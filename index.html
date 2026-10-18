@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Foto Studio</title>
+  <meta name="description" content="Gratis AI-foto-app die volledig in je browser draait.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>AI Foto Studio</h1>
+    <p class="sub">Gratis AI in je browser: je foto's verlaten je apparaat niet.</p>
+  </header>
+
+  <main>
+    <section class="card" id="input-card">
+      <div id="dropzone" tabindex="0">
+        <p><strong>Sleep een foto hierheen</strong> of</p>
+        <div class="row">
+          <label class="btn">
+            Kies foto
+            <input type="file" id="file-input" accept="image/*" hidden>
+          </label>
+          <button class="btn secondary" id="camera-btn" type="button">Camera</button>
+        </div>
+      </div>
+      <div id="camera-wrap" hidden>
+        <video id="camera" autoplay playsinline muted></video>
+        <div class="row">
+          <button class="btn" id="snap-btn" type="button">Maak foto</button>
+          <button class="btn secondary" id="camera-close" type="button">Sluiten</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="editor" hidden>
+      <div class="stage">
+        <canvas id="canvas"></canvas>
+        <canvas id="overlay"></canvas>
+      </div>
+
+      <div class="tools">
+        <h2>AI-functies</h2>
+        <div class="row wrap">
+          <button class="btn" data-task="caption" type="button">Beschrijf foto</button>
+          <button class="btn" data-task="detect" type="button">Herken objecten</button>
+          <button class="btn" data-task="classify" type="button">Labels</button>
+          <button class="btn" data-task="background" type="button">Verwijder achtergrond</button>
+        </div>
+
+        <div id="status" role="status" aria-live="polite"></div>
+        <progress id="progress" max="100" value="0" hidden></progress>
+        <div id="result"></div>
+
+        <h2>Filters</h2>
+        <div class="sliders">
+          <label>Helderheid <input type="range" id="f-brightness" min="0" max="200" value="100"></label>
+          <label>Contrast <input type="range" id="f-contrast" min="0" max="200" value="100"></label>
+          <label>Verzadiging <input type="range" id="f-saturate" min="0" max="200" value="100"></label>
+          <label>Zwart-wit <input type="range" id="f-grayscale" min="0" max="100" value="0"></label>
+          <label>Sepia <input type="range" id="f-sepia" min="0" max="100" value="0"></label>
+          <label>Vervaging <input type="range" id="f-blur" min="0" max="10" value="0"></label>
+        </div>
+
+        <div class="row wrap">
+          <button class="btn secondary" id="reset-btn" type="button">Herstel origineel</button>
+          <button class="btn secondary" id="new-btn" type="button">Nieuwe foto</button>
+          <button class="btn" id="download-btn" type="button">Download</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Modellen via <a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">Transformers.js</a>.
+    De eerste keer wordt een model gedownload (±25–170 MB) en daarna in je browser bewaard.
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
