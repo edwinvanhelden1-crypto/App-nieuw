@@ -112,7 +112,12 @@ data class AppData(
     val cloud: CloudSettings = CloudSettings(),
     /** Inlog via de Smart Life-app (QR-code). */
     val smartLife: SmartLifeSession? = null,
+    /** Lopende inlogpoging (QR-code nog niet bevestigd); overleeft het afsluiten van de app. */
+    val pendingLogin: PendingLogin? = null,
 )
+
+@Serializable
+data class PendingLogin(val qrToken: String, val userCode: String, val createdAt: Long)
 
 object DefaultThemes {
     val all = listOf(

@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         (application as LedApp).devices.refreshAll()
+        (application as LedApp).account.resume()
     }
 }
 

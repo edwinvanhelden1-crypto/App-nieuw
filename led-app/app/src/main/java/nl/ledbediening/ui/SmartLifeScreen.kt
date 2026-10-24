@@ -18,18 +18,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,131 +41,114 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import nl.ledbediening.data.Strip
-import nl.ledbediening.tuya.CloudDevice
-import nl.ledbediening.tuya.SmartLifeApi
+import nl.ledbediening.control.AccountSync
 import nl.ledbediening.tuya.SmartLifeLogin
-import nl.ledbediening.tuya.SmartLifeSession
 
 /**
  * Inloggen met je Smart Life-account: gebruikerscode invullen, QR-code goedkeuren in de
- * Smart Life-app, en daarna alle lampen uit al je huizen ophalen. Er wordt niets veranderd
- * in de Smart Life-app; we lezen alleen de lampen en hun sleutels.
+ * Smart Life-app; daarna worden alle lampen automatisch toegevoegd en op wifi gezocht.
+ * Er wordt niets veranderd in de Smart Life-app.
  */
 @Composable
-fun SmartLifeImport(onAdd: (List<Strip>) -> Unit) {
+fun SmartLifeImport(nav: Nav) {
     val app = app()
     val data by app.repo.data.collectAsState()
-    val scope = rememberCoroutineScope()
+    val state by app.account.state.collectAsState()
+    val lastDevices by app.account.lastDevices.collectAsState()
     val session = data.smartLife
-    var userCode by remember { mutableStateOf(session?.userCode ?: "") }
-    var qrToken by remember { mutableStateOf<String?>(null) }
-    var busy by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var devices by remember { mutableStateOf<List<CloudDevice>?>(null) }
+    var userCode by remember { mutableStateOf(session?.userCode ?: data.pendingLogin?.userCode ?: "") }
+    var pick by remember { mutableStateOf(false) }
 
-    fun saveSession(s: SmartLifeSession?) = app.repo.update { it.copy(smartLife = s) }
-
-    fun fetch(s: SmartLifeSession) {
-        busy = true
-        error = null
-        scope.launch {
-            try {
-                devices = withContext(Dispatchers.IO) { SmartLifeApi(s, onSessionChanged = ::saveSession).allDevices() }
-                if (devices.isNullOrEmpty()) error = "Geen apparaten gevonden in je Smart Life-account."
-            } catch (e: Exception) {
-                error = "${e.message}\n\nLog eventueel opnieuw in."
-            }
-            busy = false
+    when (val st = state) {
+        is AccountSync.State.WaitingForScan -> QrStep(st.qrToken, st.lastMessage, onCancel = { app.account.cancel() })
+        is AccountSync.State.Working -> SectionCard("Bezig") {
+            Text(st.message)
+            VSpace(12)
+            LinearProgressIndicator(Modifier.fillMaxWidth())
         }
-    }
-
-    // Wachten tot de QR-code in de Smart Life-app is goedgekeurd.
-    qrToken?.let { token ->
-        LaunchedEffect(token) {
-            val login = SmartLifeLogin()
-            repeat(150) {
-                delay(2000)
-                val s = withContext(Dispatchers.IO) { runCatching { login.poll(token, userCode) }.getOrNull() }
-                if (s != null) {
-                    saveSession(s)
-                    qrToken = null
-                    fetch(s)
-                    return@LaunchedEffect
+        is AccountSync.State.Done -> SectionCard("Klaar") {
+            Text(st.message)
+            VSpace(12)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { app.account.dismiss(); nav.pop() }) { Text("Naar mijn lampen") }
+                if (lastDevices.isNotEmpty()) OutlinedButton(onClick = { pick = true }) { Text("Andere apparaten…") }
+            }
+        }
+        is AccountSync.State.Failed -> SectionCard("Dat lukte niet") {
+            Text(st.message, color = MaterialTheme.colorScheme.error)
+            VSpace(12)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { app.account.dismiss() }) { Text("Opnieuw") }
+                if (lastDevices.isNotEmpty()) OutlinedButton(onClick = { pick = true }) { Text("Zelf kiezen…") }
+            }
+        }
+        AccountSync.State.Idle -> if (session != null) {
+            SectionCard("Smart Life") {
+                Text("Ingelogd${if (session.username.isNotBlank()) " als ${session.username}" else ""}.")
+                VSpace(10)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { app.account.refresh() }) { Text("Lampen ophalen") }
+                    TextButton(onClick = { app.repo.update { it.copy(smartLife = null) } }) { Text("Uitloggen") }
                 }
             }
-            qrToken = null
-            error = "De QR-code is verlopen. Probeer het opnieuw."
-        }
-    }
-
-    val token = qrToken
-    when {
-        token != null -> QrStep(token, onCancel = { qrToken = null })
-        session != null && devices == null -> SectionCard("Smart Life") {
-            Text("Ingelogd${if (session.username.isNotBlank()) " als ${session.username}" else ""}.")
-            VSpace(10)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Button(enabled = !busy, onClick = { fetch(session) }) { Text(if (busy) "Bezig…" else "Lampen ophalen") }
-                TextButton(onClick = { saveSession(null) }) { Text("Uitloggen") }
-            }
-            if (busy) {
+        } else {
+            SectionCard("Inloggen met Smart Life") {
+                Text(
+                    "Zo vind je je gebruikerscode in de Smart Life- (of Tuya Smart-)app:\n" +
+                        "Ik → ⚙ Instellingen (rechtsboven) → Account en beveiliging → Gebruikerscode.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 VSpace(10)
-                CircularProgressIndicator(Modifier.size(28.dp))
+                OutlinedTextField(userCode, { userCode = it.trim() }, label = { Text("Gebruikerscode") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                VSpace(10)
+                Button(enabled = userCode.isNotBlank(), onClick = { app.account.startLogin(userCode) }) { Text("Inloggen") }
+                VSpace(8)
+                Text(
+                    "Er verandert niets in je Smart Life-app: LED Bediening leest alleen welke lampen je hebt en hun sleutels. " +
+                        "Daarna praat de app rechtstreeks via je wifi met de lampen.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
-        session == null -> SectionCard("Inloggen met Smart Life") {
-            Text(
-                "Zo vind je je gebruikerscode in de Smart Life- (of Tuya Smart-)app:\n" +
-                    "Ik → ⚙ Instellingen (rechtsboven) → Account en beveiliging → Gebruikerscode.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            VSpace(10)
-            OutlinedTextField(userCode, { userCode = it.trim() }, label = { Text("Gebruikerscode") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            VSpace(10)
-            Button(
-                enabled = userCode.isNotBlank() && !busy,
-                onClick = {
-                    busy = true
-                    error = null
-                    scope.launch {
-                        try {
-                            qrToken = withContext(Dispatchers.IO) { SmartLifeLogin().requestQr(userCode) }
-                        } catch (e: Exception) {
-                            error = e.message
-                        }
-                        busy = false
-                    }
-                },
-            ) { Text(if (busy) "Bezig…" else "Inloggen") }
-            VSpace(8)
-            Text(
-                "Er verandert niets in je Smart Life-app: LED Bediening leest alleen welke lampen je hebt en hun sleutels. " +
-                    "Daarna praat de app rechtstreeks via je wifi met de lampen.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 
-    error?.let {
-        SectionCard {
-            Text(it, color = MaterialTheme.colorScheme.error)
+    if (pick && lastDevices.isNotEmpty()) {
+        DevicePicker(lastDevices) { chosen ->
+            pick = false
+            app.account.addDevices(lastDevices.filter { d -> chosen.any { it.id == d.id } })
         }
     }
+}
 
-    devices?.let { list ->
-        DevicePicker(list, onAdd)
-        TextButton(onClick = { devices = null }) { Text("Terug") }
+/** Korte melding op het hoofdscherm zolang het inloggen of zoeken loopt. */
+@Composable
+fun AccountBanner(nav: Nav) {
+    val app = app()
+    val state by app.account.state.collectAsState()
+    val text = when (val st = state) {
+        is AccountSync.State.WaitingForScan -> "Wachten op bevestiging in de Smart Life-app…"
+        is AccountSync.State.Working -> st.message
+        is AccountSync.State.Done -> st.message
+        is AccountSync.State.Failed -> st.message
+        AccountSync.State.Idle -> return
+    }
+    SectionCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(text, color = if (state is AccountSync.State.Failed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
+        if (state is AccountSync.State.Working) {
+            VSpace(10)
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+        VSpace(6)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (state is AccountSync.State.WaitingForScan) Button(onClick = { nav.push(Screen.AddStrip) }) { Text("QR-code tonen") }
+            if (state is AccountSync.State.Done || state is AccountSync.State.Failed) TextButton(onClick = { app.account.dismiss() }) { Text("OK") }
+        }
     }
 }
 
 @Composable
-private fun QrStep(token: String, onCancel: () -> Unit) {
+private fun QrStep(token: String, lastMessage: String?, onCancel: () -> Unit) {
     val context = LocalContext.current
     val content = SmartLifeLogin.qrContent(token)
     val bitmap = remember(content) { qrBitmap(content) }
@@ -206,6 +188,9 @@ private fun QrStep(token: String, onCancel: () -> Unit) {
             HSpace(10)
             Text("Wachten op bevestiging…", modifier = Modifier.weight(1f))
             TextButton(onClick = onCancel) { Text("Annuleren") }
+        }
+        if (lastMessage != null) {
+            Text("Tuya: $lastMessage", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

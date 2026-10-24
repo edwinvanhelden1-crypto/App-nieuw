@@ -116,6 +116,7 @@ fun StripsScreen(nav: Nav) {
                 IconButton(onClick = { nav.push(Screen.Diagnose) }) { Icon(Icons.Filled.Search, contentDescription = "Netwerk-diagnose") }
                 IconButton(onClick = { app.devices.refreshAll() }) { Icon(Icons.Filled.Refresh, contentDescription = "Vernieuwen") }
             }
+            AccountBanner(nav)
             if (data.strips.any { !it.isConfigured }) {
                 SectionCard(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text("Niet alle lampen zijn op je wifi gevonden.")

@@ -107,7 +107,7 @@ fun AddStripScreen(nav: Nav) {
                         }
                     }
                     when (tab) {
-                        0 -> SmartLifeImport(onAdd = ::addAndLocate)
+                        0 -> SmartLifeImport(nav)
                         1 -> CloudImport(onAdd = ::addAndLocate)
                         else -> ManualAdd(onAdd = { addAndLocate(listOf(it)) })
                     }

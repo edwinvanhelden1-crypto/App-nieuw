@@ -40,6 +40,9 @@ data class SmartLifeSession(
  * 3. [poll] tot het inloggen gelukt is.
  */
 class SmartLifeLogin(private val http: (String, String) -> String = ::defaultHttp) {
+    /** Laatste melding van Tuya tijdens het wachten (handig om te tonen bij problemen). */
+    @Volatile var lastMessage: String? = null
+        private set
 
     /** Vraagt een QR-token aan. */
     fun requestQr(userCode: String): String {
@@ -56,7 +59,10 @@ class SmartLifeLogin(private val http: (String, String) -> String = ::defaultHtt
         val url = "https://$LOGIN_HOST/v1.0/m/life/home-assistant/qrcode/tokens/${enc(qrToken)}" +
             "?clientid=$CLIENT_ID&usercode=${enc(userCode)}"
         val json = parse(http("GET", url))
-        if (json["success"]?.jsonPrimitive?.booleanOrNull != true) return null
+        if (json["success"]?.jsonPrimitive?.booleanOrNull != true) {
+            lastMessage = json["msg"]?.jsonPrimitive?.content?.let { m -> "$m (code ${json["code"]?.jsonPrimitive?.content})" }
+            return null
+        }
         val r = json["result"]?.jsonObject ?: return null
         fun s(k: String) = r[k]?.jsonPrimitive?.content ?: ""
         val t = json["t"]?.jsonPrimitive?.longOrNull ?: System.currentTimeMillis()
