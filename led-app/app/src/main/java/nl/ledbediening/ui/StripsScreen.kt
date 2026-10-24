@@ -287,6 +287,9 @@ private fun StripCard(strip: Strip, state: StripState?, onClick: () -> Unit, onP
             if (strip.hasDreamScenes) {
                 Pill("RGBIC")
                 HSpace(8)
+            } else if (strip.isIkea) {
+                Pill("IKEA")
+                HSpace(8)
             }
             Switch(checked = state?.on == true, onCheckedChange = onPower, enabled = strip.isConfigured)
         }
@@ -322,7 +325,10 @@ fun StripDetailScreen(id: String, nav: Nav) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(state.statusText(strip), color = if (state?.online == false) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)
-                        if (strip.isConfigured) {
+                        if (strip.isIkea) {
+                            Text(listOf("IKEA DIRIGERA", strip.room).filter { it.isNotBlank() }.joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        } else if (strip.isConfigured) {
                             Text("${strip.ip} · protocol ${strip.version}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -410,10 +416,12 @@ private fun StripSettings(strip: Strip, onSave: (Strip) -> Unit, onLocate: () ->
     var version by remember(strip.id) { mutableStateOf(strip.version) }
     SectionCard("Instellingen") {
         OutlinedTextField(name, { name = it }, label = { Text("Naam") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-        OutlinedTextField(ip, { ip = it.trim() }, label = { Text("IP-adres") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-        OutlinedTextField(key, { key = it.trim() }, label = { Text("Lokale sleutel (16 tekens)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
-        VSpace(8)
-        Dropdown("Protocol", listOf("3.3", "3.4", "3.5"), version, { it }, { version = it })
+        if (strip.isTuya) {
+            OutlinedTextField(ip, { ip = it.trim() }, label = { Text("IP-adres") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+            OutlinedTextField(key, { key = it.trim() }, label = { Text("Lokale sleutel (16 tekens)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+            VSpace(8)
+            Dropdown("Protocol", listOf("3.3", "3.4", "3.5"), version, { it }, { version = it })
+        }
         VSpace(8)
         Text("Apparaat-ID: ${strip.id}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (strip.dps.isNotEmpty()) {
@@ -422,7 +430,7 @@ private fun StripSettings(strip: Strip, onSave: (Strip) -> Unit, onLocate: () ->
         VSpace(10)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { onSave(strip.copy(name = name.ifBlank { strip.name }, ip = ip, localKey = key, version = version)) }) { Text("Opslaan") }
-            OutlinedButton(onClick = onLocate) { Text("Zoek op netwerk") }
+            if (strip.isTuya) OutlinedButton(onClick = onLocate) { Text("Zoek op netwerk") }
         }
         VSpace(6)
         Row(verticalAlignment = Alignment.CenterVertically) {

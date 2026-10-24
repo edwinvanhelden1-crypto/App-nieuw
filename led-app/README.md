@@ -46,6 +46,13 @@ sleutels. Daarna praat de app rechtstreeks via je wifi met de lampen.
 4. Kopieer bij **Overview** de Access ID en Access Secret en vul ze in bij **Strip toevoegen → Ontwikkelaar**.
 </details>
 
+### IKEA-lampen (DIRIGERA-hub)
+
+**Strip toevoegen → IKEA**: de app zoekt de hub zelf (of vul het IP-adres in), tik op
+**Koppelen** en druk binnen 90 seconden op de knop aan de onderkant van de hub. Alle
+IKEA-lampen verschijnen dan naast je andere lampen en doen mee met thema's, reeksen en het
+feest. IKEA-lampen lopen via de hub (Zigbee) en verwerken ongeveer 4 wijzigingen per seconde.
+
 **Tip:** geef je strips in je router een vast IP-adres, dan blijft alles werken als de
 router opnieuw opstart. Verandert het adres toch, tik dan bij de strip op
 **Instellingen → Zoek op netwerk**.

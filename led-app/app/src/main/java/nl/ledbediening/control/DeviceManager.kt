@@ -13,12 +13,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import nl.ledbediening.data.HubInfo
 import nl.ledbediening.data.Repository
 import nl.ledbediening.data.Strip
+import nl.ledbediening.ikea.DirigeraHub
+import nl.ledbediening.ikea.DirigeraLight
 import nl.ledbediening.tuya.Dp
 import nl.ledbediening.tuya.Hsv
 import nl.ledbediening.tuya.LightCodec
+import nl.ledbediening.tuya.LightDevice
 import nl.ledbediening.tuya.TuyaDevice
+import nl.ledbediening.tuya.TuyaException
 
 /** Wat we van een strip weten. */
 data class StripState(
@@ -42,8 +47,7 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
     private val _states = MutableStateFlow<Map<String, StripState>>(emptyMap())
     val states: StateFlow<Map<String, StripState>> = _states.asStateFlow()
 
-    private inner class Worker(val strip: Strip) {
-        val device = TuyaDevice(strip.id, strip.ip, strip.localKey, strip.version)
+    private inner class Worker(val strip: Strip, val device: LightDevice) {
         private val pending = LinkedHashMap<String, Any?>()
         private val signal = Channel<Unit>(Channel.CONFLATED)
         private val dispatcher = Dispatchers.IO.limitedParallelism(1)
@@ -59,7 +63,9 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
             signal.trySend(Unit)
         }
 
-        suspend fun <T> onDevice(block: (TuyaDevice) -> T): T = withContext(dispatcher) { block(device) }
+        suspend fun <T> onDevice(block: (LightDevice) -> T): T = withContext(dispatcher) { block(device) }
+
+        private var lastSent = 0L
 
         private suspend fun loop() {
             var idleSince = System.currentTimeMillis()
@@ -73,8 +79,13 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
                     }
                     continue
                 }
+                // Sommige lampen (IKEA via de hub) kunnen niet onbeperkt snel: even wachten
+                // zodat tussentijdse waarden worden samengevoegd.
+                val wait = device.minIntervalMs - (System.currentTimeMillis() - lastSent)
+                if (wait > 0) kotlinx.coroutines.delay(wait)
                 val batch = synchronized(pending) { LinkedHashMap(pending).also { pending.clear() } }
                 if (batch.isEmpty()) continue
+                lastSent = System.currentTimeMillis()
                 try {
                     device.set(batch)
                     setState(strip.id) { it.copy(online = true, error = null) }
@@ -93,17 +104,43 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
     }
 
     private val workers = HashMap<String, Worker>()
+    private val hubs = HashMap<String, DirigeraHub>()
+
+    /** Eén verbinding per IKEA-hub, gedeeld door de lampen eraan. */
+    private fun hub(info: HubInfo): DirigeraHub = synchronized(hubs) {
+        val h = hubs[info.id]
+        if (h != null && h.host == info.host && h.token == info.token) return h
+        h?.close()
+        DirigeraHub(info.host, info.token, info.certSha256).also { hubs[info.id] = it }
+    }
+
+    private fun createDevice(strip: Strip): LightDevice = if (strip.isIkea) {
+        val info = repo.data.value.hubs.find { it.id == strip.hubId } ?: throw TuyaException("IKEA-hub niet gevonden: koppel de hub opnieuw")
+        DirigeraLight(hub(info), strip.id)
+    } else {
+        TuyaDevice(strip.id, strip.ip, strip.localKey, strip.version)
+    }
 
     private fun worker(strip: Strip): Worker? = synchronized(workers) {
         if (!strip.isConfigured) return null
         val w = workers[strip.id]
-        if (w != null && w.strip.ip == strip.ip && w.strip.localKey == strip.localKey && w.strip.version == strip.version) return w
+        if (w != null && w.strip.ip == strip.ip && w.strip.localKey == strip.localKey && w.strip.version == strip.version &&
+            w.strip.kind == strip.kind && w.strip.hubId == strip.hubId
+        ) return w
         w?.close()
         return try {
-            Worker(strip).also { workers[strip.id] = it }
+            Worker(strip, createDevice(strip)).also { workers[strip.id] = it }
         } catch (e: Exception) {
             setState(strip.id) { it.copy(online = false, error = e.message) }
             null
+        }
+    }
+
+    /** Na opnieuw koppelen van een hub: verbindingen vernieuwen. */
+    fun resetHub(hubId: String) {
+        synchronized(hubs) { hubs.remove(hubId)?.close() }
+        synchronized(workers) {
+            workers.values.filter { it.strip.hubId == hubId }.map { it.strip.id }.forEach { workers.remove(it)?.close() }
         }
     }
 
@@ -142,6 +179,7 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
     private suspend fun relocateIfUnreachable(strip: Strip, e: Exception) {
         val msg = e.message ?: ""
         val network = listOf("onbereikbaar", "Geen antwoord", "verbinding maken", "reageert niet").any { it in msg }
+        if (!strip.isTuya) return
         val find = relocate ?: return
         val now = System.currentTimeMillis()
         if (!network || now - (lastRelocate[strip.id] ?: 0L) < 3 * 60_000) return

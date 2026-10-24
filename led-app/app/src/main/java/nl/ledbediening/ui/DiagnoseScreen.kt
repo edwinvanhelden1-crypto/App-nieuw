@@ -59,7 +59,7 @@ fun DiagnoseScreen(nav: Nav) {
     }
 
     fun relocate() {
-        val strips = data.strips
+        val strips = data.strips.filter { it.isTuya }
         if (strips.isEmpty()) return
         scope.launch {
             status = "Lampen opnieuw zoeken…"
@@ -116,9 +116,13 @@ fun DiagnoseScreen(nav: Nav) {
                     Text(s.name)
                     Text(
                         listOfNotNull(
-                            if (s.isConfigured) "${s.ip} · v${s.version}" else "geen IP-adres",
+                            when {
+                                s.isIkea -> "IKEA via hub"
+                                s.isConfigured -> "${s.ip} · v${s.version}"
+                                else -> "geen IP-adres"
+                            },
                             if (h != null) "meldt zich op ${h.ip} (v${h.version})" else null,
-                            if (s.localKey.length != 16) "sleutel ongeldig (${s.localKey.length} tekens)" else null,
+                            if (s.isTuya && s.localKey.length != 16) "sleutel ongeldig (${s.localKey.length} tekens)" else null,
                             if (s.dps.isNotEmpty()) "datapunten ${s.dps.joinToString(",")}" else null,
                         ).joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall,

@@ -19,11 +19,36 @@ data class Strip(
     val version: String = "3.3",
     /** Datapunten die de strip heeft (bekend na de eerste verbinding). */
     val dps: List<String> = emptyList(),
+    /** "tuya" of "ikea" (lamp aan een IKEA DIRIGERA-hub). */
+    val kind: String = KIND_TUYA,
+    /** Bij IKEA: de hub waar de lamp aan hangt. */
+    val hubId: String = "",
+    /** Bij IKEA: de ruimte uit de IKEA-app. */
+    val room: String = "",
 ) {
+    val isIkea get() = kind == KIND_IKEA
+    val isTuya get() = kind == KIND_TUYA
+
     val hasDreamScenes get() = Dp.DREAM_SCENE in dps
     val hasLiveControl get() = Dp.CONTROL in dps
-    val isConfigured get() = ip.isNotBlank()
+    val isConfigured get() = isIkea || ip.isNotBlank()
+
+    companion object {
+        const val KIND_TUYA = "tuya"
+        const val KIND_IKEA = "ikea"
+    }
 }
+
+/** Een gekoppelde IKEA DIRIGERA-hub. */
+@Serializable
+data class HubInfo(
+    val id: String,
+    val host: String,
+    val token: String,
+    /** Vingerafdruk van het certificaat van de hub (alleen dat certificaat wordt vertrouwd). */
+    val certSha256: String? = null,
+    val name: String = "IKEA DIRIGERA",
+)
 
 /** Waar een thema wordt afgespeeld. */
 enum class Engine(val label: String) {
@@ -119,6 +144,7 @@ data class AppData(
     /** Lopende inlogpoging (QR-code nog niet bevestigd); overleeft het afsluiten van de app. */
     val pendingLogin: PendingLogin? = null,
     val party: PartySettings = PartySettings(),
+    val hubs: List<HubInfo> = emptyList(),
 )
 
 @Serializable

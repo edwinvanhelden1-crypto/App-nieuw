@@ -3,9 +3,13 @@ package nl.ledbediening.control
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.nsd.NsdManager
+import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import nl.ledbediening.data.Strip
 import nl.ledbediening.tuya.FoundDevice
 import nl.ledbediening.tuya.TuyaDevice
@@ -59,7 +63,9 @@ class Setup(private val context: Context) {
      * 1. luisteren naar broadcasts; 2. bekend IP proberen; 3. netwerk afzoeken en de sleutel testen.
      */
     suspend fun locate(strips: List<Strip>, progress: (String) -> Unit): List<Strip> = withContext(Dispatchers.IO) {
-        val result = strips.associateBy { it.id }.toMutableMap()
+        // Alleen Tuya-lampen hebben een eigen IP-adres; IKEA-lampen lopen via de hub.
+        val result = strips.filter { it.isTuya }.associateBy { it.id }.toMutableMap()
+        if (result.isEmpty()) return@withContext strips
         progress("Luisteren naar strips op het netwerk…")
         val heard = listen(8000) { d ->
             result[d.id]?.let { progress("Gevonden: ${it.name} (${d.ip})") }
@@ -109,7 +115,42 @@ class Setup(private val context: Context) {
             } catch (_: Exception) {
             }
         }
-        strips.map { result[it.id]!! }
+        strips.map { result[it.id] ?: it }
+    }
+
+    /** Zoekt de IKEA DIRIGERA-hub op het netwerk (mDNS-dienst _ihsp._tcp). */
+    suspend fun findDirigera(timeoutMs: Long = 8000): String? = withContext(Dispatchers.Main) {
+        val nsd = context.getSystemService(NsdManager::class.java) ?: return@withContext null
+        val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val lock = wm.createMulticastLock("led:hub").apply { setReferenceCounted(false); acquire() }
+        val result = CompletableDeferred<String?>()
+        val listener = object : NsdManager.DiscoveryListener {
+            override fun onDiscoveryStarted(serviceType: String) {}
+            override fun onDiscoveryStopped(serviceType: String) {}
+            override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) { result.complete(null) }
+            override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {}
+            override fun onServiceLost(service: NsdServiceInfo) {}
+            override fun onServiceFound(service: NsdServiceInfo) {
+                @Suppress("DEPRECATION")
+                nsd.resolveService(service, object : NsdManager.ResolveListener {
+                    override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {}
+                    override fun onServiceResolved(info: NsdServiceInfo) {
+                        @Suppress("DEPRECATION")
+                        val ip = info.host?.hostAddress
+                        if (ip != null && !ip.contains(':')) result.complete(ip)
+                    }
+                })
+            }
+        }
+        try {
+            nsd.discoverServices("_ihsp._tcp", NsdManager.PROTOCOL_DNS_SD, listener)
+            withTimeoutOrNull(timeoutMs) { result.await() }
+        } catch (_: Exception) {
+            null
+        } finally {
+            runCatching { nsd.stopServiceDiscovery(listener) }
+            lock.release()
+        }
     }
 
     companion object {

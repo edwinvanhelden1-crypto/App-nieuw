@@ -11,7 +11,6 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
-import java.io.Closeable
 import java.io.EOFException
 import java.io.InputStream
 import java.io.OutputStream
@@ -33,7 +32,7 @@ class TuyaDevice(
     private val port: Int = 6668,
     private val connectTimeoutMs: Int = 3000,
     private val readTimeoutMs: Int = 3000,
-) : Closeable {
+) : LightDevice {
     private val realKey = localKey.toByteArray(Charsets.ISO_8859_1)
     private var sessionKey = realKey
     private var socket: Socket? = null
@@ -44,17 +43,17 @@ class TuyaDevice(
     private val versionHeader = version.toByteArray() + ByteArray(12)
 
     /** Laatst bekende waarden van alle datapunten. */
-    val dps: MutableMap<String, Any?> = java.util.concurrent.ConcurrentHashMap()
+    override val dps: MutableMap<String, Any?> = java.util.concurrent.ConcurrentHashMap()
 
     /** Wordt aangeroepen als het apparaat (ook uit zichzelf) nieuwe waarden meldt. */
-    @Volatile var onDps: ((Map<String, Any?>) -> Unit)? = null
+    @Volatile override var onDps: ((Map<String, Any?>) -> Unit)? = null
 
     init {
         if (realKey.size != 16) throw TuyaException("De lokale sleutel moet 16 tekens lang zijn")
         if (ver !in setOf(3.3, 3.4, 3.5)) throw TuyaException("Protocolversie $version wordt niet ondersteund (alleen 3.3, 3.4 en 3.5)")
     }
 
-    val isConnected: Boolean
+    override val isConnected: Boolean
         @Synchronized get() = socket?.isConnected == true && socket?.isClosed == false
 
     @Synchronized
@@ -100,7 +99,7 @@ class TuyaDevice(
 
     /** Vraagt alle datapunten op. */
     @Synchronized
-    fun status(): Map<String, Any?> = withConnection {
+    override fun status(): Map<String, Any?> = withConnection {
         val cmd = if (ver >= 3.4) Cmd.DP_QUERY_NEW else Cmd.DP_QUERY
         val body = if (ver >= 3.4) "{}" else jsonString(
             buildJsonObject { put("gwId", id); put("devId", id); put("uid", id); put("t", now().toString()) },
@@ -121,7 +120,7 @@ class TuyaDevice(
      * die de strip aankan.
      */
     @Synchronized
-    fun set(values: Map<String, Any?>, waitAck: Boolean = true) = withConnection {
+    override fun set(values: Map<String, Any?>, waitAck: Boolean) = withConnection {
         val dpsJson = toJson(values)
         val (cmd, body) = if (ver >= 3.4) {
             Cmd.CONTROL_NEW to jsonString(buildJsonObject {
@@ -142,7 +141,7 @@ class TuyaDevice(
 
     /** Houdt de verbinding open (apparaten sluiten hem na ±30 s stilte). */
     @Synchronized
-    fun heartbeat() = withConnection {
+    override fun heartbeat() = withConnection {
         send(Cmd.HEART_BEAT, jsonString(buildJsonObject { put("gwId", id); put("devId", id) }).toByteArray())
         awaitAck(Cmd.HEART_BEAT)
     }

@@ -100,15 +100,16 @@ fun AddStripScreen(nav: Nav) {
                 }
                 else -> {
                     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-                        listOf("Smart Life", "Ontwikkelaar", "Handmatig").forEachIndexed { i, label ->
-                            SegmentedButton(selected = tab == i, onClick = { tab = i }, shape = SegmentedButtonDefaults.itemShape(i, 3)) {
+                        listOf("Smart Life", "IKEA", "Ontwikkelaar", "Handmatig").forEachIndexed { i, label ->
+                            SegmentedButton(selected = tab == i, onClick = { tab = i }, shape = SegmentedButtonDefaults.itemShape(i, 4)) {
                                 Text(label, style = MaterialTheme.typography.labelMedium)
                             }
                         }
                     }
                     when (tab) {
                         0 -> SmartLifeImport(nav)
-                        1 -> CloudImport(onAdd = ::addAndLocate)
+                        1 -> IkeaImport(nav)
+                        2 -> CloudImport(onAdd = ::addAndLocate)
                         else -> ManualAdd(onAdd = { addAndLocate(listOf(it)) })
                     }
                 }
