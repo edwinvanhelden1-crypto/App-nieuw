@@ -130,6 +130,31 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
             if (keys != strip.dps) repo.strip(strip.id)?.let { repo.saveStrip(it.copy(dps = keys)) }
         } catch (e: Exception) {
             setState(strip.id) { it.copy(online = false, busy = false, error = e.message) }
+            relocateIfUnreachable(strip, e)
+        }
+    }
+
+    /** Zoekt de strip opnieuw op het netwerk (wordt door de app ingesteld). */
+    var relocate: (suspend (Strip) -> Strip?)? = null
+    private val lastRelocate = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
+    /** Onbereikbaar? Misschien heeft de lamp een nieuw IP-adres gekregen: zoek hem opnieuw. */
+    private suspend fun relocateIfUnreachable(strip: Strip, e: Exception) {
+        val msg = e.message ?: ""
+        val network = listOf("onbereikbaar", "Geen antwoord", "verbinding maken", "reageert niet").any { it in msg }
+        val find = relocate ?: return
+        val now = System.currentTimeMillis()
+        if (!network || now - (lastRelocate[strip.id] ?: 0L) < 3 * 60_000) return
+        lastRelocate[strip.id] = now
+        setState(strip.id) { it.copy(busy = true, error = "Lamp opnieuw zoeken op je wifi…") }
+        val found = try { find(strip) } catch (_: Exception) { null }
+        if (found != null && (found.ip != strip.ip || found.version != strip.version)) {
+            val cur = repo.strip(strip.id) ?: return
+            val updated = cur.copy(ip = found.ip, version = found.version, dps = found.dps.ifEmpty { cur.dps })
+            repo.saveStrip(updated)
+            refresh(updated)
+        } else {
+            setState(strip.id) { it.copy(busy = false, error = msg) }
         }
     }
 

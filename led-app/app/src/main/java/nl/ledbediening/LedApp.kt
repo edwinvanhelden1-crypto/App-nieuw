@@ -25,5 +25,6 @@ class LedApp : Application() {
         player = Player(this, repo, devices, scope)
         setup = Setup(this)
         account = AccountSync(repo, devices, setup, scope)
+        devices.relocate = { s -> setup.locate(listOf(s)) {}.first().takeIf { it.isConfigured } }
     }
 }

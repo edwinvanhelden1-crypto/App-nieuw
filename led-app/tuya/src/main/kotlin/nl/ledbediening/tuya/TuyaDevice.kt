@@ -81,6 +81,17 @@ class TuyaDevice(
         } catch (e: EOFException) {
             close()
             throw TuyaException("Strip verbrak de verbinding: verkeerde sleutel of protocolversie?", e)
+        } catch (e: java.net.NoRouteToHostException) {
+            close()
+            throw TuyaException("Lamp onbereikbaar op $ip. Staat hij aan, en zit hij op hetzelfde wifi als je telefoon?", e)
+        } catch (e: java.net.ConnectException) {
+            close()
+            val m = e.message ?: ""
+            throw if ("EHOSTUNREACH" in m || "ENETUNREACH" in m) {
+                TuyaException("Lamp onbereikbaar op $ip. Staat hij aan, en zit hij op hetzelfde wifi als je telefoon?", e)
+            } else {
+                TuyaException("Lamp weigert de verbinding op $ip (is de Smart Life-app er nog mee verbonden?)", e)
+            }
         } catch (e: Exception) {
             close()
             throw TuyaException("Kan geen verbinding maken met $ip: ${e.message}", e)
