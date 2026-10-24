@@ -10,6 +10,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Om de Smart Life-app te kunnen openen bij het inloggen. -->
+    <queries>
+        <package android:name="com.tuya.smartlife" />
+        <package android:name="com.tuya.smart" />
+    </queries>
+
     <application
         android:name=".LedApp"
         android:allowBackup="true"

@@ -100,11 +100,17 @@ fun AddStripScreen(nav: Nav) {
                 }
                 else -> {
                     SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-                        listOf("Uit Tuya-cloud", "Handmatig").forEachIndexed { i, label ->
-                            SegmentedButton(selected = tab == i, onClick = { tab = i }, shape = SegmentedButtonDefaults.itemShape(i, 2)) { Text(label) }
+                        listOf("Smart Life", "Ontwikkelaar", "Handmatig").forEachIndexed { i, label ->
+                            SegmentedButton(selected = tab == i, onClick = { tab = i }, shape = SegmentedButtonDefaults.itemShape(i, 3)) {
+                                Text(label, style = MaterialTheme.typography.labelMedium)
+                            }
                         }
                     }
-                    if (tab == 0) CloudImport(onAdd = ::addAndLocate) else ManualAdd(onAdd = { addAndLocate(listOf(it)) })
+                    when (tab) {
+                        0 -> SmartLifeImport(onAdd = ::addAndLocate)
+                        1 -> CloudImport(onAdd = ::addAndLocate)
+                        else -> ManualAdd(onAdd = { addAndLocate(listOf(it)) })
+                    }
                 }
             }
         }
@@ -122,9 +128,6 @@ private fun CloudImport(onAdd: (List<Strip>) -> Unit) {
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var devices by remember { mutableStateOf<List<CloudDevice>?>(null) }
-    var showAll by remember { mutableStateOf(false) }
-    val selected = remember { mutableStateListOf<String>() }
-    val existing = app.repo.data.value.strips.map { it.id }.toSet()
 
     SectionCard("Sleutels ophalen") {
         Text(
@@ -152,8 +155,6 @@ private fun CloudImport(onAdd: (List<Strip>) -> Unit) {
                     try {
                         val list = withContext(Dispatchers.IO) { TuyaCloud(region.host, accessId, secret).devices() }
                         devices = list
-                        selected.clear()
-                        selected.addAll(list.filter { it.isLight && it.id !in existing }.map { it.id })
                         if (list.isEmpty()) error = "Geen apparaten gevonden. Is je Smart Life-account gekoppeld aan het project (Devices → Link App Account)?"
                     } catch (e: Exception) {
                         error = e.message
@@ -168,9 +169,18 @@ private fun CloudImport(onAdd: (List<Strip>) -> Unit) {
         }
     }
 
-    val list = devices ?: return
+    devices?.let { DevicePicker(it, onAdd) }
+}
+
+/** Lijst met gevonden apparaten om te kiezen; verlichting staat standaard aangevinkt. */
+@Composable
+fun DevicePicker(list: List<CloudDevice>, onAdd: (List<Strip>) -> Unit) {
+    val app = app()
+    val existing = remember { app.repo.data.value.strips.map { it.id }.toSet() }
+    var showAll by remember { mutableStateOf(false) }
+    val selected = remember(list) { mutableStateListOf<String>().apply { addAll(list.filter { it.isLight && it.id !in existing }.map { it.id }) } }
     val shown = if (showAll) list else list.filter { it.isLight }
-    SectionCard("Kies je strips") {
+    SectionCard("Kies je lampen (${shown.size})") {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Ook andere apparaten tonen", modifier = Modifier.weight(1f))
             Switch(showAll, { showAll = it })

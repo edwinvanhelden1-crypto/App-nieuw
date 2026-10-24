@@ -107,6 +107,12 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
         }
     }
 
+    /** Huidige stand van een strip, om later terug te kunnen zetten. */
+    fun snapshot(strip: Strip): Map<String, Any?> {
+        val dps = synchronized(workers) { workers[strip.id]?.device?.dps } ?: return emptyMap()
+        return RESTORE_KEYS.mapNotNull { k -> dps[k]?.let { k to it } }.toMap()
+    }
+
     fun forget(stripId: String) = synchronized(workers) { workers.remove(stripId)?.close() }
 
     /** Vraagt de actuele status op en onthoudt welke datapunten de strip heeft. */
@@ -162,5 +168,7 @@ class DeviceManager(private val repo: Repository, private val scope: CoroutineSc
 
     companion object {
         private const val TAG = "DeviceManager"
+        /** Datapunten die samen de stand van een lamp bepalen (modus eerst). */
+        val RESTORE_KEYS = listOf(Dp.MODE, Dp.BRIGHTNESS, Dp.TEMPERATURE, Dp.COLOUR, Dp.SCENE, Dp.DREAM_SCENE, Dp.SWITCH)
     }
 }

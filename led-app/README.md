@@ -9,6 +9,7 @@ Een eigen Android-app (APK) om je Tuya-, Smart Life- en RGBIC-ledstrips te bedie
 - **Richting en beweging**: vooruit/achteruit, heen en weer, per segment, of verdeeld over strips
 - **Reeksen**: speel thema's na elkaar af (elk zo lang als je wilt), zacht in elkaar overvloeiend, eindeloos herhalen
 - **Live voorbeeld** van je thema in de app, ook zonder strips
+- **Discomodus** en snelle thema's voor alle lampen tegelijk; na stoppen gaan de lampen terug naar hoe ze waren
 - Blijft doorspelen met het scherm uit (melding met stopknop)
 
 ## 1. App installeren
@@ -21,32 +22,29 @@ Een eigen Android-app (APK) om je Tuya-, Smart Life- en RGBIC-ledstrips te bedie
 
 Een nieuwe versie installeer je op dezelfde manier; je strips en thema's blijven bewaard.
 
-## 2. Je strips toevoegen (eenmalig)
+## 2. Je lampen toevoegen (eenmalig)
 
-Tuya-strips versleutelen hun verkeer met een eigen sleutel per apparaat. Die sleutel
-haal je één keer op via een gratis Tuya-ontwikkelaarsaccount. Daarna praat de app
-rechtstreeks met de strips.
+1. Zoek in de **Smart Life**-app je gebruikerscode op:
+   **Ik → ⚙ Instellingen → Account en beveiliging → Gebruikerscode**.
+2. Open LED Bediening → **Strip toevoegen** → **Smart Life**, vul de code in en tik op **Inloggen**.
+3. Er verschijnt een QR-code. Scan die met de Smart Life-app (scan-icoon rechtsboven) en tik op **Bevestigen**.
+   Gebruik je dezelfde telefoon? Tik op **Opslaan als foto** en kies de foto in de scanner van Smart Life.
+4. Al je lampen uit al je huizen verschijnen. Vink aan wat je wilt en tik op **toevoegen en zoeken op wifi**.
 
-1. Zorg dat je strips werken in de **Smart Life**- (of Tuya Smart-)app.
-2. Maak een account op **iot.tuya.com** en kies als regio *Central Europe*.
-3. Ga naar **Cloud → Development → Create Cloud Project**
-   - Industry: *Smart Home*, Development Method: *Smart Home*
-   - Data Center: **Central Europe Data Center**
-   - Sta bij de API-services in ieder geval **IoT Core** toe.
-4. Open het project → tabblad **Devices** → **Link App Account** → **Add App Account**.
-   Scan de QR-code met de Smart Life-app (tabblad *Ik* → scanicoon rechtsboven).
-   Je strips verschijnen nu in de lijst.
-5. Kopieer op het tabblad **Overview** de **Access ID/Client ID** en **Access Secret/Client Secret**.
-6. Open LED Bediening → **Strip toevoegen** → **Uit Tuya-cloud**, vul beide in, kies regio
-   *Centraal-Europa* en tik op **Apparaten ophalen**.
-7. Vink je strips aan en tik op **toevoegen en zoeken op wifi**. De app zoekt dan zelf
-   het IP-adres en de protocolversie van elke strip.
+Er verandert niets in je Smart Life-app: LED Bediening leest alleen welke lampen je hebt en hun
+sleutels. Daarna praat de app rechtstreeks via je wifi met de lampen.
 
-> Koppel je een strip later opnieuw in Smart Life, dan krijgt hij een nieuwe sleutel.
-> Doe dan stap 6–7 nog een keer.
+> Deze inlogmanier is dezelfde die Home Assistant gebruikt. Werkt hij ooit niet meer, dan kun je
+> de sleutels nog ophalen via **Ontwikkelaar** (een gratis project op iot.tuya.com, zie hieronder) of **Handmatig**.
 
-Heb je de apparaat-ID en lokale sleutel al (bijvoorbeeld via `python -m tinytuya wizard`)?
-Kies dan **Handmatig**.
+<details>
+<summary>Alternatief: via een Tuya-ontwikkelaarsproject</summary>
+
+1. Maak een account op **iot.tuya.com** (regio *Central Europe*).
+2. **Cloud → Development → Create Cloud Project** (Smart Home, Central Europe Data Center, API-service **IoT Core**).
+3. **Devices → Link App Account → Add App Account** en scan de QR-code met de Smart Life-app.
+4. Kopieer bij **Overview** de Access ID en Access Secret en vul ze in bij **Strip toevoegen → Ontwikkelaar**.
+</details>
 
 **Tip:** geef je strips in je router een vast IP-adres, dan blijft alles werken als de
 router opnieuw opstart. Verandert het adres toch, tik dan bij de strip op
@@ -93,6 +91,7 @@ een eindeloze loop.
 | *Niet gevonden op het netwerk* | Staan telefoon en strips op hetzelfde wifi (niet het gastnetwerk)? Vul anders het IP-adres zelf in bij de instellingen van de strip. |
 | *Verkeerde sleutel of protocolversie* | Haal de sleutels opnieuw op (stap 2.6) of kies een ander protocol (3.3 / 3.4 / 3.5) bij de instellingen. |
 | Strip reageert traag of soms niet | Sluit de Smart Life-app: sommige strips accepteren maar één lokale verbinding tegelijk. |
+| Smart Life: *inloggen mislukt* | Controleer de gebruikerscode (hoofdlettergevoelig) en probeer opnieuw; de QR-code is een paar minuten geldig. |
 | Cloud: *geen toegang* of *not authorized* | Controleer de regio, en dat het project de API-service **IoT Core** heeft en je Smart Life-account gekoppeld is. |
 | Een effect ziet er anders uit dan verwacht | Niet elke strip heeft dezelfde ingebouwde effecten. Zet *Afspelen* op **Via de app**. |
 | Loop stopt als het scherm uit gaat | Sta meldingen toe voor de app en zet batterijoptimalisatie voor LED Bediening uit. |

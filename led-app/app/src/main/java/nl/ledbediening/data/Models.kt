@@ -5,6 +5,7 @@ import nl.ledbediening.tuya.Dp
 import nl.ledbediening.tuya.Effect
 import nl.ledbediening.tuya.EffectSpec
 import nl.ledbediening.tuya.Hsv
+import nl.ledbediening.tuya.SmartLifeSession
 import java.util.UUID
 
 fun newId(): String = UUID.randomUUID().toString()
@@ -109,6 +110,8 @@ data class AppData(
     val themes: List<Theme> = DefaultThemes.all,
     val sequences: List<Sequence> = emptyList(),
     val cloud: CloudSettings = CloudSettings(),
+    /** Inlog via de Smart Life-app (QR-code). */
+    val smartLife: SmartLifeSession? = null,
 )
 
 object DefaultThemes {

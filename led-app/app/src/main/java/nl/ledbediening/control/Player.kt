@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +42,9 @@ class Player(
     val state: StateFlow<PlayState?> = _state.asStateFlow()
     private var job: Job? = null
 
+    /** Stand van de lampen vóór het afspelen; wordt bij stoppen teruggezet. */
+    private var saved: Map<String, Map<String, Any?>>? = null
+
     fun play(theme: Theme) {
         start(PlayState(theme.name, theme.effectEnum.label, themeId = theme.id)) {
             runSteps(listOf(theme to null), crossfadeMs = 0, repeat = true) {}
@@ -54,18 +58,40 @@ class Player(
             runSteps(steps, seq.crossfadeSeconds * 1000L, seq.repeat) { i ->
                 _state.value = PlayState(seq.name, "Stap ${i + 1}/${steps.size}: ${steps[i].first.name}", sequenceId = seq.id)
             }
-            _state.value = null
+            restore(takeSaved())
         }
     }
 
-    fun stop() {
-        job?.cancel()
+    /** Stopt en zet de lampen (als [restoreLamps]) terug zoals ze vóór het afspelen waren. */
+    fun stop(restoreLamps: Boolean = true) {
+        val j = job
         job = null
-        _state.value = null
+        val snap = takeSaved()
+        scope.launch {
+            j?.cancelAndJoin()
+            if (restoreLamps) restore(snap)
+        }
     }
 
+    @Synchronized
+    private fun takeSaved(): Map<String, Map<String, Any?>>? {
+        _state.value = null
+        return saved.also { saved = null }
+    }
+
+    private fun restore(snap: Map<String, Map<String, Any?>>?) {
+        for ((id, dps) in snap ?: return) {
+            val strip = repo.strip(id) ?: continue
+            if (dps.isNotEmpty()) devices.send(strip, dps)
+        }
+    }
+
+    @Synchronized
     private fun start(state: PlayState, block: suspend () -> Unit) {
         job?.cancel()
+        if (saved == null) {
+            saved = repo.data.value.strips.filter { it.isConfigured }.associate { it.id to devices.snapshot(it) }
+        }
         _state.value = state
         ContextCompat.startForegroundService(context, Intent(context, PlayerService::class.java))
         job = scope.launch(Dispatchers.Default) { block() }

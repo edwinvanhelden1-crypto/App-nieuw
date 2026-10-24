@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +32,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import nl.ledbediening.control.StripState
 import nl.ledbediening.data.Strip
+import nl.ledbediening.data.Theme
+import nl.ledbediening.tuya.Effect
 import nl.ledbediening.tuya.Hsv
 
 @Composable
@@ -121,6 +125,9 @@ fun StripsScreen(nav: Nav) {
                 }
             }
             LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp)) {
+                if (data.strips.any { it.isConfigured }) {
+                    item(key = "snel") { QuickControls() }
+                }
                 items(data.strips, key = { it.id }) { strip ->
                     StripCard(strip, states[strip.id], onClick = { nav.push(Screen.StripDetail(strip.id)) }) { on ->
                         app.devices.setPower(strip, on)
@@ -133,6 +140,46 @@ fun StripsScreen(nav: Nav) {
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
             text = { Text("Strip toevoegen") },
             modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+        )
+    }
+}
+
+/** Alles tegelijk: aan/uit, discomodus en thema's met één tik op alle lampen. */
+@Composable
+private fun QuickControls() {
+    val app = app()
+    val data by app.repo.data.collectAsState()
+    val playing by app.player.state.collectAsState()
+    val strips = data.strips.filter { it.isConfigured }
+    val disco = data.themes.firstOrNull { it.name.equals("Disco", ignoreCase = true) }
+        ?: Theme(name = "Disco", colors = listOf(0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF), effect = Effect.JUMP.name, speed = 85)
+    SectionCard("Alle lampen tegelijk") {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { app.player.stop(restoreLamps = false); strips.forEach { app.devices.setPower(it, true) } }, modifier = Modifier.weight(1f)) { Text("Alles aan") }
+            OutlinedButton(onClick = { app.player.stop(restoreLamps = false); strips.forEach { app.devices.setPower(it, false) } }, modifier = Modifier.weight(1f)) { Text("Alles uit") }
+        }
+        VSpace(8)
+        val discoOn = playing?.themeId == disco.id
+        Button(
+            onClick = { if (discoOn) app.player.stop() else app.player.play(disco.copy(stripIds = emptyList())) },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(if (discoOn) "Discomodus stoppen" else "🎉 Discomodus") }
+        VSpace(8)
+        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            data.themes.filter { it.id != disco.id }.forEach { t ->
+                val on = playing?.themeId == t.id
+                FilledTonalButton(onClick = { if (on) app.player.stop() else app.player.play(t.copy(stripIds = emptyList())) }) {
+                    ColorDot(rgbColor(t.colors.firstOrNull() ?: 0xFFFFFF), size = 14)
+                    HSpace(6)
+                    Text(if (on) "■ ${t.name}" else t.name)
+                }
+            }
+        }
+        VSpace(6)
+        Text(
+            "Stop je, dan gaan de lampen terug naar hoe ze waren.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
