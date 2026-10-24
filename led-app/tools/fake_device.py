@@ -32,7 +32,8 @@ DPS = {
 
 
 class Conn:
-    def __init__(self, sock, version, log):
+    def __init__(self, sock, version, log, no_ack=False):
+        self.no_ack = no_ack
         self.sock = sock
         self.version = version
         self.key = KEY
@@ -134,6 +135,8 @@ class Conn:
                 dps = j.get("dps") or j.get("data", {}).get("dps")
                 self.log("control", json.dumps(dps, sort_keys=True))
                 DPS.update(dps)
+                if self.no_ack:
+                    continue
                 self.send(cmd, b"")
                 self.send(8, json.dumps({"dps": dps, "t": int(time.time())}).encode(), header=True)
             elif cmd == 9:
@@ -147,6 +150,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", type=float, default=3.3)
     ap.add_argument("--port", type=int, default=16668)
+    ap.add_argument("--no-ack", action="store_true", help="bevestig opdrachten niet (zoals sommige lampen)")
     args = ap.parse_args()
 
     def log(*a):
@@ -162,7 +166,7 @@ def main():
 
         def handle(s=s):
             try:
-                Conn(s, args.version, log).run()
+                Conn(s, args.version, log, args.no_ack).run()
             except Exception as e:  # noqa
                 log("fout", repr(e))
             finally:

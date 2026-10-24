@@ -16,13 +16,13 @@ class DeviceTest {
     private val python = System.getenv("FAKE_DEVICE_PYTHON").orEmpty()
     private val procs = mutableListOf<Process>()
 
-    private fun startFake(version: String, port: Int): Boolean {
+    private fun startFake(version: String, port: Int, vararg extra: String): Boolean {
         if (python.isEmpty()) {
             println("FAKE_DEVICE_PYTHON niet gezet: test overgeslagen")
             return false
         }
         val script = File("../tools/fake_device.py").absoluteFile
-        val p = ProcessBuilder(python, script.path, "--version", version, "--port", "$port")
+        val p = ProcessBuilder(listOf(python, script.path, "--version", version, "--port", "$port") + extra)
             .redirectErrorStream(true).redirectOutput(File("build/fake_$version.log")).start()
         procs += p
         repeat(50) {
@@ -72,5 +72,19 @@ class DeviceTest {
         if (!startFake("3.4", 18134)) return
         assertEquals("3.4", TuyaDiscovery.probe("bf0123456789abcdefgh", "127.0.0.1", "0123456789abcdef", port = 18134))
         assertEquals(null, TuyaDiscovery.probe("bf0123456789abcdefgh", "127.0.0.1", "ffffffffffffffff", port = 18134))
+    }
+
+    @Test
+    fun lampWithoutAcksStaysFast() {
+        if (!startFake("3.3", 18233, "--no-ack")) return
+        TuyaDevice("bf0123456789abcdefgh", "127.0.0.1", "0123456789abcdef", "3.3", port = 18233).use { dev ->
+            dev.status()
+            val start = System.currentTimeMillis()
+            repeat(20) { dev.set(mapOf("28" to LightCodec.control(Hsv(it * 18f, 1f), true))) }
+            val ms = System.currentTimeMillis() - start
+            assertTrue(ms < 2500, "20 opdrachten zonder bevestiging duurden $ms ms")
+            // De verbinding werkt daarna nog steeds.
+            assertEquals(LightCodec.control(Hsv(342f, 1f), true), dev.status()["28"])
+        }
     }
 }

@@ -180,12 +180,19 @@ class TuyaDevice(
 
     private var missedAcks = 0
 
+    /** Of deze lamp opdrachten bevestigt; zo niet, dan wachten we er niet meer op. */
+    private var sendsAcks = true
+
     /**
-     * Wacht op de bevestiging van [cmd] (of een statusmelding). Niet elke strip bevestigt
-     * altijd; een gemiste bevestiging is daarom geen fout, maar na drie keer op rij wordt
-     * de verbinding vernieuwd.
+     * Wacht kort op de bevestiging van [cmd] (of een statusmelding). Lampen die niet
+     * bevestigen zouden anders elke opdracht vertragen: na twee gemiste bevestigingen
+     * lezen we alleen nog wat er al binnen is.
      */
-    private fun awaitAck(cmd: Int, timeoutMs: Int = 1500) {
+    private fun awaitAck(cmd: Int, timeoutMs: Int = 600) {
+        if (!sendsAcks) {
+            drainAvailable()
+            return
+        }
         val deadline = System.currentTimeMillis() + timeoutMs
         while (true) {
             val left = deadline - System.currentTimeMillis()
@@ -201,10 +208,7 @@ class TuyaDevice(
                 return
             }
         }
-        if (++missedAcks >= 3) {
-            missedAcks = 0
-            close()
-        }
+        if (++missedAcks >= 2) sendsAcks = false
     }
 
     /** Leest berichten die al binnen zijn, zonder te wachten. */
