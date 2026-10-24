@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -35,6 +36,8 @@ class MainActivity : Activity() {
     private lateinit var outputKind: TextView
     private lateinit var powerSwitch: Switch
     private lateinit var statusText: TextView
+    private lateinit var appsText: TextView
+    private lateinit var systemWideSwitch: Switch
     private lateinit var curve: CurveView
     private lateinit var presetSpinner: Spinner
     private lateinit var deleteButton: Button
@@ -52,11 +55,25 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         EqEngine.init(this)
         setContentView(buildUi())
+        handleEffectIntent(intent)
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleEffectIntent(intent)
+    }
+
+    /** Spotify, YouTube Music etc. open us through their "Equalizer" setting and pass their audio session. */
+    private fun handleEffectIntent(intent: Intent?) {
+        if (intent?.action != AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL) return
+        val session = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, AudioEffect.ERROR_BAD_VALUE)
+        EqEngine.openSession(session, intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME) ?: callingPackage)
+        setResult(RESULT_OK)
     }
 
     override fun onStart() {
@@ -113,6 +130,21 @@ class MainActivity : Activity() {
             addView(powerSwitch)
             statusText = text("", 14f, muted = true).apply { setPadding(0, dp(6), 0, 0) }
             addView(statusText)
+            appsText = text("", 14f).apply { setPadding(0, dp(6), 0, 0) }
+            addView(appsText)
+            systemWideSwitch = Switch(this@MainActivity).apply {
+                text = "Systeembreed (alle apps)"
+                setOnCheckedChangeListener { _, on -> if (!updatingUi) EqEngine.systemWide = on }
+                setPadding(0, dp(12), 0, 0)
+            }
+            addView(systemWideSwitch)
+            addView(text(
+                "Hoor je geen verschil? Zet systeembreed uit: dan koppelt de app zich rechtstreeks aan " +
+                    "Spotify, YouTube Music, Deezer en andere spelers die hun geluid aanmelden. " +
+                    "Tip: in Spotify (Instellingen › Afspelen › Equalizer) en YouTube Music " +
+                    "(Instellingen › Afspelen › Equalizer) opent die knop deze app.",
+                13f, muted = true,
+            ).apply { setPadding(0, dp(4), 0, 0) })
         })
 
         // Equalizer
@@ -248,6 +280,10 @@ class MainActivity : Activity() {
             EqEngine.enabled -> "Equalizer wordt gestart…"
             else -> "Uit: het geluid gaat onbewerkt naar je soundbar."
         }
+        systemWideSwitch.isChecked = EqEngine.systemWide
+        val apps = EqEngine.attachedApps.map(::appName)
+        appsText.text = if (EqEngine.running && apps.isNotEmpty()) "Gekoppeld aan: ${apps.joinToString()}" else ""
+        appsText.visibility = if (appsText.text.isEmpty()) View.GONE else View.VISIBLE
         curve.profile = profile
 
         profile.gains.forEachIndexed { i, db ->
@@ -269,6 +305,10 @@ class MainActivity : Activity() {
         deleteButton.visibility = if (isCustom(match)) View.VISIBLE else View.GONE
         updatingUi = false
     }
+
+    private fun appName(packageName: String) = KNOWN_APPS[packageName]
+        ?: runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(packageName, 0)).toString() }
+            .getOrDefault(packageName)
 
     // ---------- Presets ----------
 
@@ -310,5 +350,18 @@ class MainActivity : Activity() {
             .setPositiveButton("Verwijderen") { _, _ -> EqEngine.deletePreset(name) }
             .setNegativeButton("Annuleren", null)
             .show()
+    }
+
+    private companion object {
+        val KNOWN_APPS = mapOf(
+            "com.spotify.music" to "Spotify",
+            "com.google.android.youtube" to "YouTube",
+            "com.google.android.apps.youtube.music" to "YouTube Music",
+            "deezer.android.app" to "Deezer",
+            "com.aspiro.tidal" to "Tidal",
+            "com.soundcloud.android" to "SoundCloud",
+            "com.amazon.mp3" to "Amazon Music",
+            "org.videolan.vlc" to "VLC",
+        )
     }
 }

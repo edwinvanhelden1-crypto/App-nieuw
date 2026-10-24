@@ -72,6 +72,17 @@ het naar de soundbar gaat.
 - Blijft op de achtergrond werken (melding met knop *Uitzetten*) en start na een
   herstart van de telefoon weer op als hij aan stond.
 
+## Spotify, YouTube en andere apps
+
+- **Systeembreed (standaard):** al het geluid wordt aangepast, dus ook YouTube,
+  Netflix, de browser en games.
+- **Per app:** hoor je geen verschil (sommige telefoons blokkeren de systeembrede
+  modus), zet dan *Systeembreed* uit. De app koppelt zich dan rechtstreeks aan
+  spelers die hun geluid aanmelden: Spotify, YouTube Music, Deezer, Tidal,
+  SoundCloud, VLC… Bovenin zie je aan welke apps hij gekoppeld is.
+- In **Spotify** (Instellingen › Afspelen › Equalizer) en **YouTube Music**
+  (Instellingen › Afspelen › Equalizer) opent de equalizerknop deze app.
+
 ## Hoe het werkt
 
 De app gebruikt Android's `DynamicsProcessing`-effect op de gezamenlijke audio-uitvoer,

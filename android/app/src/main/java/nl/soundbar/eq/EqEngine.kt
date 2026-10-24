@@ -54,6 +54,7 @@ object EqEngine {
     private lateinit var audioManager: AudioManager
     private var global: DynamicsProcessing? = null
     private val sessions = mutableMapOf<Int, DynamicsProcessing>()
+    private val announced = mutableMapOf<Int, String>()
     private val listeners = mutableSetOf<() -> Unit>()
 
     var running = false
@@ -77,6 +78,22 @@ object EqEngine {
             applyAll()
             notifyChanged()
         }
+
+    /** Equalize the global output mix (all apps) rather than only the apps that announce their audio. */
+    var systemWide: Boolean
+        get() = prefs.getBoolean("systemWide", true)
+        set(value) {
+            prefs.edit().putBoolean("systemWide", value).apply()
+            if (running) {
+                detach()
+                attach()
+            }
+            notifyChanged()
+        }
+
+    /** Packages whose own audio session is equalized (only in the per-app mode). */
+    val attachedApps: List<String>
+        get() = sessions.keys.mapNotNull { announced[it] }.filter { it.isNotEmpty() }.distinct()
 
     val customPresets: Map<String, EqProfile>
         get() {
@@ -106,41 +123,67 @@ object EqEngine {
     fun start() {
         if (running) return
         running = true
-        status = try {
-            global = create(0)
-            "Actief: al het geluid op dit toestel wordt realtime aangepast."
-        } catch (e: Exception) {
-            Log.w(TAG, "Global output mix not available", e)
-            global = null
-            "Dit toestel staat systeembreed aanpassen niet toe. De equalizer werkt voor apps die " +
-                "hun geluid aanmelden (bijv. Spotify, YouTube Music, VLC). Start het afspelen opnieuw."
-        }
+        attach()
         notifyChanged()
     }
 
     fun stop() {
         if (!running) return
         running = false
-        global?.release()
-        global = null
-        sessions.values.forEach { it.release() }
-        sessions.clear()
+        detach()
         status = ""
         notifyChanged()
     }
 
-    /** A player opened an audio session; only needed when the global mix is unavailable. */
-    fun openSession(sessionId: Int) {
-        if (!running || global != null || sessionId <= 0 || sessionId in sessions) return
+    private fun attach() {
+        if (systemWide) {
+            try {
+                global = create(0)
+                status = "Actief: al het geluid op dit toestel wordt realtime aangepast " +
+                    "(Spotify, YouTube, Netflix, games…)."
+                return
+            } catch (e: Exception) {
+                Log.w(TAG, "Global output mix not available", e)
+                global = null
+            }
+        }
+        announced.keys.forEach(::attachSession)
+        status = (if (systemWide) "Dit toestel staat systeembreed aanpassen niet toe. " else "") +
+            "De equalizer werkt voor apps die hun geluid aanmelden, zoals Spotify, YouTube Music, " +
+            "Deezer en VLC. Start het afspelen opnieuw als je nog geen verschil hoort."
+    }
+
+    private fun detach() {
+        global?.release()
+        global = null
+        sessions.values.forEach { it.release() }
+        sessions.clear()
+    }
+
+    /**
+     * A player (e.g. Spotify) announced its audio session. Sessions are remembered even while the
+     * system-wide mode is active, so switching to the per-app mode takes effect immediately.
+     */
+    fun openSession(sessionId: Int, packageName: String?) {
+        if (sessionId <= 0) return
+        announced[sessionId] = packageName ?: ""
+        attachSession(sessionId)
+        notifyChanged()
+    }
+
+    fun closeSession(sessionId: Int) {
+        announced.remove(sessionId)
+        sessions.remove(sessionId)?.release()
+        notifyChanged()
+    }
+
+    private fun attachSession(sessionId: Int) {
+        if (!running || global != null || sessionId in sessions) return
         try {
             sessions[sessionId] = create(sessionId)
         } catch (e: Exception) {
             Log.w(TAG, "Cannot attach to session $sessionId", e)
         }
-    }
-
-    fun closeSession(sessionId: Int) {
-        sessions.remove(sessionId)?.release()
     }
 
     private fun create(sessionId: Int): DynamicsProcessing {

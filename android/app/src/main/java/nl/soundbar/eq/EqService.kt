@@ -22,7 +22,8 @@ class EqService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
             val session = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, -1)
             when (intent.action) {
-                AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION -> EqEngine.openSession(session)
+                AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION ->
+                    EqEngine.openSession(session, intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME))
                 AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION -> EqEngine.closeSession(session)
             }
         }
