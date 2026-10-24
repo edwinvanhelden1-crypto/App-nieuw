@@ -1,0 +1,62 @@
+name: LED-app APK
+
+on:
+  push:
+    paths:
+      - "led-app/**"
+      - ".github/workflows/led-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: led-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: tinytuya voor de nagebootste strip
+        run: pip install tinytuya
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Protocoltests
+        run: ./gradlew :tuya:test --console=plain
+        env:
+          FAKE_DEVICE_PYTHON: python
+
+      - name: APK bouwen
+        run: ./gradlew :app:assembleRelease --console=plain
+
+      - name: APK klaarzetten
+        run: cp app/build/outputs/apk/release/app-release.apk LED-Bediening.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LED-Bediening
+          path: led-app/LED-Bediening.apk
+
+      - name: Release publiceren
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: led-app-v${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: LED Bediening ${{ github.run_number }}
+          make_latest: true
+          files: led-app/LED-Bediening.apk
+          body: |
+            Download **LED-Bediening.apk** hieronder op je Android-telefoon en open het bestand om te installeren.
+            Bouw ${{ github.run_number }} van branch `${{ github.ref_name }}` (${{ github.sha }}).

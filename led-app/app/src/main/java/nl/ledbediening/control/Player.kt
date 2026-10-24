@@ -1,0 +1,173 @@
+package nl.ledbediening.control
+
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import nl.ledbediening.data.Engine
+import nl.ledbediening.data.Repository
+import nl.ledbediening.data.Sequence
+import nl.ledbediening.data.Strip
+import nl.ledbediening.data.Theme
+import nl.ledbediening.data.label
+import nl.ledbediening.tuya.Dp
+import nl.ledbediening.tuya.EffectEngine
+import nl.ledbediening.tuya.Hsv
+import nl.ledbediening.tuya.LightCodec
+import kotlin.coroutines.coroutineContext
+
+data class PlayState(val title: String, val subtitle: String, val themeId: String? = null, val sequenceId: String? = null)
+
+/**
+ * Speelt thema's en reeksen af. Per strip wordt gekozen:
+ *  - "op de strip": de RGBIC-strip speelt het effect zelf af (één opdracht, telefoon mag uit);
+ *  - "via de app": de app berekent ±10× per seconde de kleur en stuurt die live.
+ */
+class Player(
+    private val context: Context,
+    private val repo: Repository,
+    private val devices: DeviceManager,
+    private val scope: CoroutineScope,
+) {
+    private val _state = MutableStateFlow<PlayState?>(null)
+    val state: StateFlow<PlayState?> = _state.asStateFlow()
+    private var job: Job? = null
+
+    fun play(theme: Theme) {
+        start(PlayState(theme.name, theme.effectEnum.label, themeId = theme.id)) {
+            runSteps(listOf(theme to null), crossfadeMs = 0, repeat = true) {}
+        }
+    }
+
+    fun play(seq: Sequence) {
+        val steps = seq.steps.mapNotNull { st -> repo.theme(st.themeId)?.let { it to st.seconds.coerceAtLeast(2) * 1000L } }
+        if (steps.isEmpty()) return
+        start(PlayState(seq.name, "Reeks", sequenceId = seq.id)) {
+            runSteps(steps, seq.crossfadeSeconds * 1000L, seq.repeat) { i ->
+                _state.value = PlayState(seq.name, "Stap ${i + 1}/${steps.size}: ${steps[i].first.name}", sequenceId = seq.id)
+            }
+            _state.value = null
+        }
+    }
+
+    fun stop() {
+        job?.cancel()
+        job = null
+        _state.value = null
+    }
+
+    private fun start(state: PlayState, block: suspend () -> Unit) {
+        job?.cancel()
+        _state.value = state
+        ContextCompat.startForegroundService(context, Intent(context, PlayerService::class.java))
+        job = scope.launch(Dispatchers.Default) { block() }
+    }
+
+    /** Wat we per strip het laatst hebben verstuurd. */
+    private class Sent(var mode: String? = null, var value: String? = null, var at: Long = 0)
+
+    private fun targets(theme: Theme): List<Strip> {
+        val all = repo.data.value.strips.filter { it.isConfigured }
+        return if (theme.stripIds.isEmpty()) all else all.filter { it.id in theme.stripIds }
+    }
+
+    private fun onStrip(theme: Theme, strip: Strip): Boolean {
+        if (theme.effectEnum.dreamMode == null || !strip.hasDreamScenes) return false
+        return when (theme.engine) {
+            Engine.STRIP -> true
+            Engine.APP -> false
+            Engine.AUTO -> !theme.spread && !theme.pingPong
+        }
+    }
+
+    private fun dreamScene(theme: Theme) = LightCodec.dreamSceneBase64(
+        LightCodec.DreamScene(
+            mode = theme.effectEnum.dreamMode ?: 0,
+            colors = theme.hsvColors,
+            speed = theme.speed,
+            brightness = theme.brightness / 100f,
+            segmented = theme.segmented,
+            smooth = theme.smooth,
+            reverse = theme.reverse,
+        ),
+    )
+
+    /**
+     * Speelt de stappen af. Stap k+1 begint [crossfadeMs] vóór het einde van stap k;
+     * in die tijd vloeien de kleuren van beide thema's in elkaar over.
+     * Een stap zonder duur (null) duurt oneindig.
+     */
+    private suspend fun runSteps(steps: List<Pair<Theme, Long?>>, crossfadeMs: Long, repeat: Boolean, onStep: (Int) -> Unit) {
+        val sent = HashMap<String, Sent>()
+        var k = 0
+        var stepStart = System.currentTimeMillis()
+        onStep(0)
+        while (coroutineContext.isActive) {
+            val now = System.currentTimeMillis()
+            val (theme, dur) = steps[k]
+            val fade = if (dur == null) 0L else crossfadeMs.coerceAtMost(dur / 2)
+            if (dur != null && now - stepStart >= dur) {
+                stepStart += dur - fade
+                k++
+                if (k >= steps.size) {
+                    if (!repeat) return
+                    k = 0
+                }
+                onStep(k)
+                continue
+            }
+            val next = if (dur != null && fade > 0 && now - stepStart >= dur - fade) {
+                steps.getOrNull(k + 1)?.first ?: if (repeat) steps[0].first else null
+            } else null
+            val nextStart = stepStart + (dur ?: 0L) - fade
+            val blend = if (next != null) ((now - nextStart).toFloat() / fade).coerceIn(0f, 1f) else 0f
+
+            val list = targets(theme)
+            val nextList = next?.let { targets(it) } ?: emptyList()
+            list.forEachIndexed { i, strip ->
+                val s = sent.getOrPut(strip.id) { Sent() }
+                if (onStrip(theme, strip)) {
+                    val scene = dreamScene(theme)
+                    if (s.mode != "scene" || s.value != scene) {
+                        devices.send(strip, mapOf(Dp.SWITCH to true, Dp.MODE to "scene", Dp.DREAM_SCENE to scene))
+                        s.mode = "scene"; s.value = scene
+                    }
+                    return@forEachIndexed
+                }
+                var c = EffectEngine.frame(theme.spec(), now - stepStart, i, list.size)
+                val j = nextList.indexOfFirst { it.id == strip.id }
+                if (next != null && j >= 0 && !onStrip(next, strip)) {
+                    c = Hsv.lerp(c, EffectEngine.frame(next.spec(), now - nextStart, j, nextList.size), blend)
+                }
+                sendColour(strip, s, c, theme.smooth && EffectEngine.isSmooth(theme.effectEnum), now)
+            }
+            delay(FRAME_MS)
+        }
+    }
+
+    private fun sendColour(strip: Strip, s: Sent, c: Hsv, smooth: Boolean, now: Long) {
+        if (s.mode != "colour") {
+            devices.send(strip, mapOf(Dp.SWITCH to true, Dp.MODE to "colour"))
+            s.mode = "colour"; s.value = null
+        }
+        val colour = LightCodec.colour(c)
+        if (colour == s.value) return
+        // Zonder live-datapunt (28) slaat de strip elke kleur op: dan wat rustiger aan.
+        if (!strip.hasLiveControl && now - s.at < 200) return
+        s.value = colour
+        s.at = now
+        devices.send(strip, if (strip.hasLiveControl) mapOf(Dp.CONTROL to LightCodec.control(c, smooth)) else mapOf(Dp.COLOUR to colour))
+    }
+
+    companion object {
+        const val FRAME_MS = 100L
+    }
+}
