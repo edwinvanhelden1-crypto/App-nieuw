@@ -43,3 +43,27 @@ HTTPS of `localhost`.
 - `style.css` – opmaak (licht en donker thema)
 - `app.js` – foto laden, camera, filters, tekenen en downloaden
 - `worker.js` – laadt en draait de AI-modellen buiten de hoofdthread
+
+---
+
+# Soundbar Equalizer
+
+In de map [`soundbar-eq/`](soundbar-eq/) staat een tweede app: een 10-bands
+equalizer die geluid naar je Bluetooth-soundbar stuurt.
+Open hem via `http://localhost:8000/soundbar-eq/` (of `/soundbar-eq/` op GitHub Pages).
+
+1. Koppel de soundbar in de Bluetooth-instellingen van je telefoon of computer.
+2. Kies hem in de app onder **Soundbar** (Chrome, Edge en Firefox op de computer).
+   Kan je browser dat niet (bijv. Safari/iPhone), dan speelt de app af via de
+   uitvoer die je in je toestel hebt gekozen.
+3. Kies een geluidsbron:
+   - **Muziekbestanden** van je apparaat (afspeellijst), of
+   - **Ander tabblad**: het geluid van bijv. Spotify, YouTube of Netflix in een ander
+     browsertabblad gaat door de equalizer (Chrome/Edge op de computer).
+4. Stel de 10 banden (32 Hz – 16 kHz, ±12 dB) in, of kies een voorinstelling
+   (Bas boost, Dialoog, Film, Muziek, Nacht…). Eigen instellingen kun je opslaan.
+
+Een gewone Bluetooth-soundbar heeft geen standaardmanier waarop een app zijn
+ingebouwde equalizer kan bedienen. Deze app past daarom het geluid aan
+vóórdat het naar de soundbar gaat. Geluid van andere apps op je telefoon
+(bijv. de Spotify-app) kan een browser-app niet aanpassen.

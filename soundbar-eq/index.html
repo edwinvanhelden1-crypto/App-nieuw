@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soundbar Equalizer</title>
+  <meta name="description" content="Stuur geluid naar je Bluetooth-soundbar en pas het aan met een 10-bands equalizer.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Soundbar Equalizer</h1>
+    <p class="sub">Kies je Bluetooth-soundbar, speel geluid af en stel het in met de equalizer.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Soundbar</h2>
+      <p class="hint">Koppel de soundbar eerst in de Bluetooth-instellingen van je telefoon of computer. Kies hem daarna hier.</p>
+      <div class="row wrap">
+        <select id="output-select" aria-label="Uitvoerapparaat">
+          <option value="">Standaard uitvoer van het systeem</option>
+        </select>
+        <button class="btn secondary" id="output-btn" type="button">Zoek apparaten</button>
+      </div>
+      <p id="output-status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <h2>2. Geluidsbron</h2>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-source="file" role="tab" aria-selected="true" type="button">Muziekbestanden</button>
+        <button class="tab" data-source="tab" role="tab" aria-selected="false" type="button">Ander tabblad</button>
+      </div>
+
+      <div id="source-file">
+        <div class="row wrap">
+          <label class="btn">
+            Kies bestanden
+            <input type="file" id="file-input" accept="audio/*,video/*" multiple hidden>
+          </label>
+          <button class="btn secondary" id="prev-btn" type="button" aria-label="Vorige">⏮</button>
+          <button class="btn" id="play-btn" type="button" disabled>Afspelen</button>
+          <button class="btn secondary" id="next-btn" type="button" aria-label="Volgende">⏭</button>
+        </div>
+        <input type="range" id="seek" min="0" max="0" step="0.1" value="0" aria-label="Positie">
+        <div class="time"><span id="cur-time">0:00</span><span id="track-name">Geen bestand gekozen</span><span id="dur-time">0:00</span></div>
+        <ol id="playlist"></ol>
+        <audio id="audio" preload="auto"></audio>
+      </div>
+
+      <div id="source-tab" hidden>
+        <p class="hint">Haal geluid uit een ander browsertabblad (bijv. Spotify, YouTube of Netflix in de browser) door de equalizer.
+          Kies in het venster een <strong>tabblad</strong> en zet <strong>Tabblad-audio delen</strong> aan.
+          Werkt in Chrome en Edge op een computer.</p>
+        <div class="row wrap">
+          <button class="btn" id="capture-btn" type="button">Tabblad kiezen</button>
+          <button class="btn secondary" id="capture-stop" type="button" hidden>Stoppen</button>
+        </div>
+      </div>
+      <p id="source-status" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card">
+      <div class="eq-head">
+        <h2>3. Equalizer</h2>
+        <label class="switch"><input type="checkbox" id="eq-on" checked> Aan</label>
+      </div>
+
+      <canvas id="curve" height="180" aria-label="Frequentiecurve en spectrum"></canvas>
+
+      <div class="row wrap presets">
+        <select id="preset-select" aria-label="Voorinstelling"></select>
+        <button class="btn secondary" id="save-preset" type="button">Opslaan</button>
+        <button class="btn secondary" id="delete-preset" type="button" hidden>Verwijderen</button>
+        <button class="btn secondary" id="reset-eq" type="button">Vlak</button>
+      </div>
+
+      <div id="bands" class="bands"></div>
+
+      <div class="sliders">
+        <label>Voorversterking <input type="range" id="preamp" min="-12" max="6" step="0.5" value="0"><output id="preamp-val">0 dB</output></label>
+        <label>Volume <input type="range" id="volume" min="0" max="100" value="80"><output id="volume-val">80%</output></label>
+        <label class="check"><input type="checkbox" id="limiter-on" checked> Begrenzer (voorkomt vervorming bij veel versterking)</label>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>De app past het geluid aan vóórdat het naar de soundbar gaat, dus de ingebouwde instellingen van de soundbar blijven gelijk.
+      Instellingen worden alleen in deze browser bewaard.</p>
+  </footer>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
