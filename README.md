@@ -50,3 +50,11 @@ HTTPS of `localhost`.
 
 In de map [`tuya-led/`](tuya-led/) staat een app om Tuya LED-strips lokaal via
 je eigen wifi te bedienen. Zie [`tuya-led/README.md`](tuya-led/README.md).
+
+---
+
+# LED Bediening – Android-app (APK)
+
+In [`led-app/`](led-app/) staat een Android-app voor Tuya/RGBIC-ledstrips met eigen
+thema's, loops en reeksen. De APK staat onder **Releases**. Zie
+[`led-app/README.md`](led-app/README.md) voor installatie en uitleg.
