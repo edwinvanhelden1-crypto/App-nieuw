@@ -153,6 +153,10 @@ data class PartySettings(
     val tempo: Int = 65,
     /** Reageren op muziek via de microfoon. */
     val music: Boolean = false,
+    /** Lampen die meedoen; leeg = alle lampen. */
+    val stripIds: List<String> = emptyList(),
+    /** Elke lamp zijn eigen willekeurige disco, in plaats van samen hetzelfde effect. */
+    val independent: Boolean = false,
 )
 
 @Serializable

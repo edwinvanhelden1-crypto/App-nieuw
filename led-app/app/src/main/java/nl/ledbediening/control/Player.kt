@@ -52,6 +52,7 @@ class Player(
 
     fun play(theme: Theme) {
         usesMic = false
+        currentParty = null
         start(PlayState(theme.name, theme.effectEnum.label, themeId = theme.id)) {
             runSteps(listOf(theme to null), crossfadeMs = 0, repeat = true) {}
         }
@@ -65,75 +66,105 @@ class Player(
      * Feestmodus op alle lampen: wisselt steeds van effect en kleuren. Met [PartySettings.music]
      * en microfoontoestemming gaan de lampen mee op de beat van de muziek.
      */
+    /** Instellingen van het feest dat nu speelt (null als er geen feest speelt). */
+    @Volatile var currentParty: PartySettings? = null
+        private set
+
     fun playParty(settings: PartySettings) {
+        currentParty = settings
         usesMic = settings.music &&
             ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-        start(PlayState("🎉 Feest", if (usesMic) "Op de muziek" else settings.palette, themeId = PARTY_ID)) {
+        start(PlayState("🎉 Feest", if (usesMic) "Op de muziek" else settings.palette, themeId = PARTY_ID), partyStrips(settings)) {
             runParty(settings)
         }
     }
 
+    /** Doelstrips van het feest: de gekozen lampen, of alle. */
+    private fun partyStrips(settings: PartySettings): List<Strip> {
+        val all = repo.data.value.strips.filter { it.isConfigured }
+        val chosen = all.filter { it.id in settings.stripIds }
+        return chosen.ifEmpty { all }
+    }
+
+    /**
+     * Eén "baan" van het feest: een groep lampen die samen hetzelfde effect doet. Bij
+     * "elke lamp zijn eigen disco" heeft elke lamp een eigen baan met eigen toevalsgetallen.
+     */
+    private inner class Lane(val strips: List<Strip>, val rnd: Random, val settings: PartySettings, now: Long) {
+        var scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, null)
+        var sceneStart = now
+        var beatsInScene = 0
+        var stepIndex = 0L
+        var lastBeats = 0L
+        var tv = 0.0 // "muziektijd": loopt alleen een stap verder op een beat
+
+        fun tick(now: Long, dt: Double, beats: Long?, beatMode: Boolean, level: Float, sent: HashMap<String, Sent>) {
+            val step = EffectEngine.stepMs(scene.spec.speed)
+            if (beats != null) {
+                if (beats > lastBeats) {
+                    stepIndex += beats - lastBeats
+                    beatsInScene += (beats - lastBeats).toInt()
+                    lastBeats = beats
+                    tv = stepIndex * step
+                } else {
+                    // Tussen beats loopt de tijd door, maar nooit voorbij de huidige stap.
+                    tv = minOf(tv + dt, (stepIndex + 0.97) * step)
+                }
+            }
+            val over = if (beatMode) beatsInScene >= scene.beats else now - sceneStart >= scene.durationMs
+            if (over) {
+                scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, scene.spec.effect)
+                sceneStart = now
+                beatsInScene = 0
+                stepIndex = 0
+                tv = 0.0
+            }
+            val t = if (beatMode) tv.toLong() else now - sceneStart
+            val smooth = EffectEngine.isSmooth(scene.spec.effect) && !beatMode
+            strips.forEachIndexed { i, strip ->
+                val c = EffectEngine.frame(scene.spec, t, i, strips.size)
+                sendColour(strip, sent.getOrPut(strip.id) { Sent() }, c.withV(c.v * level), smooth, now)
+            }
+        }
+    }
+
     private suspend fun runParty(settings: PartySettings) {
-        val strips = repo.data.value.strips.filter { it.isConfigured }
+        val strips = partyStrips(settings)
         if (strips.isEmpty()) {
             takeSaved()
             return
         }
-        val rnd = Random(System.nanoTime())
+        val seed = System.nanoTime()
         val sent = HashMap<String, Sent>()
         val audio = if (usesMic) AudioBeat().takeIf { it.start() } else null
         try {
-            var scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, null)
-            var sceneStart = System.currentTimeMillis()
-            var last = sceneStart
-            var lastBeats = 0L
-            var lastBeatAt = sceneStart
-            var beatsInScene = 0
-            var stepIndex = 0L
-            var tv = 0.0 // "muziektijd": loopt alleen een stap verder op een beat
-            fun announce() {
-                _state.value = PlayState(
-                    "🎉 Feest",
-                    scene.spec.effect.label + if (audio != null) " · op de muziek" else " · ${settings.palette}",
-                    themeId = PARTY_ID,
-                )
+            var now = System.currentTimeMillis()
+            val lanes = if (settings.independent && strips.size > 1) {
+                strips.mapIndexed { i, s -> Lane(listOf(s), Random(seed + i * 7919), settings, now) }
+            } else {
+                listOf(Lane(strips, Random(seed), settings, now))
             }
-            announce()
+            var last = now
+            var lastBeatAt = now
+            var lastBeats = 0L
+            var shown: String? = null
             while (coroutineContext.isActive) {
-                val now = System.currentTimeMillis()
+                now = System.currentTimeMillis()
                 val dt = (now - last).toDouble()
                 last = now
-                val step = EffectEngine.stepMs(scene.spec.speed)
-                var level = 1f
+                val beats = audio?.beats?.get()
+                if (beats != null && beats > lastBeats) {
+                    lastBeats = beats
+                    lastBeatAt = now
+                }
                 val beatMode = audio != null && now - lastBeatAt < 4000
-                if (audio != null) {
-                    val b = audio.beats.get()
-                    if (b > lastBeats) {
-                        stepIndex += b - lastBeats
-                        beatsInScene += (b - lastBeats).toInt()
-                        lastBeats = b
-                        lastBeatAt = now
-                        tv = stepIndex * step
-                    } else {
-                        // Tussen beats loopt de tijd door, maar nooit voorbij de huidige stap.
-                        tv = minOf(tv + dt, (stepIndex + 0.97) * step)
-                    }
-                    level = 0.4f + 0.6f * audio.level
-                }
-                val sceneOver = if (beatMode) beatsInScene >= scene.beats else now - sceneStart >= scene.durationMs
-                if (sceneOver) {
-                    scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, scene.spec.effect)
-                    sceneStart = now
-                    beatsInScene = 0
-                    stepIndex = 0
-                    tv = 0.0
-                    announce()
-                }
-                val t = if (beatMode) tv.toLong() else now - sceneStart
-                val smooth = EffectEngine.isSmooth(scene.spec.effect)
-                strips.forEachIndexed { i, strip ->
-                    val c = EffectEngine.frame(scene.spec, t, i, strips.size)
-                    sendColour(strip, sent.getOrPut(strip.id) { Sent() }, c.withV(c.v * level), smooth && !beatMode, now)
+                val level = if (audio != null) 0.4f + 0.6f * audio.level else 1f
+                lanes.forEach { it.tick(now, dt, beats, beatMode, level, sent) }
+                val subtitle = (if (lanes.size > 1) "Elke lamp eigen disco" else lanes[0].scene.spec.effect.label) +
+                    if (audio != null) " · op de muziek" else " · ${settings.palette}"
+                if (subtitle != shown) {
+                    shown = subtitle
+                    _state.value = PlayState("🎉 Feest (${strips.size} lamp${if (strips.size == 1) "" else "en"})", subtitle, themeId = PARTY_ID)
                 }
                 delay(if (audio != null) 40 else 70)
             }
@@ -144,6 +175,7 @@ class Player(
 
     fun play(seq: Sequence) {
         usesMic = false
+        currentParty = null
         val steps = seq.steps.mapNotNull { st -> repo.theme(st.themeId)?.let { it to st.seconds.coerceAtLeast(2) * 1000L } }
         if (steps.isEmpty()) return
         start(PlayState(seq.name, "Reeks", sequenceId = seq.id)) {
@@ -179,10 +211,10 @@ class Player(
     }
 
     @Synchronized
-    private fun start(state: PlayState, block: suspend () -> Unit) {
+    private fun start(state: PlayState, targets: List<Strip>? = null, block: suspend () -> Unit) {
         job?.cancel()
         if (saved == null) {
-            saved = repo.data.value.strips.filter { it.isConfigured }.associate { it.id to devices.snapshot(it) }
+            saved = (targets ?: repo.data.value.strips.filter { it.isConfigured }).associate { it.id to devices.snapshot(it) }
         }
         _state.value = state
         ContextCompat.startForegroundService(context, Intent(context, PlayerService::class.java))

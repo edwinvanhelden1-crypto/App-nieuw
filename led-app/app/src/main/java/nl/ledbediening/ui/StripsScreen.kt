@@ -235,6 +235,37 @@ private fun PartyCard() {
                 )
             }
         }
+        val lamps = data.strips.filter { it.isConfigured }
+        if (lamps.size > 1) {
+            VSpace(6)
+            Text("Welke lampen doen mee", style = MaterialTheme.typography.bodyMedium)
+            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                lamps.forEach { l ->
+                    val inParty = party.stripIds.isEmpty() || l.id in party.stripIds
+                    FilterChip(
+                        selected = inParty,
+                        onClick = {
+                            val current = if (party.stripIds.isEmpty()) lamps.map { it.id } else party.stripIds
+                            val next = if (l.id in current) current - l.id else current + l.id
+                            // Alles aan = lege lijst (dan doen nieuwe lampen ook automatisch mee).
+                            if (next.isNotEmpty()) save(party.copy(stripIds = if (next.size == lamps.size) emptyList() else next))
+                        },
+                        label = { Text(l.name) },
+                    )
+                }
+            }
+            Row(Modifier.fillMaxWidth().clickable { save(party.copy(independent = !party.independent)) }, verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Elke lamp zijn eigen disco")
+                    Text(
+                        "Iedere lamp kiest zelf willekeurig een effect en kleuren, los van de andere.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(checked = party.independent, onCheckedChange = null)
+            }
+        }
         LabeledSlider(
             "Tempo", party.tempo.toFloat(), { app.repo.update { d -> d.copy(party = d.party.copy(tempo = it.toInt())) } }, 1f..100f,
             valueText = when {
@@ -339,6 +370,17 @@ fun StripDetailScreen(id: String, nav: Nav) {
                     )
                 }
             }
+
+            val playing by app.player.state.collectAsState()
+            val partyHere = playing?.themeId == Player.PARTY_ID && app.player.currentParty?.stripIds == listOf(strip.id)
+            OutlinedButton(
+                onClick = {
+                    if (partyHere) app.player.stop()
+                    else app.player.playParty(data.party.copy(stripIds = listOf(strip.id), independent = false))
+                },
+                enabled = strip.isConfigured,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(if (partyHere) "Disco op deze lamp stoppen" else "🎉 Disco op deze lamp") }
 
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
                 listOf("Kleur", "Wit").forEachIndexed { i, label ->
