@@ -18,6 +18,8 @@ enum class Effect(val dreamMode: Int?) {
     FLOW(10),
     RAINBOW(11),
     CHASE(null),     // één kleur die van strip naar strip loopt
+    RANDOM(null),    // elke strip elke stap een andere willekeurige kleur
+    STROBE(null),    // korte felle flitsen
 }
 
 data class EffectSpec(
@@ -61,6 +63,8 @@ object EffectEngine {
                 val hue = ((tMs / cycle - offset / n) * 360.0).mod(360.0).toFloat()
                 Hsv(if (spec.reverse) 360f - hue else hue, 1f)
             }
+            Effect.RANDOM -> colors[randomIndex(i, stripOrder, n)]
+            Effect.STROBE -> if (frac < 0.18f) col(i) else col(i).withV(0f)
             Effect.CHASE -> {
                 // Strip die "aan de beurt" is krijgt de kleur, de rest dimt.
                 val active = floor(tMs / step).toLong()
@@ -82,6 +86,34 @@ object EffectEngine {
         val p = ((k % period) + period) % period
         return (if (p <= n - 1) p else period - p).toInt()
     }
+
+    /**
+     * Herhaalbare willekeurige kleurkeuze voor stap [k] die nooit twee keer dezelfde kleur
+     * achter elkaar geeft: elk blok van n stappen is een geschudde volgorde van alle kleuren,
+     * waarbij het blok eindigt op kleur (blok mod n) en het volgende blok daar niet mee begint.
+     */
+    private fun randomIndex(k: Long, strip: Int, n: Int): Int {
+        if (n <= 2) return Math.floorMod(k, n.toLong()).toInt()
+        val block = Math.floorDiv(k, n.toLong())
+        val pos = Math.floorMod(k, n.toLong()).toInt()
+        val last = Math.floorMod(block, n.toLong()).toInt()
+        val prevLast = Math.floorMod(block - 1, n.toLong()).toInt()
+        val others = (0 until n).filter { it != last }.toMutableList()
+        others.shuffle(kotlin.random.Random(scramble(block * 7919 + strip)))
+        if (others[0] == prevLast) others[0] = others[1].also { others[1] = others[0] }
+        return if (pos == n - 1) last else others[pos]
+    }
+
+    /** Snelle hash naar een niet-negatief getal (voor herhaalbare "willekeur"). */
+    private fun scramble(x: Long): Long {
+        var h = x * -0x61c8864680b583ebL
+        h = h xor (h ushr 29)
+        h *= -0x4b47d5b1ad7a5a65L
+        h = h xor (h ushr 32)
+        return h and Long.MAX_VALUE
+    }
+
+    private fun scramble(x: Int): Long = scramble(x.toLong())
 
     private fun smooth(t: Float) = t * t * (3 - 2 * t)
 

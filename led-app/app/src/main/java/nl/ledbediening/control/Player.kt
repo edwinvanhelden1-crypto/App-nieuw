@@ -1,7 +1,9 @@
 package nl.ledbediening.control
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import nl.ledbediening.data.Engine
+import nl.ledbediening.data.PartySettings
 import nl.ledbediening.data.Repository
 import nl.ledbediening.data.Sequence
 import nl.ledbediening.data.Strip
@@ -23,7 +26,9 @@ import nl.ledbediening.tuya.Dp
 import nl.ledbediening.tuya.EffectEngine
 import nl.ledbediening.tuya.Hsv
 import nl.ledbediening.tuya.LightCodec
+import nl.ledbediening.tuya.Party
 import kotlin.coroutines.coroutineContext
+import kotlin.random.Random
 
 data class PlayState(val title: String, val subtitle: String, val themeId: String? = null, val sequenceId: String? = null)
 
@@ -46,12 +51,99 @@ class Player(
     private var saved: Map<String, Map<String, Any?>>? = null
 
     fun play(theme: Theme) {
+        usesMic = false
         start(PlayState(theme.name, theme.effectEnum.label, themeId = theme.id)) {
             runSteps(listOf(theme to null), crossfadeMs = 0, repeat = true) {}
         }
     }
 
+    /** Of de huidige weergave de microfoon gebruikt (voor het type voorgrondservice). */
+    @Volatile var usesMic = false
+        private set
+
+    /**
+     * Feestmodus op alle lampen: wisselt steeds van effect en kleuren. Met [PartySettings.music]
+     * en microfoontoestemming gaan de lampen mee op de beat van de muziek.
+     */
+    fun playParty(settings: PartySettings) {
+        usesMic = settings.music &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        start(PlayState("🎉 Feest", if (usesMic) "Op de muziek" else settings.palette, themeId = PARTY_ID)) {
+            runParty(settings)
+        }
+    }
+
+    private suspend fun runParty(settings: PartySettings) {
+        val strips = repo.data.value.strips.filter { it.isConfigured }
+        if (strips.isEmpty()) {
+            takeSaved()
+            return
+        }
+        val rnd = Random(System.nanoTime())
+        val sent = HashMap<String, Sent>()
+        val audio = if (usesMic) AudioBeat().takeIf { it.start() } else null
+        try {
+            var scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, null)
+            var sceneStart = System.currentTimeMillis()
+            var last = sceneStart
+            var lastBeats = 0L
+            var lastBeatAt = sceneStart
+            var beatsInScene = 0
+            var stepIndex = 0L
+            var tv = 0.0 // "muziektijd": loopt alleen een stap verder op een beat
+            fun announce() {
+                _state.value = PlayState(
+                    "🎉 Feest",
+                    scene.spec.effect.label + if (audio != null) " · op de muziek" else " · ${settings.palette}",
+                    themeId = PARTY_ID,
+                )
+            }
+            announce()
+            while (coroutineContext.isActive) {
+                val now = System.currentTimeMillis()
+                val dt = (now - last).toDouble()
+                last = now
+                val step = EffectEngine.stepMs(scene.spec.speed)
+                var level = 1f
+                val beatMode = audio != null && now - lastBeatAt < 4000
+                if (audio != null) {
+                    val b = audio.beats.get()
+                    if (b > lastBeats) {
+                        stepIndex += b - lastBeats
+                        beatsInScene += (b - lastBeats).toInt()
+                        lastBeats = b
+                        lastBeatAt = now
+                        tv = stepIndex * step
+                    } else {
+                        // Tussen beats loopt de tijd door, maar nooit voorbij de huidige stap.
+                        tv = minOf(tv + dt, (stepIndex + 0.97) * step)
+                    }
+                    level = 0.4f + 0.6f * audio.level
+                }
+                val sceneOver = if (beatMode) beatsInScene >= scene.beats else now - sceneStart >= scene.durationMs
+                if (sceneOver) {
+                    scene = Party.next(rnd, settings.palette, settings.tempo, strips.size, scene.spec.effect)
+                    sceneStart = now
+                    beatsInScene = 0
+                    stepIndex = 0
+                    tv = 0.0
+                    announce()
+                }
+                val t = if (beatMode) tv.toLong() else now - sceneStart
+                val smooth = EffectEngine.isSmooth(scene.spec.effect)
+                strips.forEachIndexed { i, strip ->
+                    val c = EffectEngine.frame(scene.spec, t, i, strips.size)
+                    sendColour(strip, sent.getOrPut(strip.id) { Sent() }, c.withV(c.v * level), smooth && !beatMode, now)
+                }
+                delay(if (audio != null) 40 else 70)
+            }
+        } finally {
+            audio?.stop()
+        }
+    }
+
     fun play(seq: Sequence) {
+        usesMic = false
         val steps = seq.steps.mapNotNull { st -> repo.theme(st.themeId)?.let { it to st.seconds.coerceAtLeast(2) * 1000L } }
         if (steps.isEmpty()) return
         start(PlayState(seq.name, "Reeks", sequenceId = seq.id)) {
@@ -195,5 +287,6 @@ class Player(
 
     companion object {
         const val FRAME_MS = 100L
+        const val PARTY_ID = "feest"
     }
 }

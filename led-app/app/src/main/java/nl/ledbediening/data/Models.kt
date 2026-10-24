@@ -42,6 +42,8 @@ val Effect.label: String
         Effect.FLOW -> "Stromen"
         Effect.RAINBOW -> "Regenboog"
         Effect.CHASE -> "Achtervolgen"
+        Effect.RANDOM -> "Willekeurig"
+        Effect.STROBE -> "Stroboscoop"
     }
 
 val Effect.description: String
@@ -54,6 +56,8 @@ val Effect.description: String
         Effect.FLOW -> "Kleuren stromen over de strip"
         Effect.RAINBOW -> "Een regenboog die over de strip loopt"
         Effect.CHASE -> "Kleur loopt van strip naar strip (meerdere strips)"
+        Effect.RANDOM -> "Elke lamp springt naar een willekeurige kleur"
+        Effect.STROBE -> "Korte felle flitsen"
     }
 
 @Serializable
@@ -114,6 +118,15 @@ data class AppData(
     val smartLife: SmartLifeSession? = null,
     /** Lopende inlogpoging (QR-code nog niet bevestigd); overleeft het afsluiten van de app. */
     val pendingLogin: PendingLogin? = null,
+    val party: PartySettings = PartySettings(),
+)
+
+@Serializable
+data class PartySettings(
+    val palette: String = "Willekeurig",
+    val tempo: Int = 65,
+    /** Reageren op muziek via de microfoon. */
+    val music: Boolean = false,
 )
 
 @Serializable

@@ -1,17 +1,21 @@
 package nl.ledbediening.control
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -61,7 +65,11 @@ class PlayerService : Service() {
             return START_NOT_STICKY
         }
         val st = player.state.value ?: PlayState("LED Bediening", "")
-        ServiceCompat.startForeground(this, NOTIFICATION_ID, notification(st), ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+        val micAllowed = player.usesMic &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val type = ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or
+            (if (micAllowed && Build.VERSION.SDK_INT >= 30) ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE else 0)
+        ServiceCompat.startForeground(this, NOTIFICATION_ID, notification(st), type)
         foreground = true
         if (player.state.value == null) stopSelf()
         return START_NOT_STICKY

@@ -2,6 +2,16 @@
 
 package nl.ledbediening.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.FilterChip
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import nl.ledbediening.control.Player
+import nl.ledbediening.data.PartySettings
+import nl.ledbediening.tuya.Party
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,8 +75,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import nl.ledbediening.control.StripState
 import nl.ledbediening.data.Strip
-import nl.ledbediening.data.Theme
-import nl.ledbediening.tuya.Effect
 import nl.ledbediening.tuya.Hsv
 
 @Composable
@@ -154,29 +162,21 @@ fun StripsScreen(nav: Nav) {
     }
 }
 
-/** Alles tegelijk: aan/uit, discomodus en thema's met één tik op alle lampen. */
+/** Alles tegelijk: aan/uit, feestmodus en thema's met één tik op alle lampen. */
 @Composable
 private fun QuickControls() {
     val app = app()
     val data by app.repo.data.collectAsState()
     val playing by app.player.state.collectAsState()
     val strips = data.strips.filter { it.isConfigured }
-    val disco = data.themes.firstOrNull { it.name.equals("Disco", ignoreCase = true) }
-        ?: Theme(name = "Disco", colors = listOf(0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF), effect = Effect.JUMP.name, speed = 85)
     SectionCard("Alle lampen tegelijk") {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { app.player.stop(restoreLamps = false); strips.forEach { app.devices.setPower(it, true) } }, modifier = Modifier.weight(1f)) { Text("Alles aan") }
             OutlinedButton(onClick = { app.player.stop(restoreLamps = false); strips.forEach { app.devices.setPower(it, false) } }, modifier = Modifier.weight(1f)) { Text("Alles uit") }
         }
-        VSpace(8)
-        val discoOn = playing?.themeId == disco.id
-        Button(
-            onClick = { if (discoOn) app.player.stop() else app.player.play(disco.copy(stripIds = emptyList())) },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(if (discoOn) "Discomodus stoppen" else "🎉 Discomodus") }
-        VSpace(8)
+        VSpace(10)
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            data.themes.filter { it.id != disco.id }.forEach { t ->
+            data.themes.forEach { t ->
                 val on = playing?.themeId == t.id
                 FilledTonalButton(onClick = { if (on) app.player.stop() else app.player.play(t.copy(stripIds = emptyList())) }) {
                     ColorDot(rgbColor(t.colors.firstOrNull() ?: 0xFFFFFF), size = 14)
@@ -191,6 +191,77 @@ private fun QuickControls() {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+    PartyCard()
+}
+
+/** Feestmodus: steeds wisselende effecten en kleuren, eventueel op de beat van de muziek. */
+@Composable
+private fun PartyCard() {
+    val app = app()
+    val data by app.repo.data.collectAsState()
+    val playing by app.player.state.collectAsState()
+    val party = data.party
+    val on = playing?.themeId == Player.PARTY_ID
+
+    fun save(p: PartySettings) {
+        app.repo.update { it.copy(party = p) }
+        if (on) app.player.playParty(p) // wijzigingen meteen toepassen
+    }
+
+    val micPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) save(app.repo.data.value.party.copy(music = true))
+    }
+    val context = LocalContext.current
+
+    SectionCard("🎉 Feest") {
+        Button(
+            onClick = { if (on) app.player.stop() else app.player.playParty(party) },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(if (on) "Feest stoppen" else "Feest starten") }
+        if (on) {
+            VSpace(6)
+            Text(playing?.subtitle ?: "", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        VSpace(10)
+        Text("Kleuren", style = MaterialTheme.typography.bodyMedium)
+        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Party.palettes.forEach { (name, colors) ->
+                FilterChip(
+                    selected = party.palette == name,
+                    onClick = { save(party.copy(palette = name)) },
+                    label = { Text(name) },
+                    leadingIcon = { ColorDot(if (colors != null) rgbColor(colors.first()) else Color.White, size = 12) },
+                )
+            }
+        }
+        LabeledSlider(
+            "Tempo", party.tempo.toFloat(), { app.repo.update { d -> d.copy(party = d.party.copy(tempo = it.toInt())) } }, 1f..100f,
+            valueText = when {
+                party.tempo < 35 -> "rustig"
+                party.tempo < 70 -> "gemiddeld"
+                else -> "wild"
+            },
+            onDone = { if (on) app.player.playParty(app.repo.data.value.party) },
+        )
+        Row(
+            Modifier.fillMaxWidth().clickable {
+                if (party.music) save(party.copy(music = false))
+                else if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) save(party.copy(music = true))
+                else micPermission.launch(Manifest.permission.RECORD_AUDIO)
+            },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text("🎵 Op de muziek")
+                Text(
+                    "De lampen wisselen op de beat en worden feller als de muziek harder gaat (via de microfoon; er wordt niets opgenomen).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = party.music, onCheckedChange = null)
+        }
     }
 }
 
