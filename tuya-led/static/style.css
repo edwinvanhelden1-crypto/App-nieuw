@@ -1,0 +1,110 @@
+:root {
+  --bg: #f3f4f7;
+  --card: #ffffff;
+  --text: #15171c;
+  --muted: #6b7180;
+  --line: #e2e4ea;
+  --accent: #6d5cff;
+  --glow: #ffffff;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111318;
+    --card: #1b1e25;
+    --text: #eef0f4;
+    --muted: #8d93a1;
+    --line: #2b2f39;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding: env(safe-area-inset-top) 0 calc(24px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color: transparent;
+}
+header, main, .empty { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+.empty { margin-top: 16px; }
+h1 { font-size: 1.5rem; margin: 20px 0 12px; }
+h2 { font-size: 1.15rem; margin: 0; }
+.muted { color: var(--muted); margin: 2px 0 0; font-size: .9rem; }
+code { background: var(--line); padding: 1px 5px; border-radius: 4px; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
+.chips button {
+  flex: none; border: 1px solid var(--line); background: var(--card); color: var(--text);
+  padding: 8px 16px; border-radius: 999px; font: inherit; cursor: pointer;
+}
+.chips button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+  padding: 18px; margin-bottom: 14px;
+}
+
+.power-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.power {
+  width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer; flex: none;
+  background: var(--line); color: var(--muted); display: grid; place-items: center;
+  transition: background .2s, box-shadow .2s, color .2s;
+}
+.power[aria-pressed="true"] {
+  background: var(--glow); color: #15171c;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--glow) 30%, transparent), 0 0 28px var(--glow);
+}
+
+.tabs { display: flex; background: var(--line); border-radius: 14px; padding: 4px; margin-bottom: 14px; }
+.tabs button {
+  flex: 1; border: none; background: none; color: var(--muted); font: inherit; font-weight: 600;
+  padding: 9px 0; border-radius: 10px; cursor: pointer;
+}
+.tabs button.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px #0002; }
+
+.wheel-wrap { position: relative; width: min(100%, 280px); aspect-ratio: 1; margin: 4px auto 18px; touch-action: none; }
+#wheel { width: 100%; height: 100%; border-radius: 50%; cursor: crosshair; display: block; }
+#wheel-dot {
+  position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+  border: 3px solid #fff; box-shadow: 0 1px 6px #0007; pointer-events: none; left: 50%; top: 50%;
+}
+
+.swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-bottom: 18px; }
+.swatches button {
+  aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0;
+}
+
+.slider { display: block; margin: 6px 0 16px; }
+.slider span { display: flex; justify-content: space-between; font-size: .95rem; margin-bottom: 8px; }
+.slider output { color: var(--muted); }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 32px; border-radius: 16px;
+  background: linear-gradient(90deg, #333, #fff); outline: none; margin: 0;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+input.temp { background: linear-gradient(90deg, #ffb35c, #fff4e5, #cfe3ff); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 30px; height: 30px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--accent); box-shadow: 0 1px 4px #0005; cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%; background: #fff;
+  border: 3px solid var(--accent); box-shadow: 0 1px 4px #0005; cursor: pointer;
+}
+
+.presets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.presets button {
+  border: 1px solid var(--line); background: var(--bg); color: var(--text); font: inherit;
+  padding: 14px; border-radius: 14px; cursor: pointer;
+}
+.presets button:active, .swatches button:active, .power:active { transform: scale(.96); }
+
+main.offline [data-pane], main.offline .tabs { opacity: .45; pointer-events: none; }
+
+#toast {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: #c62f45; color: #fff; padding: 10px 16px; border-radius: 12px; max-width: calc(100% - 32px);
+  font-size: .9rem; box-shadow: 0 4px 16px #0004;
+}

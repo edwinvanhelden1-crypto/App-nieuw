@@ -43,3 +43,10 @@ HTTPS of `localhost`.
 - `style.css` – opmaak (licht en donker thema)
 - `app.js` – foto laden, camera, filters, tekenen en downloaden
 - `worker.js` – laadt en draait de AI-modellen buiten de hoofdthread
+
+---
+
+# LED Bediening (Tuya)
+
+In de map [`tuya-led/`](tuya-led/) staat een app om Tuya LED-strips lokaal via
+je eigen wifi te bedienen. Zie [`tuya-led/README.md`](tuya-led/README.md).

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LED Bediening</title>
+  <meta name="theme-color" content="#111318">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>LED Bediening</h1>
+    <div id="devices" class="chips" role="tablist"></div>
+  </header>
+
+  <main id="panel" hidden>
+    <section class="card power-card">
+      <div>
+        <h2 id="dev-name">–</h2>
+        <p id="dev-status" class="muted">Verbinden…</p>
+      </div>
+      <button id="power" class="power" type="button" aria-label="Aan/uit" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+      </button>
+    </section>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" data-tab="colour" class="active">Kleur</button>
+      <button type="button" data-tab="white">Wit</button>
+      <button type="button" data-tab="scene">Scènes</button>
+    </nav>
+
+    <section class="card" data-pane="colour">
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="560" height="560"></canvas>
+        <div id="wheel-dot"></div>
+      </div>
+      <div id="swatches" class="swatches"></div>
+      <label class="slider">
+        <span>Helderheid <output id="colour-bri-out">100%</output></span>
+        <input type="range" id="colour-bri" min="1" max="100" value="100">
+      </label>
+    </section>
+
+    <section class="card" data-pane="white" hidden>
+      <label class="slider">
+        <span>Helderheid <output id="white-bri-out">100%</output></span>
+        <input type="range" id="white-bri" min="1" max="100" value="100">
+      </label>
+      <label class="slider">
+        <span>Kleurtemperatuur <output id="temp-out">50%</output></span>
+        <input type="range" id="temp" class="temp" min="0" max="100" value="50">
+      </label>
+      <div class="presets">
+        <button type="button" data-white="20,0">Nachtlicht</button>
+        <button type="button" data-white="70,10">Warm</button>
+        <button type="button" data-white="100,50">Neutraal</button>
+        <button type="button" data-white="100,100">Koel</button>
+      </div>
+    </section>
+
+    <section class="card" data-pane="scene" hidden>
+      <p class="muted">Ingebouwde effecten van de strip (verschilt per model).</p>
+      <div id="scenes" class="presets"></div>
+    </section>
+  </main>
+
+  <section id="empty" class="card empty" hidden>
+    <h2>Nog geen LED-strips</h2>
+    <p>Maak <code>devices.json</code> aan naast <code>app.py</code> en start de server opnieuw.
+      Zie de README voor uitleg.</p>
+  </section>
+
+  <div id="toast" role="status" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
