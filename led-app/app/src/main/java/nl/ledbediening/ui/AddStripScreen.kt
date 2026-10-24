@@ -177,10 +177,11 @@ private fun CloudImport(onAdd: (List<Strip>) -> Unit) {
 fun DevicePicker(list: List<CloudDevice>, onAdd: (List<Strip>) -> Unit) {
     val app = app()
     val existing = remember { app.repo.data.value.strips.map { it.id }.toSet() }
-    var showAll by remember { mutableStateOf(false) }
+    // Herkent de app niets als lamp, toon dan meteen alles.
+    var showAll by remember(list) { mutableStateOf(list.none { it.isLight }) }
     val selected = remember(list) { mutableStateListOf<String>().apply { addAll(list.filter { it.isLight && it.id !in existing }.map { it.id }) } }
     val shown = if (showAll) list else list.filter { it.isLight }
-    SectionCard("Kies je lampen (${shown.size})") {
+    SectionCard("Kies je lampen (${shown.size} van ${list.size} apparaten)") {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Ook andere apparaten tonen", modifier = Modifier.weight(1f))
             Switch(showAll, { showAll = it })
@@ -194,7 +195,13 @@ fun DevicePicker(list: List<CloudDevice>, onAdd: (List<Strip>) -> Unit) {
                 Column(Modifier.weight(1f)) {
                     Text(d.name)
                     Text(
-                        listOfNotNull(d.productName.ifBlank { null }, if (d.online) "online" else "offline", if (d.id in existing) "al toegevoegd" else null).joinToString(" · "),
+                        listOfNotNull(
+                            d.productName.ifBlank { null },
+                            d.category.ifBlank { null }?.let { "type $it" },
+                            if (d.online) "online" else "offline",
+                            if (d.localKey.isBlank()) "geen sleutel" else null,
+                            if (d.id in existing) "al toegevoegd" else null,
+                        ).joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

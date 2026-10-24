@@ -127,6 +127,8 @@ class SmartLifeApi(
                 category = s("category"),
                 productName = s("product_name"),
                 online = d["online"]?.jsonPrimitive?.booleanOrNull ?: false,
+                codes = (d["status"] as? kotlinx.serialization.json.JsonArray)
+                    ?.mapNotNull { (it as? JsonObject)?.get("code")?.jsonPrimitive?.content }?.toSet() ?: emptySet(),
             )
         }
     }

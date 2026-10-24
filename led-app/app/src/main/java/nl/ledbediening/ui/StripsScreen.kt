@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -111,8 +112,16 @@ fun StripsScreen(nav: Nav) {
     val states by app.devices.states.collectAsState()
     Box(Modifier.fillMaxSize()) {
         Column {
-            AppTopBar("Mijn strips") {
+            AppTopBar("Mijn lampen") {
+                IconButton(onClick = { nav.push(Screen.Diagnose) }) { Icon(Icons.Filled.Search, contentDescription = "Netwerk-diagnose") }
                 IconButton(onClick = { app.devices.refreshAll() }) { Icon(Icons.Filled.Refresh, contentDescription = "Vernieuwen") }
+            }
+            if (data.strips.any { !it.isConfigured }) {
+                SectionCard(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text("Niet alle lampen zijn op je wifi gevonden.")
+                    VSpace(6)
+                    Button(onClick = { nav.push(Screen.Diagnose) }) { Text("Zoeken en diagnose") }
+                }
             }
             if (data.strips.isEmpty()) {
                 SectionCard(modifier = Modifier.padding(horizontal = 16.dp)) {

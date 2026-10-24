@@ -51,6 +51,7 @@ sealed class Screen {
     data object AddStrip : Screen()
     data class ThemeEditor(val id: String?) : Screen()
     data class SequenceEditor(val id: String?) : Screen()
+    data object Diagnose : Screen()
 }
 
 class Nav(val push: (Screen) -> Unit, val pop: () -> Unit)
@@ -108,6 +109,7 @@ private fun Root() {
                 Screen.AddStrip -> AddStripScreen(nav)
                 is Screen.ThemeEditor -> ThemeEditorScreen(current.id, nav)
                 is Screen.SequenceEditor -> SequenceEditorScreen(current.id, nav)
+                Screen.Diagnose -> DiagnoseScreen(nav)
             }
         }
     }

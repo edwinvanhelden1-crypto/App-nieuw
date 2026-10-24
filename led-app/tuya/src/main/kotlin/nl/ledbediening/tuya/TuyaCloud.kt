@@ -17,9 +17,20 @@ data class CloudDevice(
     val category: String,
     val productName: String,
     val online: Boolean,
+    /** Functies (datapuntcodes) van het apparaat, als de cloud die meestuurt. */
+    val codes: Set<String> = emptySet(),
 ) {
-    /** Verlichting volgens Tuya's categorieën (dd = ledstrip, dj = lamp, ...). */
-    val isLight get() = category in setOf("dd", "dj", "dc", "fwd", "xdd", "fsd", "tgq", "tyndj", "gyd", "mbd", "sxd")
+    /** Verlichting: herkend aan categorie (dd = ledstrip, dj = lamp, ...), functies of productnaam. */
+    val isLight: Boolean
+        get() = category in LIGHT_CATEGORIES ||
+            codes.any { it in LIGHT_CODES } ||
+            LIGHT_WORDS.any { productName.contains(it, ignoreCase = true) || name.contains(it, ignoreCase = true) }
+
+    companion object {
+        val LIGHT_CATEGORIES = setOf("dd", "dj", "dc", "fwd", "xdd", "fsd", "tgq", "tyndj", "gyd", "mbd", "sxd", "fwl", "tgkg", "dsd", "ykq")
+        val LIGHT_CODES = setOf("switch_led", "work_mode", "colour_data", "colour_data_v2", "bright_value", "bright_value_v2", "dreamlight_scene_mode", "paint_colour_data")
+        val LIGHT_WORDS = listOf("led", "light", "lamp", "strip", "licht", "rgb", "bulb")
+    }
 }
 
 /**

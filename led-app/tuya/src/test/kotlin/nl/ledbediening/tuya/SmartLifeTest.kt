@@ -78,7 +78,8 @@ class SmartLifeTest {
                         """[{"id":"bf1","name":"Hoeklamp","local_key":"0123456789abcdef","category":"dd","product_name":"RGBIC Corner","online":true},
                            {"id":"bf2","name":"Stekker","local_key":"fedcba9876543210","category":"cz","online":false}]"""
                     } else {
-                        """[{"id":"bf3","name":"Lamp zomerhuis","local_key":"aaaaaaaaaaaaaaaa","category":"dj","online":true}]"""
+                        """[{"id":"bf3","name":"Lamp zomerhuis","local_key":"aaaaaaaaaaaaaaaa","category":"dj","online":true},
+                           {"id":"bf4","name":"Hoek","local_key":"bbbbbbbbbbbbbbbb","category":"xyz","online":true,"status":[{"code":"switch_led","value":true}]}]"""
                     }
                 }
                 else -> error("onverwacht pad ${uri.path}")
@@ -87,7 +88,8 @@ class SmartLifeTest {
         })
         val devices = api.allDevices()
         assertEquals(listOf("111", "222"), seenHomes)
-        assertEquals(listOf("bf1", "bf2", "bf3"), devices.map { it.id })
+        assertEquals(listOf("bf1", "bf2", "bf3", "bf4"), devices.map { it.id })
+        assertTrue(devices[3].isLight, "lamp met onbekende categorie maar switch_led moet herkend worden")
         assertEquals("0123456789abcdef", devices[0].localKey)
         assertTrue(devices[0].isLight)
         assertTrue(!devices[1].isLight)

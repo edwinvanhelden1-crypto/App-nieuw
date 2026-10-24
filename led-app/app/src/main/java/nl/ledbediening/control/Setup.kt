@@ -2,6 +2,7 @@ package nl.ledbediening.control
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +20,12 @@ class Setup(private val context: Context) {
 
     fun localNetwork(): Local? {
         val cm = context.getSystemService(ConnectivityManager::class.java)
-        val props = cm.getLinkProperties(cm.activeNetwork) ?: return null
+        // Altijd het wifi-netwerk, ook als Android mobiele data als hoofdverbinding gebruikt.
+        @Suppress("DEPRECATION")
+        val wifi = cm.allNetworks.firstOrNull { n ->
+            cm.getNetworkCapabilities(n)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+        } ?: cm.activeNetwork
+        val props = cm.getLinkProperties(wifi) ?: return null
         val la = props.linkAddresses.firstOrNull { it.address is Inet4Address } ?: return null
         val ip = la.address.address
         val prefix = la.prefixLength
