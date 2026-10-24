@@ -46,24 +46,48 @@ HTTPS of `localhost`.
 
 ---
 
-# Soundbar Equalizer
+# Soundbar EQ (Android-app)
 
-In de map [`soundbar-eq/`](soundbar-eq/) staat een tweede app: een 10-bands
-equalizer die geluid naar je Bluetooth-soundbar stuurt.
-Open hem via `http://localhost:8000/soundbar-eq/` (of `/soundbar-eq/` op GitHub Pages).
+In de map [`android/`](android/) staat een Android-app met een **10-bands equalizer
+die al het geluid van je telefoon realtime aanpast** (Spotify, YouTube, Netflix,
+games…). Hij werkt met **elke soundbar of speaker**, ongeacht het merk: Bluetooth,
+HDMI (ARC/eARC) of USB. Het geluid wordt namelijk op de telefoon aangepast voordat
+het naar de soundbar gaat.
 
-1. Koppel de soundbar in de Bluetooth-instellingen van je telefoon of computer.
-2. Kies hem in de app onder **Soundbar** (Chrome, Edge en Firefox op de computer).
-   Kan je browser dat niet (bijv. Safari/iPhone), dan speelt de app af via de
-   uitvoer die je in je toestel hebt gekozen.
-3. Kies een geluidsbron:
-   - **Muziekbestanden** van je apparaat (afspeellijst), of
-   - **Ander tabblad**: het geluid van bijv. Spotify, YouTube of Netflix in een ander
-     browsertabblad gaat door de equalizer (Chrome/Edge op de computer).
-4. Stel de 10 banden (32 Hz – 16 kHz, ±12 dB) in, of kies een voorinstelling
-   (Bas boost, Dialoog, Film, Muziek, Nacht…). Eigen instellingen kun je opslaan.
+## Installeren
 
-Een gewone Bluetooth-soundbar heeft geen standaardmanier waarop een app zijn
-ingebouwde equalizer kan bedienen. Deze app past daarom het geluid aan
-vóórdat het naar de soundbar gaat. Geluid van andere apps op je telefoon
-(bijv. de Spotify-app) kan een browser-app niet aanpassen.
+1. Open op je Android-telefoon (Android 9 of nieuwer) de pagina **Releases** van
+   deze repository en download `SoundbarEQ.apk` bij *Soundbar EQ (nieuwste versie)*.
+   (Ook te vinden onder **Actions › Android app** als artifact.)
+2. Open het bestand en sta *installeren uit onbekende bronnen* toe als daarom gevraagd wordt.
+3. Open **Soundbar EQ**, sta meldingen toe en zet **Equalizer aan**.
+
+## Functies
+
+- 10 banden van 32 Hz tot 16 kHz (±12 dB), versterking en een begrenzer tegen vervorming.
+- Voorinstellingen (Bas boost, Dialoog, Film, Muziek, Pop, Rock, Nacht, Hoge tonen)
+  en je eigen instellingen opslaan.
+- **Elke soundbar onthoudt zijn eigen instellingen**: zodra hij verbindt, worden die
+  automatisch geladen.
+- Blijft op de achtergrond werken (melding met knop *Uitzetten*) en start na een
+  herstart van de telefoon weer op als hij aan stond.
+
+## Hoe het werkt
+
+De app gebruikt Android's `DynamicsProcessing`-effect op de gezamenlijke audio-uitvoer,
+dus de aanpassing gebeurt live, zonder merkbare vertraging. Sommige telefoons staan dat
+niet toe; dan koppelt de app zich aan elke app die zijn geluid aanmeldt (Spotify,
+YouTube Music, VLC en andere). De app toont welke modus actief is.
+
+Een gewone Bluetooth-soundbar heeft geen standaardmanier waarop een app zijn ingebouwde
+equalizer kan bedienen. Daarom werkt deze app via de telefoon. Een iPhone staat geen
+systeembrede equalizer toe; de app is daarom alleen voor Android.
+
+Bouwen: `cd android && ./gradlew assembleRelease` (met Android SDK), of automatisch
+via GitHub Actions bij elke push.
+
+## Browserversie
+
+De map [`soundbar-eq/`](soundbar-eq/) bevat een eenvoudigere browserversie die alleen
+muziekbestanden en geluid uit een ander tabblad kan aanpassen
+(`http://localhost:8000/soundbar-eq/`).
