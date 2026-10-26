@@ -26,7 +26,11 @@ import android.webkit.WebViewClient;
 import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
@@ -186,6 +190,10 @@ public class MainActivity extends Activity {
         pendingPermission = null;
     }
 
+    private static String quote(String s) {
+        return "'" + s.replace("\\", "\\\\").replace("'", "\\'") + "'";
+    }
+
     // ---------- JavaScript bridge ----------
 
     private class Bridge {
@@ -217,6 +225,42 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
                 return false;
             }
+        }
+
+        /**
+         * Downloads an image outside the WebView (so no CORS rules apply) and hands
+         * it back as a data URL through window.__androidImage(id, dataUrl or null).
+         */
+        @JavascriptInterface
+        public void fetchImage(final String id, final String url) {
+            new Thread(() -> {
+                String result = null;
+                HttpURLConnection con = null;
+                try {
+                    con = (HttpURLConnection) new URL(url).openConnection();
+                    con.setConnectTimeout(30000);
+                    con.setReadTimeout(180000);
+                    con.setInstanceFollowRedirects(true);
+                    if (con.getResponseCode() == 200) {
+                        String type = con.getContentType();
+                        try (InputStream in = con.getInputStream()) {
+                            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+                            byte[] chunk = new byte[16384];
+                            int n;
+                            while ((n = in.read(chunk)) > 0) buf.write(chunk, 0, n);
+                            result = "data:" + (type != null && type.startsWith("image/") ? type : "image/jpeg")
+                                    + ";base64," + Base64.encodeToString(buf.toByteArray(), Base64.NO_WRAP);
+                        }
+                    }
+                } catch (Exception e) {
+                    result = null;
+                } finally {
+                    if (con != null) con.disconnect();
+                }
+                final String js = "window.__androidImage && window.__androidImage(" + quote(id) + ","
+                        + (result == null ? "null" : quote(result)) + ")";
+                runOnUiThread(() -> webView.evaluateJavascript(js, null));
+            }).start();
         }
 
         @JavascriptInterface

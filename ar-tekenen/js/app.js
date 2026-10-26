@@ -294,6 +294,25 @@ let aiStyle = 'lijn';
 let aiImg = null;
 chips($('#ai-styles'), AI_STYLES, aiStyle, (v) => (aiStyle = v));
 
+// In the Android app the image is downloaded natively, so the picture can be
+// processed on a canvas even when the AI service sends no CORS headers.
+const pendingImages = new Map();
+window.__androidImage = (id, dataUrl) => {
+  const done = pendingImages.get(id);
+  pendingImages.delete(id);
+  if (done) done(dataUrl);
+};
+async function loadRemoteImage(url) {
+  if (!window.AndroidApp?.fetchImage) return loadImage(url);
+  const id = String(Date.now() + Math.random());
+  const dataUrl = await new Promise((resolve) => {
+    pendingImages.set(id, resolve);
+    window.AndroidApp.fetchImage(id, url);
+  });
+  if (!dataUrl) throw new Error('download mislukt');
+  return loadImage(dataUrl);
+}
+
 async function generateAi() {
   const prompt = $('#ai-prompt').value.trim();
   if (!prompt) { toast('Typ eerst wat je wilt tekenen'); return; }
@@ -305,7 +324,7 @@ async function generateAi() {
   btn.disabled = true;
   btn.textContent = 'Bezig met tekenen…';
   try {
-    aiImg = await loadImage(url);
+    aiImg = await loadRemoteImage(url);
     $('#ai-img').src = aiImg.src;
     $('#ai-result').hidden = false;
   } catch {
@@ -422,12 +441,22 @@ async function startCamera() {
   const track = stream.getVideoTracks()[0];
   const caps = track.getCapabilities ? track.getCapabilities() : {};
   $('#t-torch').hidden = !caps.torch;
+  const zoomRow = $('#t-zoom-row');
+  zoomRow.hidden = !caps.zoom;
+  if (caps.zoom) {
+    const z = $('#t-zoom');
+    z.min = caps.zoom.min;
+    z.max = Math.min(caps.zoom.max, caps.zoom.min * 8);
+    z.step = caps.zoom.step || 0.1;
+    z.value = track.getSettings().zoom || caps.zoom.min;
+  }
 }
 
 function stopCamera() {
   if (stream) for (const t of stream.getTracks()) t.stop();
   stream = null;
   video.srcObject = null;
+  $('#t-zoom-row').hidden = true;
   torch = false;
   $('#t-torch').setAttribute('aria-pressed', 'false');
 }
@@ -556,6 +585,10 @@ $('#t-width').addEventListener('input', (e) => {
   saveSettings();
   clearTimeout(widthTimer);
   widthTimer = setTimeout(renderOverlay, 120);
+});
+$('#t-zoom').addEventListener('input', async (e) => {
+  const track = stream?.getVideoTracks()[0];
+  try { await track?.applyConstraints({ advanced: [{ zoom: +e.target.value }] }); } catch { /* not supported */ }
 });
 let levelTimer;
 $('#t-level').addEventListener('input', (e) => {
