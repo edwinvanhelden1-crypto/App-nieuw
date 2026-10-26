@@ -1,1 +1,111 @@
-{ "categories": [] }
+{
+ "categories": [
+  {
+   "id": "dieren",
+   "name": "Dieren",
+   "position": 0,
+   "items": [
+    {
+     "file": "koala.webp",
+     "title": "Koala",
+     "style": "schets"
+    },
+    {
+     "file": "leeuw.webp",
+     "title": "Leeuw",
+     "style": "schets"
+    },
+    {
+     "file": "tijger.webp",
+     "title": "Tijger",
+     "style": "schets"
+    },
+    {
+     "file": "wolf.webp",
+     "title": "Wolf",
+     "style": "schets"
+    },
+    {
+     "file": "vos.webp",
+     "title": "Vos",
+     "style": "schets"
+    },
+    {
+     "file": "uil.webp",
+     "title": "Uil",
+     "style": "schets"
+    },
+    {
+     "file": "olifant.webp",
+     "title": "Olifant",
+     "style": "schets"
+    },
+    {
+     "file": "paard.webp",
+     "title": "Paard",
+     "style": "schets"
+    },
+    {
+     "file": "kat.webp",
+     "title": "Kat",
+     "style": "schets"
+    },
+    {
+     "file": "puppy.webp",
+     "title": "Puppy",
+     "style": "schets"
+    },
+    {
+     "file": "panda.webp",
+     "title": "Panda",
+     "style": "schets"
+    },
+    {
+     "file": "hert.webp",
+     "title": "Hert",
+     "style": "schets"
+    },
+    {
+     "file": "konijn.webp",
+     "title": "Konijn",
+     "style": "schets"
+    },
+    {
+     "file": "eekhoorn.webp",
+     "title": "Eekhoorn",
+     "style": "schets"
+    },
+    {
+     "file": "schildpad.webp",
+     "title": "Schildpad",
+     "style": "schets"
+    },
+    {
+     "file": "giraf.webp",
+     "title": "Giraf",
+     "style": "schets"
+    },
+    {
+     "file": "beer.webp",
+     "title": "Beer",
+     "style": "schets"
+    },
+    {
+     "file": "vlinder.webp",
+     "title": "Vlinder",
+     "style": "schets"
+    },
+    {
+     "file": "kameleon.webp",
+     "title": "Kameleon",
+     "style": "schets"
+    },
+    {
+     "file": "dolfijn.webp",
+     "title": "Dolfijn",
+     "style": "schets"
+    }
+   ]
+  }
+ ]
+}
