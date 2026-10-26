@@ -1,1 +1,61 @@
-{ "categories": [] }
+{
+ "categories": [
+  {
+   "id": "dieren",
+   "name": "Dieren",
+   "position": 0,
+   "items": [
+    {
+     "file": "koala.webp",
+     "title": "Koala",
+     "style": "schets"
+    },
+    {
+     "file": "leeuw.webp",
+     "title": "Leeuw",
+     "style": "schets"
+    },
+    {
+     "file": "tijger.webp",
+     "title": "Tijger",
+     "style": "schets"
+    },
+    {
+     "file": "wolf.webp",
+     "title": "Wolf",
+     "style": "schets"
+    },
+    {
+     "file": "vos.webp",
+     "title": "Vos",
+     "style": "schets"
+    },
+    {
+     "file": "uil.webp",
+     "title": "Uil",
+     "style": "schets"
+    },
+    {
+     "file": "olifant.webp",
+     "title": "Olifant",
+     "style": "schets"
+    },
+    {
+     "file": "kat.webp",
+     "title": "Kat",
+     "style": "schets"
+    },
+    {
+     "file": "puppy.webp",
+     "title": "Puppy",
+     "style": "schets"
+    },
+    {
+     "file": "panda.webp",
+     "title": "Panda",
+     "style": "schets"
+    }
+   ]
+  }
+ ]
+}
