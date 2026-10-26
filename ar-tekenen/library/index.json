@@ -54,6 +54,56 @@
      "file": "hert.webp",
      "title": "Hert",
      "style": "schets"
+    },
+    {
+     "file": "konijn.webp",
+     "title": "Konijn",
+     "style": "schets"
+    },
+    {
+     "file": "eekhoorn.webp",
+     "title": "Eekhoorn",
+     "style": "schets"
+    },
+    {
+     "file": "schildpad.webp",
+     "title": "Schildpad",
+     "style": "schets"
+    },
+    {
+     "file": "giraf.webp",
+     "title": "Giraf",
+     "style": "schets"
+    },
+    {
+     "file": "beer.webp",
+     "title": "Beer",
+     "style": "schets"
+    },
+    {
+     "file": "egel.webp",
+     "title": "Egel",
+     "style": "schets"
+    },
+    {
+     "file": "vlinder.webp",
+     "title": "Vlinder",
+     "style": "schets"
+    },
+    {
+     "file": "kameleon.webp",
+     "title": "Kameleon",
+     "style": "schets"
+    },
+    {
+     "file": "wasbeer.webp",
+     "title": "Wasbeer",
+     "style": "schets"
+    },
+    {
+     "file": "kat-kleur.webp",
+     "title": "Kat (kleur)",
+     "style": "kleur"
     }
    ]
   }
