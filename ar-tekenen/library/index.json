@@ -489,6 +489,63 @@
      "file": "monstertje.webp",
      "title": "Monstertje",
      "style": "kleur"
+    },
+    {
+     "file": "jongen-die-zwaait-kleurplaat.webp",
+     "title": "Jongen die zwaait (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "meisje-met-ballon-kleurplaat.webp",
+     "title": "Meisje met ballon (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "skateboarder-kleurplaat.webp",
+     "title": "Skateboarder (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "superheld-kleurplaat.webp",
+     "title": "Superheld (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "piraat-kleurplaat.webp",
+     "title": "Piraat (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "astronaut-kleurplaat.webp",
+     "title": "Astronaut (kleurplaat)",
+     "style": "lijn"
+    }
+   ]
+  },
+  {
+   "id": "portret",
+   "name": "Portret",
+   "position": 6,
+   "items": [
+    {
+     "file": "vrouw-met-krullen.webp",
+     "title": "Vrouw met krullen",
+     "style": "schets"
+    },
+    {
+     "file": "man-met-baard.webp",
+     "title": "Man met baard",
+     "style": "schets"
+    },
+    {
+     "file": "oude-man.webp",
+     "title": "Oude man",
+     "style": "schets"
+    },
+    {
+     "file": "meisje-met-vlechten.webp",
+     "title": "Meisje met vlechten",
+     "style": "schets"
     }
    ]
   }
