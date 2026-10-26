@@ -952,6 +952,63 @@
      "file": "twee-gezichten.webp",
      "title": "Twee gezichten",
      "style": "oneline"
+    },
+    {
+     "file": "kat.webp",
+     "title": "Kat",
+     "style": "oneline"
+    },
+    {
+     "file": "hand.webp",
+     "title": "Hand",
+     "style": "oneline"
+    },
+    {
+     "file": "vrouwengezicht.webp",
+     "title": "Vrouwengezicht",
+     "style": "oneline"
+    },
+    {
+     "file": "bloem.webp",
+     "title": "Bloem",
+     "style": "oneline"
+    },
+    {
+     "file": "hart.webp",
+     "title": "Hart",
+     "style": "oneline"
+    },
+    {
+     "file": "vis.webp",
+     "title": "Vis",
+     "style": "oneline"
+    }
+   ]
+  },
+  {
+   "id": "eten",
+   "name": "Eten & café",
+   "position": 15,
+   "items": [
+    {
+     "file": "donuts.webp",
+     "title": "Donuts",
+     "style": "schets"
+    },
+    {
+     "file": "cafe-terras.webp",
+     "title": "Café-terras",
+     "style": "schets"
+    },
+    {
+     "file": "taart.webp",
+     "title": "Taart",
+     "style": "schets"
+    },
+    {
+     "file": "hamburger.webp",
+     "title": "Hamburger",
+     "style": "schets"
     }
    ]
   }
