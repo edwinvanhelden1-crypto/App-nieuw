@@ -1237,6 +1237,63 @@
      "file": "octopus.webp",
      "title": "Octopus",
      "style": "schets"
+    },
+    {
+     "file": "walvis.webp",
+     "title": "Walvis",
+     "style": "schets"
+    },
+    {
+     "file": "koraalrif.webp",
+     "title": "Koraalrif",
+     "style": "schets"
+    },
+    {
+     "file": "haai.webp",
+     "title": "Haai",
+     "style": "schets"
+    },
+    {
+     "file": "clownvis.webp",
+     "title": "Clownvis",
+     "style": "kleur"
+    },
+    {
+     "file": "zeemeermin.webp",
+     "title": "Zeemeermin",
+     "style": "schets"
+    },
+    {
+     "file": "schelpen.webp",
+     "title": "Schelpen",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "fantasie",
+   "name": "Fantasie",
+   "position": 20,
+   "items": [
+    {
+     "file": "draak.webp",
+     "title": "Draak",
+     "style": "schets"
+    },
+    {
+     "file": "eenhoorn.webp",
+     "title": "Eenhoorn",
+     "style": "schets"
+    },
+    {
+     "file": "fee.webp",
+     "title": "Fee",
+     "style": "schets"
+    },
+    {
+     "file": "feniks.webp",
+     "title": "Feniks",
+     "style": "schets"
     }
    ]
   }
