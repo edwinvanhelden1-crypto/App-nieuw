@@ -774,6 +774,63 @@
      "file": "wekker.webp",
      "title": "Wekker",
      "style": "schets"
+    },
+    {
+     "file": "sleutels.webp",
+     "title": "Sleutels",
+     "style": "schets"
+    },
+    {
+     "file": "kroon.webp",
+     "title": "Kroon",
+     "style": "schets"
+    },
+    {
+     "file": "zandloper.webp",
+     "title": "Zandloper",
+     "style": "schets"
+    },
+    {
+     "file": "sneakers.webp",
+     "title": "Sneakers",
+     "style": "schets"
+    },
+    {
+     "file": "theekop.webp",
+     "title": "Theekop",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "muziek",
+   "name": "Muziek",
+   "position": 11,
+   "items": [
+    {
+     "file": "harp.webp",
+     "title": "Harp",
+     "style": "schets"
+    },
+    {
+     "file": "cello.webp",
+     "title": "Cello",
+     "style": "schets"
+    },
+    {
+     "file": "piano.webp",
+     "title": "Piano",
+     "style": "schets"
+    },
+    {
+     "file": "saxofoon.webp",
+     "title": "Saxofoon",
+     "style": "schets"
+    },
+    {
+     "file": "elektrische-gitaar.webp",
+     "title": "Elektrische gitaar",
+     "style": "schets"
     }
    ]
   }
