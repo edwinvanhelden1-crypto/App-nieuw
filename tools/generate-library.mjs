@@ -104,7 +104,12 @@ for (const c of spec.categories) {
       continue;
     }
     failedInRow = 0;
-    await sharp(buf).resize(640, 640, { fit: 'inside' }).flatten({ background: '#ffffff' }).webp({ quality: 80 }).toFile(file);
+    // Cover the small service logo in the bottom-right corner with white.
+    const meta = await sharp(buf).metadata();
+    const mw = Math.round(meta.width * 0.3), mh = Math.round(meta.height * 0.07);
+    const mask = Buffer.from(`<svg width="${mw}" height="${mh}"><rect width="100%" height="100%" fill="#fff"/></svg>`);
+    const clean = await sharp(buf).composite([{ input: mask, left: meta.width - mw, top: meta.height - mh }]).toBuffer();
+    await sharp(clean).resize(640, 640, { fit: 'inside' }).flatten({ background: '#ffffff' }).webp({ quality: 80 }).toFile(file);
     made++;
     sinceCommit++;
     if (commitEvery && sinceCommit >= commitEvery) {

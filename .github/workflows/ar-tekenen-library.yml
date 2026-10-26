@@ -34,7 +34,7 @@ jobs:
 
       - name: Tekeningen maken met AI (Pollinations)
         env:
-          COMMIT_EVERY: 20
+          COMMIT_EVERY: 10
           POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"

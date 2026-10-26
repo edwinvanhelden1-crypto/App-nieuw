@@ -1,10 +1,10 @@
 {
  "styles": {
-  "schets": "detailed black and white ink line art illustration, coloring book page, fine pen hatching and shading, clean pure white background, centered composition, high detail, no text, no watermark",
-  "kleur": "cute colorful cartoon illustration, clean bold black outlines, vibrant flat colors, soft shading, pure white background, centered, no text, no watermark",
-  "anime": "anime manga style illustration, clean crisp line art, soft cel shading, vibrant colors, pure white background, no text, no watermark",
+  "schets": "vector illustration coloring page, clean black ink outlines with fine light hatching, cute and detailed, isolated subject on plain pure white background, no scenery background, no paper, no pencil, no frame, no border, black and white, no text",
+  "kleur": "cute colorful cartoon vector illustration, clean bold black outlines, vibrant flat colors, soft cel shading, isolated on plain pure white background, no paper, no frame, no text",
+  "anime": "anime manga style illustration, clean crisp line art, cel shading, vibrant colors, isolated on plain pure white background, no paper, no frame, no text",
   "oneline": "minimalist continuous one line drawing, single black line on pure white background, elegant, no text",
-  "lijn": "clean simple black outline coloring page for kids, smooth uniform black lines, no shading, no hatching, no grey, pure white background, full body, centered, no text, no watermark",
+  "lijn": "clean simple black outline coloring page for kids, smooth uniform black lines, no shading, no hatching, no grey, isolated on plain pure white background, full body, no paper, no frame, no text",
   "retro": "vintage 1930s rubber hose cartoon style, black and white with red and yellow accents, pie-cut eyes, white gloves, big shoes, clean bold outlines, pure white background, full body, no text, no watermark"
  },
  "categories": [
