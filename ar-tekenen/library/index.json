@@ -660,6 +660,63 @@
      "file": "oor.webp",
      "title": "Oor",
      "style": "schets"
+    },
+    {
+     "file": "handen-gevouwen.webp",
+     "title": "Handen gevouwen",
+     "style": "schets"
+    },
+    {
+     "file": "gezicht-van-voren.webp",
+     "title": "Gezicht van voren",
+     "style": "schets"
+    },
+    {
+     "file": "schedel.webp",
+     "title": "Schedel",
+     "style": "schets"
+    },
+    {
+     "file": "hand-met-potlood.webp",
+     "title": "Hand met potlood",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "natuur",
+   "name": "Natuur",
+   "position": 9,
+   "items": [
+    {
+     "file": "bergen.webp",
+     "title": "Bergen",
+     "style": "schets"
+    },
+    {
+     "file": "bos.webp",
+     "title": "Bos",
+     "style": "schets"
+    },
+    {
+     "file": "strand.webp",
+     "title": "Strand",
+     "style": "schets"
+    },
+    {
+     "file": "zonsondergang.webp",
+     "title": "Zonsondergang",
+     "style": "schets"
+    },
+    {
+     "file": "boom.webp",
+     "title": "Boom",
+     "style": "schets"
+    },
+    {
+     "file": "weide.webp",
+     "title": "Weide",
+     "style": "schets"
     }
    ]
   }
