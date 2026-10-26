@@ -1118,6 +1118,70 @@
      "style": "schets"
     }
    ]
+  },
+  {
+   "id": "kawaii",
+   "name": "Kawaii",
+   "position": 17,
+   "items": [
+    {
+     "file": "kawaii-kat.webp",
+     "title": "Kawaii kat",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-panda.webp",
+     "title": "Kawaii panda",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-eenhoorn.webp",
+     "title": "Kawaii eenhoorn",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-avocado.webp",
+     "title": "Kawaii avocado",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-sushi.webp",
+     "title": "Kawaii sushi",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-wolk.webp",
+     "title": "Kawaii wolk",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-hamster.webp",
+     "title": "Kawaii hamster",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-pinguin.webp",
+     "title": "Kawaii pinguïn",
+     "style": "kleur"
+    },
+    {
+     "file": "kawaii-aardbei.webp",
+     "title": "Kawaii aardbei",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "bloemen",
+   "name": "Bloemen & planten",
+   "position": 18,
+   "items": [
+    {
+     "file": "roos.webp",
+     "title": "Roos",
+     "style": "schets"
+    }
+   ]
   }
  ]
 }
