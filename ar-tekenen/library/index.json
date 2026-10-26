@@ -1180,6 +1180,63 @@
      "file": "roos.webp",
      "title": "Roos",
      "style": "schets"
+    },
+    {
+     "file": "zonnebloem.webp",
+     "title": "Zonnebloem",
+     "style": "schets"
+    },
+    {
+     "file": "lotus.webp",
+     "title": "Lotus",
+     "style": "schets"
+    },
+    {
+     "file": "pioenroos.webp",
+     "title": "Pioenroos",
+     "style": "schets"
+    },
+    {
+     "file": "lelie.webp",
+     "title": "Lelie",
+     "style": "schets"
+    },
+    {
+     "file": "cactus.webp",
+     "title": "Cactus",
+     "style": "schets"
+    },
+    {
+     "file": "monstera.webp",
+     "title": "Monstera",
+     "style": "schets"
+    },
+    {
+     "file": "lavendel.webp",
+     "title": "Lavendel",
+     "style": "schets"
+    },
+    {
+     "file": "kersenbloesem.webp",
+     "title": "Kersenbloesem",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "zee",
+   "name": "Zee & oceaan",
+   "position": 19,
+   "items": [
+    {
+     "file": "zeeschildpad.webp",
+     "title": "Zeeschildpad",
+     "style": "schets"
+    },
+    {
+     "file": "octopus.webp",
+     "title": "Octopus",
+     "style": "schets"
     }
    ]
   }
