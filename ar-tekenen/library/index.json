@@ -603,6 +603,63 @@
      "file": "meisje-met-paraplu.webp",
      "title": "Meisje met paraplu",
      "style": "schets"
+    },
+    {
+     "file": "boekenkast.webp",
+     "title": "Boekenkast",
+     "style": "schets"
+    },
+    {
+     "file": "theepot-en-kopjes.webp",
+     "title": "Theepot en kopjes",
+     "style": "schets"
+    },
+    {
+     "file": "vaas-met-bloemen.webp",
+     "title": "Vaas met bloemen",
+     "style": "schets"
+    },
+    {
+     "file": "hand-met-bloem.webp",
+     "title": "Hand met bloem",
+     "style": "schets"
+    },
+    {
+     "file": "kaarsen-en-boeken.webp",
+     "title": "Kaarsen en boeken",
+     "style": "schets"
+    },
+    {
+     "file": "zonnehoed-en-tas.webp",
+     "title": "Zonnehoed en tas",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "anatomie",
+   "name": "Anatomie",
+   "position": 8,
+   "items": [
+    {
+     "file": "hand.webp",
+     "title": "Hand",
+     "style": "schets"
+    },
+    {
+     "file": "lippen.webp",
+     "title": "Lippen",
+     "style": "schets"
+    },
+    {
+     "file": "neus.webp",
+     "title": "Neus",
+     "style": "schets"
+    },
+    {
+     "file": "oor.webp",
+     "title": "Oor",
+     "style": "schets"
     }
    ]
   }
