@@ -1066,6 +1066,56 @@
      "file": "raceauto.webp",
      "title": "Raceauto",
      "style": "kleur"
+    },
+    {
+     "file": "jeep.webp",
+     "title": "Jeep",
+     "style": "kleur"
+    },
+    {
+     "file": "motor.webp",
+     "title": "Motor",
+     "style": "kleur"
+    },
+    {
+     "file": "vliegtuig.webp",
+     "title": "Vliegtuig",
+     "style": "kleur"
+    },
+    {
+     "file": "helikopter.webp",
+     "title": "Helikopter",
+     "style": "kleur"
+    },
+    {
+     "file": "tractor.webp",
+     "title": "Tractor",
+     "style": "kleur"
+    },
+    {
+     "file": "zeilboot.webp",
+     "title": "Zeilboot",
+     "style": "kleur"
+    },
+    {
+     "file": "raket.webp",
+     "title": "Raket",
+     "style": "kleur"
+    },
+    {
+     "file": "sportauto-schets.webp",
+     "title": "Sportauto (schets)",
+     "style": "schets"
+    },
+    {
+     "file": "oldtimer-schets.webp",
+     "title": "Oldtimer (schets)",
+     "style": "schets"
+    },
+    {
+     "file": "motor-schets.webp",
+     "title": "Motor (schets)",
+     "style": "schets"
     }
    ]
   }
