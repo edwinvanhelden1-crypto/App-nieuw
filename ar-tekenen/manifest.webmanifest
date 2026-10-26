@@ -1,0 +1,17 @@
+{
+  "name": "AR Tekenen",
+  "short_name": "AR Tekenen",
+  "description": "Teken elke afbeelding na met augmented reality.",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f6fb",
+  "theme_color": "#8a8ff0",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

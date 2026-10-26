@@ -1,5 +1,7 @@
 # AI Foto Studio
 
+> In deze repository staat ook **[AR Tekenen](ar-tekenen/)**: teken afbeeldingen na met augmented reality.
+
 Een foto-app met AI die volledig **gratis** is en in je **browser** draait.
 Er is geen server, account of API-sleutel nodig: de open-source modellen worden
 via [Transformers.js](https://huggingface.co/docs/transformers.js) van Hugging Face

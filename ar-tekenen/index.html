@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AR Tekenen</title>
+  <meta name="description" content="Teken elke afbeelding na met augmented reality: leg je telefoon op een glas en trek de doorschijnende tekening over op papier.">
+  <meta name="theme-color" content="#8a8ff0">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <!-- Home -->
+  <section class="screen" id="home" data-screen>
+    <div class="gradient"></div>
+    <header class="topbar">
+      <button class="round" data-go="over" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h12M4 17h16"/></svg></button>
+      <span class="spacer"></span>
+      <button class="round" data-go="uitleg" aria-label="Uitleg"><svg viewBox="0 0 24 24"><path d="M12 10v7M12 6.5v.5"/><circle cx="12" cy="12" r="9.5"/></svg></button>
+    </header>
+    <p class="tagline">Maak, genereer en teken met AI</p>
+
+    <button class="ai-banner" data-go="ai">
+      <span class="ai-icon"><svg viewBox="0 0 24 24"><path class="fillpath" d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg></span>
+      <span class="ai-text"><strong>AI-tekening</strong><span class="marquee"><span>Maak van je idee direct een tekening • Typ wat je wilt tekenen • </span></span></span>
+    </button>
+
+    <div class="home-grid">
+      <button class="tile tile-ar" data-go="kies">
+        <span class="ar-art">
+          <span class="phone"><img id="ar-phone-img" alt=""></span>
+          <span class="bubble"><img id="ar-bubble-img" alt=""></span>
+        </span>
+        <strong class="ar-title">AR Tekenen</strong>
+      </button>
+      <button class="tile tile-side tint-blue" data-action="camera-photo">
+        <span class="icon-circle"><img src="icons/camera.svg" alt=""></span>
+        <span>Tekenen vanaf <strong>camera</strong></span>
+      </button>
+      <button class="tile tile-side tint-green" data-action="gallery">
+        <span class="icon-circle"><img src="icons/gallery.svg" alt=""></span>
+        <span>Tekenen vanaf <strong>galerij</strong></span>
+      </button>
+    </div>
+
+    <div class="home-row">
+      <button class="tile tile-small tint-purple" data-go="objecten">
+        <span class="icon-circle"><img src="icons/flower.svg" alt=""></span>
+        <strong>Teken object</strong>
+      </button>
+      <button class="tile tile-small tint-peach" data-go="leren">
+        <span class="icon-circle"><img src="icons/learn.svg" alt=""></span>
+        <strong>Leer tekenen</strong>
+      </button>
+      <button class="tile tile-small tint-sky" data-go="schetsen">
+        <span class="icon-circle"><img src="icons/sketch.svg" alt=""></span>
+        <strong>Mijn schetsen</strong>
+      </button>
+    </div>
+    <p class="count-note" id="count-note"></p>
+  </section>
+
+  <!-- Choose source -->
+  <section class="screen" id="kies" data-screen hidden>
+    <div class="gradient"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Kiezen</h1></header>
+    <button class="ai-banner" data-go="ai">
+      <span class="ai-icon"><svg viewBox="0 0 24 24"><path class="fillpath" d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/></svg></span>
+      <span class="ai-text"><strong>AI-tekening</strong><span class="marquee"><span>Maak van je idee direct een tekening • Typ wat je wilt tekenen • </span></span></span>
+    </button>
+    <button class="choice big" data-go="objecten">
+      <svg viewBox="0 0 48 48" class="choice-icon"><rect x="6" y="6" width="16" height="16" rx="4" fill="#f2c94c"/><rect x="26" y="6" width="16" height="16" rx="4" fill="#56a3f2"/><rect x="6" y="26" width="16" height="16" rx="4" fill="#e9893a"/><rect x="26" y="26" width="16" height="16" rx="4" fill="#6fd3c4"/></svg>
+      <strong>Teken objecten</strong>
+      <span>Kies een tekening uit een categorie om in AR na te tekenen</span>
+    </button>
+    <div class="choice-row">
+      <button class="choice" data-action="gallery"><img src="icons/gallery.svg" alt="" class="choice-icon"><strong>Galerij</strong><span>Kies een foto uit je galerij om in AR na te tekenen</span></button>
+      <button class="choice" data-action="camera-photo"><img src="icons/camera.svg" alt="" class="choice-icon"><strong>Camera</strong><span>Maak een foto om in AR na te tekenen</span></button>
+    </div>
+  </section>
+
+  <!-- Objects overview (rows per category) -->
+  <section class="screen" id="objecten" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1 id="rows-title">Teken objecten</h1></header>
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="search" type="search" placeholder="Zoek een tekening…" autocomplete="off"></div>
+    <div id="rows"></div>
+  </section>
+
+  <!-- One category -->
+  <section class="screen" id="categorie" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1 id="cat-title"></h1></header>
+    <div class="grid" id="cat-grid"></div>
+  </section>
+
+  <!-- Learn: step by step -->
+  <section class="screen" id="les" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1 id="les-title">Leer tekenen</h1></header>
+    <div class="lesson-card">
+      <img id="les-img" alt="">
+      <p id="les-step"></p>
+      <div class="row center">
+        <button class="btn ghost" id="les-prev">Vorige</button>
+        <button class="btn" id="les-next">Volgende stap</button>
+      </div>
+      <button class="btn wide" id="les-ar">Teken deze stappen in AR</button>
+    </div>
+  </section>
+
+  <!-- My sketches -->
+  <section class="screen" id="schetsen" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Mijn schetsen</h1></header>
+    <p class="empty" id="sketch-empty">Nog geen schetsen. Tik tijdens het tekenen op <strong>Foto</strong> om je tekening hier te bewaren.</p>
+    <div class="grid photos" id="sketch-grid"></div>
+  </section>
+
+  <!-- AI drawing -->
+  <section class="screen" id="ai" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>AI-tekening</h1></header>
+    <div class="panel">
+      <label for="ai-prompt">Wat wil je tekenen?</label>
+      <textarea id="ai-prompt" rows="3" placeholder="Bijv. een vos die in het bos slaapt"></textarea>
+      <label>Stijl</label>
+      <div class="chips" id="ai-styles"></div>
+      <button class="btn wide" id="ai-go">Maak tekening</button>
+      <div class="ai-result" id="ai-result" hidden>
+        <img id="ai-img" alt="Gegenereerde tekening">
+        <div class="row center">
+          <button class="btn ghost" id="ai-again">Opnieuw</button>
+          <button class="btn" id="ai-use">Teken in AR</button>
+        </div>
+      </div>
+      <p class="hint">Gebruikt de gratis Pollinations-AI via internet. Je beschrijving wordt naar die dienst gestuurd. Zonder internet kun je de ingebouwde tekeningen en <em>Eigen tekst</em> gebruiken.</p>
+      <label for="own-text">Of maak een eigen lettering</label>
+      <div class="row"><input id="own-text" maxlength="14" placeholder="Jouw tekst"><button class="btn" id="own-text-go">Teken</button></div>
+    </div>
+  </section>
+
+  <!-- Photo preparation -->
+  <section class="screen" id="foto" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Foto voorbereiden</h1></header>
+    <div class="panel">
+      <div class="checker"><canvas id="photo-preview"></canvas></div>
+      <div class="chips" id="photo-modes"></div>
+      <label for="photo-level">Sterkte</label>
+      <input type="range" id="photo-level" min="0" max="100" value="50">
+      <button class="btn wide" id="photo-use">Teken in AR</button>
+    </div>
+  </section>
+
+  <!-- Info -->
+  <section class="screen" id="uitleg" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Zo werkt het</h1></header>
+    <ol class="panel steps">
+      <li><strong>Kies een tekening</strong> uit de bibliotheek, je galerij of maak een foto.</li>
+      <li><strong>Zet je telefoon op een verhoging</strong>, bijvoorbeeld een glas of een stapel boeken, zo’n 20–30 cm boven je papier. De camera kijkt naar beneden.</li>
+      <li><strong>Plaats de tekening</strong>: sleep met één vinger, knijp met twee vingers om te vergroten en te draaien. Zet daarna het <strong>slot</strong> aan.</li>
+      <li><strong>Kijk door het scherm</strong> en trek de doorschijnende lijnen na op het papier. Met de schuif stel je in hoe doorzichtig de tekening is.</li>
+      <li>Geen goede camera of donker? Gebruik de <strong>zaklamp</strong>, of kies <strong>Lichtbak</strong>: leg dun papier op het scherm en trek de lijnen over.</li>
+    </ol>
+  </section>
+
+  <section class="screen" id="over" data-screen hidden>
+    <div class="gradient short"></div>
+    <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1>Over</h1></header>
+    <div class="panel">
+      <p><strong>AR Tekenen</strong> is gratis, zonder advertenties en zonder account. Alle ingebouwde tekeningen worden in de app zelf gemaakt en werken ook offline.</p>
+      <p>Installeer de app via het browsermenu: <em>Toevoegen aan startscherm</em>.</p>
+      <button class="btn ghost wide" data-go="uitleg">Zo werkt het</button>
+      <button class="btn ghost wide" id="clear-recent">Recent en favorieten wissen</button>
+    </div>
+  </section>
+
+  <!-- AR trace -->
+  <section class="screen trace" id="tekenen" data-screen hidden>
+    <video id="video" playsinline muted autoplay></video>
+    <div id="lightbox"></div>
+    <div id="grid-overlay" hidden></div>
+    <div id="stage"><canvas id="overlay"></canvas></div>
+
+    <div class="trace-top" data-ui>
+      <button class="round dark back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+      <button class="round dark" id="t-lock" aria-label="Vergrendelen" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path class="lock-shackle" d="M8 11V8a4 4 0 0 1 8 0"/></svg></button>
+      <button class="round dark" id="t-torch" aria-label="Zaklamp" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg></button>
+      <button class="round dark" id="t-fav" aria-label="Favoriet" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></button>
+      <span class="spacer"></span>
+      <button class="pill" id="t-hide">Verberg</button>
+    </div>
+    <button class="pill floating" id="t-show" hidden>Toon bediening</button>
+
+    <div class="steps-bar" id="t-steps" data-ui hidden>
+      <button class="round dark" id="t-step-prev" aria-label="Vorige stap"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <span id="t-step-label"></span>
+      <button class="round dark" id="t-step-next" aria-label="Volgende stap"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+
+    <div class="trace-panel" data-ui>
+      <div class="slider-row">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path class="fillpath" d="M12 4a8 8 0 0 1 0 16z"/></svg>
+        <input type="range" id="t-opacity" min="5" max="100" value="60" aria-label="Doorzichtigheid">
+        <span id="t-opacity-val">60%</span>
+      </div>
+      <div id="t-options" hidden>
+        <div class="slider-row" id="t-width-row">
+          <svg viewBox="0 0 24 24"><path d="M4 18L20 6" stroke-width="3.5"/></svg>
+          <input type="range" id="t-width" min="1" max="6" step="0.5" value="2.5" aria-label="Lijndikte">
+          <span id="t-width-val">2.5</span>
+        </div>
+        <div class="chips small" id="t-colors"></div>
+        <div class="chips small" id="t-modes"></div>
+      </div>
+      <div class="tool-row">
+        <button class="tool" id="t-flip"><svg viewBox="0 0 24 24"><path d="M12 3v18M8 7L3 12l5 5zM16 7l5 5-5 5z"/></svg>Spiegel</button>
+        <button class="tool" id="t-rotate"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/></svg>Draai</button>
+        <button class="tool" id="t-reset"><svg viewBox="0 0 24 24"><path d="M4 4h6M4 4v6M20 20h-6M20 20v-6M4 4l6 6M20 20l-6-6"/></svg>Passend</button>
+        <button class="tool" id="t-grid" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16M15 4v16"/></svg>Raster</button>
+        <button class="tool" id="t-blink" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Knipper</button>
+        <button class="tool" id="t-light" aria-pressed="false"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Lichtbak</button>
+        <button class="tool" id="t-photo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l2-3h4l2 3"/></svg>Foto</button>
+        <button class="tool" id="t-more" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="16" r="2.5"/><path d="M3 8h2.5M10.5 8H21M3 16h10.5M18.5 16H21"/></svg>Kleur & lijn</button>
+      </div>
+    </div>
+    <div class="trace-msg" id="t-msg" hidden></div>
+  </section>
+
+  <input type="file" id="file-gallery" accept="image/*" hidden>
+  <input type="file" id="file-camera" accept="image/*" capture="environment" hidden>
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
