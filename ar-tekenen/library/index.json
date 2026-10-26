@@ -275,6 +275,56 @@
      "file": "elfje-kleurplaat.webp",
      "title": "Elfje (kleurplaat)",
      "style": "lijn"
+    },
+    {
+     "file": "elfje-kleur.webp",
+     "title": "Elfje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "kabouter-kleur.webp",
+     "title": "Kabouter (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "fee-kleurplaat.webp",
+     "title": "Fee (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "fee-kleur.webp",
+     "title": "Fee (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "piraatje-kleurplaat.webp",
+     "title": "Piraatje (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "piraatje-kleur.webp",
+     "title": "Piraatje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "heksje-kleurplaat.webp",
+     "title": "Heksje (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "heksje-kleur.webp",
+     "title": "Heksje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "tovenaartje-kleur.webp",
+     "title": "Tovenaartje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "vikingkind-kleurplaat.webp",
+     "title": "Vikingkind (kleurplaat)",
+     "style": "lijn"
     }
    ]
   }
