@@ -439,6 +439,56 @@
      "file": "prinses.webp",
      "title": "Prinses",
      "style": "kleur"
+    },
+    {
+     "file": "piraat.webp",
+     "title": "Piraat",
+     "style": "kleur"
+    },
+    {
+     "file": "astronaut.webp",
+     "title": "Astronaut",
+     "style": "kleur"
+    },
+    {
+     "file": "ridder.webp",
+     "title": "Ridder",
+     "style": "kleur"
+    },
+    {
+     "file": "clown.webp",
+     "title": "Clown",
+     "style": "kleur"
+    },
+    {
+     "file": "kok.webp",
+     "title": "Kok",
+     "style": "kleur"
+    },
+    {
+     "file": "brandweerman.webp",
+     "title": "Brandweerman",
+     "style": "kleur"
+    },
+    {
+     "file": "robot.webp",
+     "title": "Robot",
+     "style": "kleur"
+    },
+    {
+     "file": "eenhoorn.webp",
+     "title": "Eenhoorn",
+     "style": "kleur"
+    },
+    {
+     "file": "draakje.webp",
+     "title": "Draakje",
+     "style": "kleur"
+    },
+    {
+     "file": "monstertje.webp",
+     "title": "Monstertje",
+     "style": "kleur"
     }
    ]
   }
