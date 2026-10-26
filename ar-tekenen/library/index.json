@@ -1358,6 +1358,31 @@
      "file": "kerstman.webp",
      "title": "Kerstman",
      "style": "kleur"
+    },
+    {
+     "file": "kerstboom.webp",
+     "title": "Kerstboom",
+     "style": "kleur"
+    },
+    {
+     "file": "sneeuwpop.webp",
+     "title": "Sneeuwpop",
+     "style": "kleur"
+    },
+    {
+     "file": "paashaas.webp",
+     "title": "Paashaas",
+     "style": "kleur"
+    },
+    {
+     "file": "verjaardagstaart.webp",
+     "title": "Verjaardagstaart",
+     "style": "kleur"
+    },
+    {
+     "file": "valentijn.webp",
+     "title": "Valentijn",
+     "style": "kleur"
     }
    ]
   }
