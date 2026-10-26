@@ -30,14 +30,17 @@ function seedOf(text) {
 
 async function generate(prompt, seed) {
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&model=flux&seed=${seed}`;
-  for (let attempt = 1; attempt <= 5; attempt++) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const res = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
-        signal: AbortSignal.timeout(180000),
+        signal: AbortSignal.timeout(120000),
       });
       const type = res.headers.get('content-type') || '';
-      if (!res.ok || !type.startsWith('image/')) throw new Error(`HTTP ${res.status} ${type}`);
+      if (!res.ok || !type.startsWith('image/')) {
+        const body = (await res.text().catch(() => '')).slice(0, 300).replace(/\s+/g, ' ');
+        throw new Error(`HTTP ${res.status} ${type} ${body}`);
+      }
       return Buffer.from(await res.arrayBuffer());
     } catch (err) {
       console.warn(`  poging ${attempt} mislukt: ${err.message}`);
@@ -81,17 +84,26 @@ function commit(message) {
   }
 }
 
-let made = 0, failed = 0, sinceCommit = 0;
+let made = 0, failed = 0, sinceCommit = 0, failedInRow = 0;
 for (const c of spec.categories) {
   await mkdir(path.join(out, c.id), { recursive: true });
+  if (failedInRow >= 5) break;
   for (const it of c.items) {
     if (made >= limit) break;
     const file = path.join(out, c.id, it.file);
     if (await exists(file)) continue;
     const prompt = `${it.prompt}, ${spec.styles[it.style]}`;
-    console.log(`${c.id}/${it.file}: ${prompt}`);
+    console.log(`${c.id}/${it.file}`);
     const buf = await generate(prompt, seedOf(c.id + it.file));
-    if (!buf) { failed++; continue; }
+    if (!buf) {
+      failed++;
+      if (++failedInRow >= 5) {
+        console.error('Vijf afbeeldingen op rij mislukt; de dienst weigert waarschijnlijk. Gestopt.');
+        break;
+      }
+      continue;
+    }
+    failedInRow = 0;
     await sharp(buf).resize(640, 640, { fit: 'inside' }).flatten({ background: '#ffffff' }).webp({ quality: 80 }).toFile(file);
     made++;
     sinceCommit++;
