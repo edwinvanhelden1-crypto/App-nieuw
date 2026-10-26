@@ -218,6 +218,63 @@
      "file": "magisch-meisje.webp",
      "title": "Magisch meisje",
      "style": "anime"
+    },
+    {
+     "file": "samurai.webp",
+     "title": "Samurai",
+     "style": "anime"
+    },
+    {
+     "file": "schoolmeisje.webp",
+     "title": "Schoolmeisje",
+     "style": "anime"
+    },
+    {
+     "file": "chibi-meisje.webp",
+     "title": "Chibi meisje",
+     "style": "anime"
+    },
+    {
+     "file": "chibi-jongen.webp",
+     "title": "Chibi jongen",
+     "style": "anime"
+    },
+    {
+     "file": "held.webp",
+     "title": "Held",
+     "style": "anime"
+    },
+    {
+     "file": "anime-meisje-met-bloemen.webp",
+     "title": "Anime meisje met bloemen",
+     "style": "anime"
+    },
+    {
+     "file": "anime-gamer.webp",
+     "title": "Anime gamer",
+     "style": "anime"
+    },
+    {
+     "file": "anime-schets-jongen.webp",
+     "title": "Anime schets jongen",
+     "style": "schets"
+    },
+    {
+     "file": "chibi-schets.webp",
+     "title": "Chibi schets",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "figuren",
+   "name": "Figuren (kleur & kleurplaat)",
+   "position": 3,
+   "items": [
+    {
+     "file": "elfje-kleurplaat.webp",
+     "title": "Elfje (kleurplaat)",
+     "style": "lijn"
     }
    ]
   }
