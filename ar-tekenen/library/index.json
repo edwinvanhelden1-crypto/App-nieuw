@@ -325,6 +325,56 @@
      "file": "vikingkind-kleurplaat.webp",
      "title": "Vikingkind (kleurplaat)",
      "style": "lijn"
+    },
+    {
+     "file": "vikingkind-kleur.webp",
+     "title": "Vikingkind (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "ridder-kleurplaat.webp",
+     "title": "Ridder (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "prinses-kleur.webp",
+     "title": "Prinses (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "zeemeermin-kleurplaat.webp",
+     "title": "Zeemeermin (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "astronautje-kleurplaat.webp",
+     "title": "Astronautje (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "astronautje-kleur.webp",
+     "title": "Astronautje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "superheldin-kleurplaat.webp",
+     "title": "Superheldin (kleurplaat)",
+     "style": "lijn"
+    },
+    {
+     "file": "superheldin-kleur.webp",
+     "title": "Superheldin (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "holbewoner-kleur.webp",
+     "title": "Holbewoner (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "robotjongen-kleur.webp",
+     "title": "Robotjongen (kleur)",
+     "style": "kleur"
     }
    ]
   }
