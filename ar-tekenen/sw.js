@@ -1,5 +1,5 @@
 // Offline support: serve the app from the cache, refresh it in the background.
-const CACHE = 'ar-tekenen-v2';
+const CACHE = 'ar-tekenen-v3';
 const FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/catalog.js', 'js/render.js', 'js/svg.js', 'js/sketches.js',

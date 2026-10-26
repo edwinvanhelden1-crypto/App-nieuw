@@ -227,3 +227,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (min-width: 720px) {
   .hscroll .thumb { flex-basis: 150px; }
 }
+
+.slider-label { font-size: .8rem; font-weight: 700; width: 84px; flex: none; }
+.slider-row svg + input, .slider-row .slider-label + input { flex: 1; }
+#t-photo-opts { display: grid; gap: 8px; }
+#t-photo-opts[hidden] { display: none; }
+.chips.filter { margin-top: 6px; }
+.thumb { position: relative; }
+.level { position: absolute; left: 6px; bottom: 6px; font-size: .68rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; color: #fff; }
+.level.l1 { background: #3fae5f; }
+.level.l2 { background: #e8a23a; }
+.level.l3 { background: #d84a4a; }

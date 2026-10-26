@@ -4,6 +4,12 @@ import { music, food, vehicles, objects, basic } from './draw-things.js';
 import {
   nature, flowers, architecture, oneLineArt, aesthetic, mandalas, patterns, geometric, letters, space, fantasy, holidays,
 } from './draw-world.js';
+import { scores, levels } from './difficulty.js';
+
+// Easy drawings first, the most detailed last.
+function byDifficulty(a, b) {
+  return a.score - b.score;
+}
 
 // Categories in the order they appear on the "Teken objecten" screen.
 const CATEGORIES = [
@@ -38,7 +44,9 @@ const CATEGORIES = [
 export const categories = CATEGORIES.map(([id, name, items]) => ({
   id,
   name,
-  items: items.map((it, i) => ({ id: `${id}-${i}`, title: it.t, draw: it.d, cat: id })),
+  items: items
+    .map((it, i) => ({ id: `${id}-${i}`, title: it.t, draw: it.d, cat: id, level: levels[`${id}-${i}`] || 2, score: scores[`${id}-${i}`] || 40 }))
+    .sort(byDifficulty),
 }));
 
 const byId = new Map();
@@ -46,6 +54,9 @@ for (const c of categories) for (const it of c.items) byId.set(it.id, it);
 
 // Illustrations made with AI (library/index.json, filled by tools/generate-library.mjs).
 // They are put in front of the drawings of the same category.
+const AI_LEVEL = { lijn: 1, oneline: 1, kleur: 2, retro: 2, anime: 3, schets: 3 };
+const AI_SCORE = { lijn: 30, oneline: 20, kleur: 50, retro: 52, anime: 80, schets: 95 };
+
 export async function loadLibrary() {
   let index;
   try {
@@ -66,10 +77,13 @@ export async function loadLibrary() {
       title: it.title,
       cat: lc.id,
       src: `library/${lc.id}/${it.file}`,
-      process: it.style === 'schets' ? 'schets' : 'origineel',
+      process: it.style === 'kleur' || it.style === 'anime' || it.style === 'retro' ? 'origineel' : 'lijnen',
+      level: AI_LEVEL[it.style] || 3,
+      score: AI_SCORE[it.style] || 90,
     }));
     for (const it of items) byId.set(it.id, it);
-    cat.items.unshift(...items);
+    cat.items.push(...items);
+    cat.items.sort(byDifficulty);
   }
 }
 

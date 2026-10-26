@@ -93,6 +93,7 @@
   <section class="screen" id="categorie" data-screen hidden>
     <div class="gradient short"></div>
     <header class="topbar"><button class="round back" aria-label="Terug"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><h1 id="cat-title"></h1></header>
+    <div class="chips filter" id="cat-filter"></div>
     <div class="grid" id="cat-grid"></div>
   </section>
 
@@ -149,7 +150,8 @@
     <div class="panel">
       <div class="checker"><canvas id="photo-preview"></canvas></div>
       <div class="chips" id="photo-modes"></div>
-      <label for="photo-level">Sterkte</label>
+      <div class="chips" id="photo-bg"></div>
+      <label for="photo-level">Hoeveel lijnen</label>
       <input type="range" id="photo-level" min="0" max="100" value="50">
       <button class="btn wide" id="photo-use">Teken in AR</button>
     </div>
@@ -204,9 +206,18 @@
 
     <div class="trace-panel" data-ui>
       <div class="slider-row">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path class="fillpath" d="M12 4a8 8 0 0 1 0 16z"/></svg>
+        <label for="t-opacity" class="slider-label">Doorschijnen</label>
         <input type="range" id="t-opacity" min="5" max="100" value="60" aria-label="Doorzichtigheid">
         <span id="t-opacity-val">60%</span>
+      </div>
+      <div id="t-photo-opts" hidden>
+        <div class="chips small" id="t-process"></div>
+        <div class="chips small" id="t-bg"></div>
+        <div class="slider-row">
+          <label for="t-level" class="slider-label">Lijnen</label>
+          <input type="range" id="t-level" min="0" max="100" value="50" aria-label="Hoeveel lijnen">
+          <span id="t-level-val">50</span>
+        </div>
       </div>
       <div id="t-options" hidden>
         <div class="slider-row" id="t-width-row">

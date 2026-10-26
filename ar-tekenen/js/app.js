@@ -92,11 +92,13 @@ const thumbObserver = new IntersectionObserver((entries) => {
   }
 }, { rootMargin: '300px' });
 
+const LEVEL_NAMES = { 1: 'Makkelijk', 2: 'Gemiddeld', 3: 'Moeilijk' };
+
 function thumb(item, learn) {
   const b = document.createElement('button');
   b.className = 'thumb';
   b.title = item.title;
-  b.innerHTML = `<img alt="${item.title}" data-item="${item.id}">`;
+  b.innerHTML = `<img alt="${item.title}" data-item="${item.id}"><span class="level l${item.level}">${LEVEL_NAMES[item.level]}</span>`;
   b.addEventListener('click', () => (learn ? go('les/' + item.id) : openItem(item)));
   thumbObserver.observe(b.firstChild);
   return b;
@@ -161,9 +163,15 @@ function showCategory(id, learn) {
   if (!c) return showHome();
   show('categorie');
   $('#cat-title').textContent = learn ? `Leer: ${c.name}` : c.name;
-  const grid = $('#cat-grid');
-  grid.innerHTML = '';
-  for (const it of learn ? c.items.filter((x) => !x.src) : c.items) grid.appendChild(thumb(it, learn));
+  const all = learn ? c.items.filter((x) => !x.src) : c.items;
+  const fill = (lvl) => {
+    const grid = $('#cat-grid');
+    grid.innerHTML = '';
+    for (const it of all) if (!lvl || it.level === lvl) grid.appendChild(thumb(it, learn));
+  };
+  const count = (l) => all.filter((it) => it.level === l).length;
+  chips($('#cat-filter'), [[0, `Alles (${all.length})`], [1, `Makkelijk (${count(1)})`], [2, `Gemiddeld (${count(2)})`], [3, `Moeilijk (${count(3)})`]], 0, fill);
+  fill(0);
 }
 
 // ---------- Learn mode ----------
@@ -203,7 +211,7 @@ async function openItem(item, learnState) {
   rowsDirty = true;
   if (item.src) {
     try {
-      source = { kind: 'photo', item, img: await loadImage(item.src), process: item.process, level: 50 };
+      source = { kind: 'photo', item, img: await loadImage(item.src), process: item.process, level: 50, removeBg: true };
       go('tekenen');
     } catch {
       toast('Deze afbeelding kon niet geladen worden');
@@ -221,14 +229,15 @@ function openSvgInner(inner, title) {
 
 // Photo from gallery or camera
 let photo = null;
-const PHOTO_MODES = [['origineel', 'Origineel'], ['schets', 'Lijnen'], ['randen', 'Randen'], ['zwartwit', 'Zwart-wit']];
+const PHOTO_MODES = [['lijnen', 'Alleen lijnen'], ['schets', 'Kleuren weg'], ['origineel', 'Origineel'], ['randen', 'Randen'], ['zwartwit', 'Zwart-wit']];
+const BG_MODES = [[true, 'Achtergrond weg'], [false, 'Achtergrond houden']];
 
 async function handleFile(file) {
   if (!file) return;
   const url = URL.createObjectURL(file);
   try {
     const img = await loadImage(url);
-    photo = { img, process: 'origineel', level: 50 };
+    photo = { img, process: 'lijnen', level: 50, removeBg: true };
     go('foto');
   } catch {
     toast('Deze afbeelding kan niet geopend worden');
@@ -258,12 +267,13 @@ function showPhoto() {
   if (!photo) return showHome();
   show('foto');
   chips($('#photo-modes'), PHOTO_MODES, photo.process, (v) => { photo.process = v; drawPhotoPreview(); });
+  chips($('#photo-bg'), BG_MODES, photo.removeBg, (v) => { photo.removeBg = v; drawPhotoPreview(); });
   $('#photo-level').value = photo.level;
   drawPhotoPreview();
 }
 async function drawPhotoPreview() {
   $('#photo-level').disabled = photo.process === 'origineel';
-  await renderPhotoTo($('#photo-preview'), photo.img, { color: '#111111', process: photo.process, level: photo.level });
+  await renderPhotoTo($('#photo-preview'), photo.img, { color: '#111111', process: photo.process, level: photo.level, removeBg: photo.removeBg });
 }
 $('#photo-level').addEventListener('input', (e) => { photo.level = +e.target.value; drawPhotoPreview(); });
 $('#photo-use').addEventListener('click', () => {
@@ -308,7 +318,7 @@ async function generateAi() {
 $('#ai-go').addEventListener('click', generateAi);
 $('#ai-again').addEventListener('click', generateAi);
 $('#ai-use').addEventListener('click', () => {
-  photo = { img: aiImg, process: 'schets', level: 50 };
+  photo = { img: aiImg, process: 'lijnen', level: 50, removeBg: true };
   go('foto');
 });
 $('#own-text-go').addEventListener('click', () => {
@@ -387,7 +397,7 @@ async function renderOverlay() {
     const inner = source.steps ? stepInner(source.steps, source.n) : source.inner;
     await renderSvgTo(overlay, inner, settings);
   } else {
-    await renderPhotoTo(overlay, source.img, { color: settings.color, process: source.process, level: source.level });
+    await renderPhotoTo(overlay, source.img, { color: settings.color, process: source.process, level: source.level, removeBg: source.removeBg });
   }
   layoutStage();
   applyTransform();
@@ -467,6 +477,13 @@ function showTrace() {
   $('#t-width-val').textContent = settings.width;
   $('#t-width-row').hidden = source.kind !== 'svg';
   $('#t-modes').hidden = source.kind !== 'svg';
+  $('#t-photo-opts').hidden = source.kind !== 'photo';
+  if (source.kind === 'photo') {
+    chips($('#t-process'), PHOTO_MODES, source.process, (v) => { source.process = v; renderOverlay(); });
+    chips($('#t-bg'), BG_MODES, source.removeBg, (v) => { source.removeBg = v; renderOverlay(); });
+    $('#t-level').value = source.level;
+    $('#t-level-val').textContent = source.level;
+  }
   $('#t-fav').hidden = !source.item?.id;
   $('#t-kleur').hidden = !(source.kind === 'svg' && hasColor(source.item));
   $('#t-fav').setAttribute('aria-pressed', String(favorites.includes(source.item?.id)));
@@ -539,6 +556,13 @@ $('#t-width').addEventListener('input', (e) => {
   saveSettings();
   clearTimeout(widthTimer);
   widthTimer = setTimeout(renderOverlay, 120);
+});
+let levelTimer;
+$('#t-level').addEventListener('input', (e) => {
+  source.level = +e.target.value;
+  $('#t-level-val').textContent = source.level;
+  clearTimeout(levelTimer);
+  levelTimer = setTimeout(renderOverlay, 150);
 });
 $('#t-flip').addEventListener('click', () => { tf.flip *= -1; applyTransform(); });
 $('#t-rotate').addEventListener('click', () => { tf.rot = (Math.round(tf.rot / 90) * 90 + 90) % 360; applyTransform(); });
