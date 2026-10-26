@@ -104,6 +104,63 @@
      "file": "kat-kleur.webp",
      "title": "Kat (kleur)",
      "style": "kleur"
+    },
+    {
+     "file": "puppy-kleur.webp",
+     "title": "Puppy (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "leeuw-kleur.webp",
+     "title": "Leeuw (kleur)",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "vogels",
+   "name": "Vogels",
+   "position": 1,
+   "items": [
+    {
+     "file": "papegaai.webp",
+     "title": "Papegaai",
+     "style": "schets"
+    },
+    {
+     "file": "ijsvogel.webp",
+     "title": "IJsvogel",
+     "style": "schets"
+    },
+    {
+     "file": "kolibrie.webp",
+     "title": "Kolibrie",
+     "style": "schets"
+    },
+    {
+     "file": "adelaar.webp",
+     "title": "Adelaar",
+     "style": "schets"
+    },
+    {
+     "file": "pauw.webp",
+     "title": "Pauw",
+     "style": "schets"
+    },
+    {
+     "file": "flamingo.webp",
+     "title": "Flamingo",
+     "style": "schets"
+    },
+    {
+     "file": "pinguin.webp",
+     "title": "Pinguïn",
+     "style": "schets"
+    },
+    {
+     "file": "zwaan.webp",
+     "title": "Zwaan",
+     "style": "schets"
     }
    ]
   }
