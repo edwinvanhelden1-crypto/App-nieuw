@@ -1,4 +1,9 @@
-import { W, F, C, E, P, L, D, G, S, R, POLY, polar, smooth, heart, star, rng } from './svg.js';
+import { W, F, K, C, E, P, L, D, G, S, R, POLY, polar, smooth, heart, star, rng, paint } from './svg.js';
+
+const HAIR = ['#2b2b3a', '#6b4226', '#f2d16b', '#e86a8a', '#6a8cff', '#9b6bd6', '#e05a3a', '#cfd6e6', '#3a8a6a', '#a0522d'];
+const SKIN = ['#ffe3cf', '#f6d0b1', '#e8b48f', '#c98e66', '#8d5a3b'];
+const CLOTH = ['#5aa8e0', '#e86a8a', '#7cc46c', '#f2c94c', '#9b6bd6', '#f2954a', '#3a4766', '#e84a3a'];
+const EYES = ['#4a7bd8', '#7a4a2a', '#3a9a6a', '#9b4ad6', '#d84a4a', '#2a2a2a'];
 
 const NONE = 'stroke="none"';
 const WHITE = `fill="#fff" ${NONE}`;
@@ -6,10 +11,10 @@ const thin = 'stroke-width="1.6"';
 
 // ---------- Anime characters ----------
 
-function animeEye(cx, cy, look) {
+function animeEye(cx, cy, look, iris = '#fff') {
   return (
     P(`M${cx - 16} ${cy - 4}Q${cx - 2} ${cy - 18} ${cx + 15} ${cy - 9}`, 'stroke-width="4.5"') +
-    E(cx + look, cy + 4, 10, 13.5, W) +
+    E(cx + look, cy + 4, 10, 13.5, K(iris)) +
     E(cx + look, cy + 6, 5.5, 7.5, F) +
     C(cx + look + 4, cy - 1, 3.4, WHITE) +
     C(cx + look - 4, cy + 11, 1.6, WHITE) +
@@ -66,20 +71,22 @@ function anime(seed) {
   const style = ANIME_STYLES[seed % ANIME_STYLES.length];
   const acc = ANIME_ACC[Math.floor(seed / 7) % ANIME_ACC.length];
   const look = r.pick([-2, 0, 2]);
-  let s = animeBackHair(style === 'kort' || style === 'piekerig' ? '' : style);
+  const hair = r.pick(HAIR), skin = r.pick(SKIN.slice(0, 4)), cloth = r.pick(CLOTH), iris = r.pick(EYES);
+  let s = paint(animeBackHair(style === 'kort' || style === 'piekerig' ? '' : style), [hair]);
   // shoulders + neck
-  s += P('M86 160L84 180Q50 182 28 200H172Q150 182 116 180L114 160', W);
+  s += P('M84 180Q50 182 28 200H172Q150 182 116 180Z', K(cloth)) + P('M86 158L84 181Q100 192 116 181L114 158Z', K(skin));
   s += r.chance(0.5) ? P('M84 180Q100 196 116 180', thin) : P('M78 182L100 200L122 182', thin);
-  s += S(P('M56 104Q46 104 48 116Q50 128 60 128', W));
-  s += P('M56 92Q56 146 100 168Q144 146 144 92', W);
-  if (acc === 'kattenoren' || acc === 'hoed') s += '';
-  if (acc === 'kattenoren') s += animeAccessory(acc);
-  s += animeHair(r, style);
-  if (acc !== 'kattenoren') s += animeAccessory(acc);
+  s += S(P('M56 104Q46 104 48 116Q50 128 60 128', K(skin)));
+  s += P('M56 92Q56 146 100 168Q144 146 144 92', K(skin));
+  s += P('M57 98Q52 40 100 36Q148 40 143 98Z', K(skin) + ' stroke="none"');
+  const accColors = { strik: ['#e84a7a'], kattenoren: [hair], koptelefoon: ['#555b6e'], bloem: ['#ffb3c7', '#ffb3c7', '#ffb3c7', '#ffb3c7', '#ffb3c7', '#f7d23e'], hoed: ['#e9d39b'] };
+  if (acc === 'kattenoren') s += paint(animeAccessory(acc), accColors[acc]);
+  s += paint(animeHair(r, style), [hair]);
+  if (acc !== 'kattenoren') s += paint(animeAccessory(acc), accColors[acc] || [null]);
   s += S(P('M66 96Q76 90 90 94', 'stroke-width="2"'));
-  s += animeEye(78, 116, look) + G(animeEye(78, 116, -look), 'matrix(-1 0 0 1 200 0)');
+  s += animeEye(78, 116, look, iris) + G(animeEye(78, 116, -look, iris), 'matrix(-1 0 0 1 200 0)');
   s += P('M100 132l-2 4h3', thin);
-  s += ANIME_MOUTHS[r.int(0, ANIME_MOUTHS.length - 1)];
+  s += paint(ANIME_MOUTHS[r.int(0, ANIME_MOUTHS.length - 1)], ['#c94a5a']);
   if (r.chance(0.6)) s += S(P('M62 140l4-5M68 140l4-5M74 140l4-5', thin));
   return s;
 }
@@ -94,16 +101,22 @@ function portrait(seed) {
   const beard = (seed % 3 === 1) && ['kort', 'kaal', 'krullen', 'afro'].includes(hair);
   const glasses = seed % 5 === 2;
   const jaw = r.range(0, 10);
+  const hairC = r.pick(HAIR.slice(0, 8)), skin = r.pick(SKIN), cloth = r.pick(CLOTH);
+  const parts = [];
   let s = '';
+  const flush = (pal) => { s = parts.join('') + paint(s, pal); parts.length = 0; parts.push(s); s = ''; };
   if (hair === 'lang') s += P('M54 70Q36 140 40 196H160Q164 140 146 70Z', W);
   if (hair === 'golvend') s += P(smooth([[54, 70], [44, 110], [52, 140], [38, 170], [50, 196], [150, 196], [162, 170], [148, 140], [156, 110], [146, 70]], false), W);
   if (hair === 'afro') s += P(smooth(Array.from({ length: 22 }, (_, i) => polar(100, 86, i % 2 ? 70 : 78, i * (360 / 22))), true), W);
   if (hair === 'knot') s += C(100, 22, 18, W);
-  s += P('M84 150L82 180Q50 184 26 200H174Q150 184 118 180L116 150', W);
+  flush([hairC]);
+  s += P('M82 178Q50 184 26 200H174Q150 184 118 178Z', W) + P('M84 150L82 179Q100 188 118 179L116 150Z', W);
+  flush([cloth, skin]);
   s += P('M82 176Q100 186 118 176', thin);
   s += S(P('M62 100Q52 98 52 112Q54 126 64 128', W) + P('M58 106Q56 114 62 120', thin));
   s += P('M62 84Q58 30 100 28Q142 30 138 84', W);
   s += P(`M62 78Q60 ${140 + jaw} ${84} ${160 + jaw / 2}Q100 ${170 + jaw / 2} ${116} ${160 + jaw / 2}Q140 ${140 + jaw} 138 78`, W);
+  flush([skin]);
   // hair front
   if (hair === 'kort') s += P('M60 96Q52 40 100 34Q148 40 140 96Q138 72 124 62Q100 74 74 64Q62 74 60 96Z', W);
   if (hair === 'lang' || hair === 'golvend') s += P('M60 110Q50 40 100 34Q150 40 140 110Q134 66 104 56Q88 76 60 110Z', W);
@@ -111,10 +124,12 @@ function portrait(seed) {
   if (hair === 'knot') s += P('M60 96Q54 36 100 34Q146 36 140 96Q132 64 100 58Q68 64 60 96Z', W);
   if (hair === 'krullen' || hair === 'afro') s += P(smooth(Array.from({ length: 13 }, (_, i) => polar(100, 80, i % 2 ? 40 : 48, -100 + i * (200 / 12))), false) + 'Q100 56 58 86Z', W);
   if (hair === 'krullen') s += P('M72 54q6 -6 10 0M98 46q6 -6 10 0M120 54q6 -6 10 0', thin);
+  flush([hairC]);
   // brows, eyes
   const browY = 96 + r.range(-2, 2);
   s += S(P(`M70 ${browY}Q80 ${browY - 6} 92 ${browY - 1}`, 'stroke-width="3"'));
-  const eye = (cx) => P(`M${cx - 12} 110Q${cx} 102 ${cx + 12} 110Q${cx} 116 ${cx - 12} 110Z`, W) + C(cx, 109.5, 5) + D(cx, 109.5, 2.4) + P(`M${cx - 12} 110Q${cx} 100 ${cx + 12} 109`, 'stroke-width="2.2"');
+  const iris = r.pick(EYES);
+  const eye = (cx) => P(`M${cx - 12} 110Q${cx} 102 ${cx + 12} 110Q${cx} 116 ${cx - 12} 110Z`, W) + C(cx, 109.5, 5, K(iris)) + D(cx, 109.5, 2.4) + P(`M${cx - 12} 110Q${cx} 100 ${cx + 12} 109`, 'stroke-width="2.2"');
   s += S(eye(81));
   if (glasses) s += S(R(64, 98, 32, 24, 7)) + P('M96 106Q100 102 104 106') + S(L(64, 104, 58, 102));
   // nose
@@ -123,11 +138,13 @@ function portrait(seed) {
   const w = r.range(12, 16);
   const smile = r.chance(0.5) ? 5 : 0;
   s += P(`M${100 - w} ${150 - smile}Q100 ${146 + smile} ${100 + w} ${150 - smile}`, 'stroke-width="2"');
-  if (seed % 4 === 3) s += S(C(60, 132, 3.5) + P('M60 136V144', thin) + C(60, 147, 3, W));
+  if (seed % 4 === 3) s += S(C(60, 132, 3.5) + P('M60 136V144', thin) + C(60, 147, 3, K('#f2c94c')));
   if (seed % 6 === 5) s += S(D(76, 128, 1.3) + D(82, 132, 1.3) + D(72, 134, 1.3));
   s += P(`M${100 - w} 150Q94 144 100 146Q106 144 ${100 + w} 150`, thin) + P(`M${100 - w + 2} 151Q100 160 ${100 + w - 2} 151`, thin);
+  flush([null]);
   if (beard) s += P(`M64 118Q66 ${160 + jaw} 100 ${174 + jaw / 2}Q134 ${160 + jaw} 136 118Q130 140 120 148Q100 140 80 148Q70 140 64 118Z`, W) + P(`M86 152Q100 146 114 152Q100 158 86 152Z`, W);
-  return s;
+  flush([hairC]);
+  return parts.join('');
 }
 
 export const portraits = Array.from({ length: 32 }, (_, i) => ({ t: `Portret ${i + 1}`, d: () => portrait(i) }));
@@ -240,30 +257,31 @@ export const anatomy = [
 function kid(seed) {
   const r = rng(seed);
   const girl = seed % 2 === 0;
+  const hairC = r.pick(HAIR.slice(0, 7)), skin = r.pick(SKIN), cloth = r.pick(CLOTH), pants = r.pick(['#3a4766', '#5a7ab8', '#6b4226', '#444']);
   const pose = ['staan', 'zwaai', 'spring', 'staan'][Math.floor(seed / 2) % 4];
   let s = '';
   // legs
   const legSpread = pose === 'spring' ? 18 : 10;
   s += P(`M${92} 140L${100 - legSpread - 4} 178M108 140L${100 + legSpread + 4} 178`, 'stroke-width="9"') + `<g stroke="#fff">${P(`M${92} 140L${100 - legSpread - 4} 178M108 140L${100 + legSpread + 4} 178`, 'stroke-width="5"')}</g>`;
-  s += E(100 - legSpread - 8, 182, 12, 7, W) + E(100 + legSpread + 8, 182, 12, 7, W);
+  s += E(100 - legSpread - 8, 182, 12, 7, K('#e84a3a')) + E(100 + legSpread + 8, 182, 12, 7, K('#e84a3a'));
   // arms
   const armL = 'M76 104L56 136', armR = pose === 'zwaai' ? 'M124 104L150 74' : pose === 'spring' ? 'M124 104L152 80' : 'M124 104L144 136';
   const armL2 = pose === 'spring' ? 'M76 104L48 80' : armL;
   s += P(`${armL2}${armR}`, 'stroke-width="9"') + `<g stroke="#fff">${P(`${armL2}${armR}`, 'stroke-width="5"')}</g>`;
-  const hand = (d) => { const m = d.match(/L(\d+) (\d+)/); return C(+m[1], +m[2], 6, W); };
+  const hand = (d) => { const m = d.match(/L(\d+) (\d+)/); return C(+m[1], +m[2], 6, K(skin)); };
   s += hand(armL2) + hand(armR);
   // body
-  s += girl ? P('M80 98H120L136 148H64Z', W) + P('M70 136H130', thin) : R(78, 98, 44, 46, 8, W) + P('M78 132H122', thin) + P('M100 132V146', thin);
-  if (!girl) s += P('M80 144H96V150H80ZM104 144H120V150H104Z', W);
+  s += girl ? P('M80 98H120L136 148H64Z', K(cloth)) + P('M70 136H130', thin) : R(78, 98, 44, 46, 8, K(cloth)) + P('M78 132H122', thin) + R(78, 132, 44, 14, 3, K(pants)) + P('M100 132V146', thin);
+  if (!girl) s += P('M80 144H96V150H80ZM104 144H120V150H104Z', K(pants));
   s += r.chance(0.5) ? star(100, 116, 8, 3.5, 5) : heart(100, 116, 7);
   // head
   s += P('M96 92V98M104 92V98');
-  if (girl) s += r.chance(0.5) ? S(C(52, 58, 12, W) + P('M52 70Q48 90 56 96', 'stroke-width="2"')) : P('M60 50Q40 96 60 104H140Q160 96 140 50Z', W);
-  s += C(100, 56, 38, W);
+  if (girl) s += r.chance(0.5) ? S(C(52, 58, 12, K(hairC)) + P('M52 70Q48 90 56 96', 'stroke-width="2"')) : P('M60 50Q40 96 60 104H140Q160 96 140 50Z', K(hairC));
+  s += C(100, 56, 38, K(skin));
   s += S(D(86, 60, 4.5) + C(87.5, 58.5, 1.4, WHITE));
-  s += r.chance(0.5) ? P('M90 74Q100 84 110 74') : P('M90 72Q100 86 110 72Z', W);
+  s += r.chance(0.5) ? P('M90 74Q100 84 110 74') : P('M90 72Q100 86 110 72Z', K('#c94a5a'));
   s += S(E(76, 72, 6, 3.5, 'fill="FILL" stroke="none" opacity=".25"'));
-  s += girl ? P('M62 52Q60 18 100 16Q140 18 138 52Q120 34 100 40Q84 30 62 52Z', W) : P('M62 56Q56 20 100 16Q144 20 138 56L132 42L124 50L118 36L108 46L100 32L92 46L82 36L76 50L68 42Z', W);
+  s += girl ? P('M62 52Q60 18 100 16Q140 18 138 52Q120 34 100 40Q84 30 62 52Z', K(hairC)) : P('M62 56Q56 20 100 16Q144 20 138 56L132 42L124 50L118 36L108 46L100 32L92 46L82 36L76 50L68 42Z', K(hairC));
   return s;
 }
 

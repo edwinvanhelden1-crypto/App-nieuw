@@ -1,0 +1,59 @@
+name: Android APK
+
+on:
+  push:
+    paths:
+      - 'ar-tekenen/**'
+      - 'android/**'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: APK bouwen
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: APK klaarzetten
+        run: cp android/app/build/outputs/apk/release/app-release.apk AR-Tekenen.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AR-Tekenen-apk
+          path: AR-Tekenen.apk
+
+      - name: Publiceren als release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ar-tekenen-apk
+          name: AR Tekenen – nieuwste APK
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: AR-Tekenen.apk
+          body: |
+            Download **AR-Tekenen.apk** hieronder op je Android-telefoon en open het bestand.
+            Sta zo nodig *installeren van onbekende apps* toe voor je browser of bestandsbeheerder.
+            Gebouwd vanaf commit ${{ github.sha }}.

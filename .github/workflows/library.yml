@@ -1,0 +1,47 @@
+name: Tekeningen genereren
+
+on:
+  push:
+    paths:
+      - 'tools/library-prompts.json'
+      - 'tools/generate-library.mjs'
+      - '.github/workflows/library.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: library-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Afhankelijkheden
+        working-directory: tools
+        run: npm install --no-save --no-package-lock sharp@0.33.5
+
+      - name: Tekeningen maken met AI (Pollinations)
+        env:
+          COMMIT_EVERY: 20
+          POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node tools/generate-library.mjs
+
+  apk:
+    needs: generate
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/android.yml

@@ -1,7 +1,30 @@
-import { W, F, C, E, P, L, D, G, S, R, POLY, ROT, polar, smooth, spiral, heart, star, rng } from './svg.js';
+import { W, F, K, C, E, P, L, D, G, S, R, POLY, ROT, polar, smooth, spiral, heart, star, rng, paint } from './svg.js';
 
 const thin = 'stroke-width="1.6"';
-const list = (arr) => arr.map(([t, d]) => ({ t, d }));
+const COLORS = {
+  // music
+  Gitaar: ['#d9822b', '#7a4a2a'], Viool: ['#b5562a', '#3a2a2a', '#3a2a2a'], Trompet: ['#f2c94c'], Piano: ['#3a3a4a', '#ffffff'],
+  Drumstel: ['#e84a3a', '#e84a3a', '#f2c94c'], Koptelefoon: ['#9b6bd6'], Microfoon: ['#9aa3b5'], Harp: ['#d9a05b'], Saxofoon: ['#f2c94c'],
+  Ukelele: ['#e8a85a', '#e8a85a', '#7a4a2a', '#7a4a2a'], Platenspeler: ['#c98e66', null, '#e84a3a'], Luidspreker: ['#3a4766'],
+  Xylofoon: ['#e84a3a', '#f2954a', '#f2c94c', '#7cc46c', '#5aa8e0', '#6a6ad8', '#9b6bd6', '#f2c94c'], Fluit: ['#cfd6e6'], Tamboerijn: ['#e8c08a', '#f2c94c'],
+  // food
+  Croissant: ['#e8a85a'], Donut: ['#e9b46f'], Pizzapunt: ['#f2c94c'], Hamburger: ['#e8a85a', '#e8a85a', '#e8a85a'],
+  Appel: ['#e84a3a', '#6cc068'], Peer: ['#b8d65a'], Kersen: ['#d8312f', '#d8312f', '#6cc068'], Watermeloen: ['#f26a7a'],
+  Ananas: ['#6cc068', '#4f9a4f', '#f2c94c'], Banaan: ['#f7d23e'], Taart: ['#f7b6c8', '#fde8ef', '#7fc8f0'], Wafel: ['#e8b46a'],
+  Taco: ['#f2c94c'], Sushi: ['#3a4a3a', '#3a4a3a', '#ffffff', '#ffffff', '#f2954a'], Theepot: ['#7fc8e8', '#7fc8e8', '#7fc8e8', '#5aa8e0'],
+  // vehicles
+  Fiets: [null], Scooter: ['#444', '#444', '#e84a3a', '#3a3a3a'], Motor: ['#444', '#444', '#e84a3a', '#3a3a3a'], Raket: ['#eef2f8', '#7fc8f0', '#e84a3a', '#f2954a'],
+  Zeilboot: ['#c98e66', '#ffffff'], Vliegtuig: ['#eef2f8', '#5aa8e0', '#5aa8e0'], Helikopter: ['#f2c94c', '#f2c94c', '#bfe3f7'],
+  Luchtballon: ['#e84a3a', '#c98e66'], Trein: ['#e84a3a', '#5aa8e0', '#3a3a4a', '#444'], Bus: ['#f2c94c', '#444'], Vrachtwagen: ['#eef2f8', '#e84a3a', '#444'],
+  Tractor: ['#444', '#444', '#3fbf5f'], 'Onderzeeër': ['#f2c94c'], Skateboard: ['#9b6bd6'],
+  // objects
+  'Papieren vliegtuigje': ['#ffffff'], Gloeilamp: ['#ffe58a', '#9aa3b5'], Paraplu: ['#e84a3a'], Potlood: ['#f2c94c', '#f2d6a8', '#f7a8b8'],
+  Boek: ['#fff8ee'], Camera: ['#3a4766', '#3a4766'], Sleutel: ['#f2c94c'], Kroon: ['#f2c94c', '#f2c94c', '#e84a3a', '#5aa8e0', '#e84a3a', '#3fbf5f'],
+  Diamant: ['#9ad8f2'], Klok: ['#e84a3a', '#ffffff'], Envelop: ['#f7e6cc'], Lamp: ['#f2c94c', '#9aa3b5'], Bril: ['#bfe3f7'], Schaar: ['#e84a3a', '#e84a3a', '#cfd6e6'],
+  Rugzak: ['#5aa8e0', '#3a7ac8'], Wereldbol: ['#7fc8f0'], Kompas: ['#c98e66'], Zandloper: ['#c98e66', '#c98e66', '#e8f4fa'], Kaars: ['#f7c6d9', '#ffcc33'],
+  Ballonnen: ['#e84a3a', '#5aa8e0', '#f2c94c'], Cadeau: ['#6fb7f0', '#f05a7e', '#f05a7e'], Vlieger: ['#f2954a'], Teddybeer: ['#c98e5a', '#c98e5a', '#c98e5a', '#c98e5a', '#c98e5a', '#c98e5a', '#c98e5a', '#c98e5a'],
+};
+const list = (arr) => arr.map(([t, d]) => ({ t, d: COLORS[t] ? () => paint(d(), COLORS[t]) : d }));
 
 // ---------- Music ----------
 
@@ -52,7 +75,9 @@ function cup(seed) {
   if (kind === 'beker') s += P('M60 50H140L130 180H70Z', W) + R(54, 36, 92, 16, 5, W) + R(64, 96, 72, 40, 4, W) + P('M76 60L82 30H118L124 60', thin);
   if (kind === 'ijskoffie') s += P('M56 40H144L132 184H68Z', W) + P('M60 80H140', thin) + R(76, 90, 22, 22, 4, thin) + R(104, 100, 22, 22, 4, thin) + R(84, 120, 22, 22, 4, thin) + P('M110 40L130 4', 'stroke-width="5"');
   if (r.chance(0.4)) s += heart(30, 170, 10) + heart(176, 40, 8);
-  return s;
+  const c = r.pick(['#f2954a', '#5aa8e0', '#e86a8a', '#7cc46c', '#9b6bd6', '#f2c94c']);
+  const drink = kind === 'thee' ? '#d9a05b' : '#8a5a3a';
+  return paint(s, kind === 'beker' ? [c, '#ffffff', '#c98e66'] : kind === 'ijskoffie' ? ['#c98e66'] : kind === 'thee' ? [c, c, '#f2c94c'] : ['#ffffff', c, c, kind === 'cappuccino' ? '#e8c9a0' : drink]);
 }
 
 function iceCream(seed) {
@@ -62,15 +87,17 @@ function iceCream(seed) {
   let s = '';
   if (cone) s += P('M70 110L100 190L130 110Z', W) + P('M78 124L118 146M84 140L112 160M76 116L126 140M122 124L84 146M116 140L88 160', 'stroke-width="1.2"');
   else s += P('M50 120H150L136 176H64Z', W) + P('M56 136H144', thin);
+  s = paint(s, [cone ? '#e7b26a' : r.pick(['#7fc8f0', '#f7a8c4', '#f2c94c'])]);
   const top = cone ? 110 : 120;
+  const flavours = ['#f7a8c4', '#fff3d6', '#8a5a3a', '#a8e0a0', '#f2c94c', '#c9a0f0', '#f26a7a'];
   for (let i = 0; i < scoops; i++) {
     const y = top - 18 - i * 32, rx = 34 - i * 4;
     const pts = [];
     for (let k = 0; k <= 10; k++) pts.push([100 - rx - 4 + (k / 10) * (2 * rx + 8), y + 20 + (k % 2 ? 6 : 0)]);
-    s += P(`M${100 - rx - 4} ${y + 20}Q${100 - rx - 10} ${y - 24} 100 ${y - 26}Q${100 + rx + 10} ${y - 24} ${100 + rx + 4} ${y + 20}` + pts.reverse().map((p) => `L${p[0].toFixed(1)} ${p[1]}`).join('') + 'Z', W);
+    s += P(`M${100 - rx - 4} ${y + 20}Q${100 - rx - 10} ${y - 24} 100 ${y - 26}Q${100 + rx + 10} ${y - 24} ${100 + rx + 4} ${y + 20}` + pts.reverse().map((p) => `L${p[0].toFixed(1)} ${p[1]}`).join('') + 'Z', K(r.pick(flavours)));
   }
   const ty = top - 18 - (scoops - 1) * 32 - 26;
-  if (r.chance(0.5)) s += C(100, ty - 8, 9, W) + P(`M100 ${ty - 17}Q104 ${ty - 30} 114 ${ty - 32}`);
+  if (r.chance(0.5)) s += C(100, ty - 8, 9, K('#e53b4b')) + P(`M100 ${ty - 17}Q104 ${ty - 30} 114 ${ty - 32}`);
   if (r.chance(0.5)) for (let i = 0; i < 8; i++) s += G(R(-4, -1.5, 8, 3, 1.5, 'fill="FILL" stroke="none"'), `translate(${r.range(76, 124)} ${r.range(ty + 8, top - 4)}) rotate(${r.int(0, 180)})`);
   if (r.chance(0.4)) s += P(`M124 ${top - 30}L150 ${top - 80}`, 'stroke-width="6"') + `<g stroke="#fff">${P(`M124 ${top - 30}L150 ${top - 80}`, 'stroke-width="2.5"')}</g>`;
   return scoops === 3 ? G(s, 'translate(100 196) scale(.8) translate(-100 -194)') : s;
@@ -79,17 +106,18 @@ function iceCream(seed) {
 function cupcake(seed) {
   const r = rng(seed);
   const layers = r.int(2, 3);
-  let s = P('M54 120L66 182H134L146 120Z', W) + Array.from({ length: 5 }, (_, i) => L(68 + i * 16, 122, 72 + i * 14, 180, thin)).join('');
+  const frost = r.pick(['#f7a8c4', '#fff3d6', '#8a5a3a', '#c9a0f0', '#a8e0f0']);
+  let s = P('M54 120L66 182H134L146 120Z', K(r.pick(['#7ec8e3', '#f9b8d0', '#a8e0a0', '#f2c94c']))) + Array.from({ length: 5 }, (_, i) => L(68 + i * 16, 122, 72 + i * 14, 180, thin)).join('');
   for (let i = 0; i < layers; i++) {
     const y = 124 - i * 26, w = 56 - i * 14;
-    s += P(`M${100 - w} ${y}Q${100 - w - 12} ${y - 22} ${100 - w + 10} ${y - 26}Q100 ${y - 40} ${100 + w - 10} ${y - 26}Q${100 + w + 12} ${y - 22} ${100 + w} ${y}Z`, W);
+    s += P(`M${100 - w} ${y}Q${100 - w - 12} ${y - 22} ${100 - w + 10} ${y - 26}Q100 ${y - 40} ${100 + w - 10} ${y - 26}Q${100 + w + 12} ${y - 22} ${100 + w} ${y}Z`, K(frost));
   }
   const topY = 124 - (layers - 1) * 26 - 36;
   const topper = r.int(0, 3);
-  if (topper === 0) s += C(100, topY - 6, 9, W) + P(`M100 ${topY - 15}Q104 ${topY - 26} 112 ${topY - 28}`);
-  if (topper === 1) s += star(100, topY - 10, 14, 6, 5, W);
-  if (topper === 2) s += heart(100, topY - 8, 12, W);
-  if (topper === 3) s += R(96, topY - 30, 8, 26, 2, W) + P(`M100 ${topY - 30}Q92 ${topY - 40} 100 ${topY - 52}Q108 ${topY - 40} 100 ${topY - 30}Z`);
+  if (topper === 0) s += C(100, topY - 6, 9, K('#e53b4b')) + P(`M100 ${topY - 15}Q104 ${topY - 26} 112 ${topY - 28}`);
+  if (topper === 1) s += star(100, topY - 10, 14, 6, 5, K('#f2c94c'));
+  if (topper === 2) s += heart(100, topY - 8, 12, K('#e84a6a'));
+  if (topper === 3) s += R(96, topY - 30, 8, 26, 2, K('#7fc8f0')) + P(`M100 ${topY - 30}Q92 ${topY - 40} 100 ${topY - 52}Q108 ${topY - 40} 100 ${topY - 30}Z`);
   for (let i = 0; i < 10; i++) s += D(r.range(60, 140), r.range(topY + 10, 116), 1.8);
   return layers === 3 ? G(s, 'translate(100 190) scale(.88) translate(-100 -184)') : s;
 }
@@ -150,13 +178,14 @@ function car(seed) {
     kever: 'M58 102Q70 72 98 70V102ZM108 102V70Q136 72 148 102Z',
     'pick-up': 'M112 100V72H144L164 100Z',
   };
-  let s = P(bodies[type], W) + P(windows[type], W);
-  s += [52, 150].map((x) => P(`M${x - wheelR - 6} 140A${wheelR + 6} ${wheelR + 6} 0 0 1 ${x + wheelR + 6} 140`, W) + C(x, y, wheelR, W) + C(x, y, wheelR * 0.45) + D(x, y, 2)).join('');
-  s += R(176, 110, 10, 8, 3) + R(14, 112, 8, 8, 2);
+  const paintC = r.pick(['#e84a3a', '#2f7fd8', '#f2c94c', '#3fbf5f', '#f2954a', '#9b6bd6', '#3a4766', '#e86a8a', '#cfd6e6', '#2aa6a6']);
+  let s = P(bodies[type], K(paintC)) + P(windows[type], K('#bfe3f7'));
+  s += [52, 150].map((x) => P(`M${x - wheelR - 6} 140A${wheelR + 6} ${wheelR + 6} 0 0 1 ${x + wheelR + 6} 140`, K(paintC)) + C(x, y, wheelR, K('#3a3a44')) + C(x, y, wheelR * 0.45, K('#cfd6e6')) + D(x, y, 2)).join('');
+  s += R(176, 110, 10, 8, 3, K('#ffe58a')) + R(14, 112, 8, 8, 2, K('#e84a3a'));
   s += P('M96 110H104M140 110H148', 'stroke-width="3"');
   if (type === 'busje' || type === 'sedan') s += L(110, 66, 110, 138, thin);
   if (type === 'pick-up') s += P('M12 100V90H100', thin);
-  if (type === 'jeep') s += C(16, 112, 14, W) + C(16, 112, 6);
+  if (type === 'jeep') s += C(16, 112, 14, K('#3a3a44')) + C(16, 112, 6);
   if (r.chance(0.4)) s += P('M30 120H180', 'stroke-width="1.2" stroke-dasharray="6 4"');
   s += P(`M4 ${y + wheelR + 1}H196`, thin);
   return s;
@@ -190,11 +219,12 @@ export const vehicles = [
 function dice(seed) {
   const r = rng(seed);
   const pips = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]], 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] };
+  const dieC = r.pick([['#ffffff', '#e8e8f0', '#d0d0dc'], ['#f26a6a', '#e04a4a', '#c83a3a'], ['#7fc8f0', '#5aa8e0', '#3a8ac8'], ['#f7d23e', '#e8b82a', '#d0a01a']]);
   const die = (cx, cy, s, a, b, c) => {
     const top = [[cx, cy - s], [cx + s * 0.87, cy - s / 2], [cx, cy], [cx - s * 0.87, cy - s / 2]];
     const left = [[cx - s * 0.87, cy - s / 2], [cx, cy], [cx, cy + s], [cx - s * 0.87, cy + s / 2]];
     const right = [[cx, cy], [cx + s * 0.87, cy - s / 2], [cx + s * 0.87, cy + s / 2], [cx, cy + s]];
-    let out = POLY(top, true, W) + POLY(left, true, W) + POLY(right, true, W);
+    let out = POLY(top, true, K(dieC[0])) + POLY(left, true, K(dieC[1])) + POLY(right, true, K(dieC[2]));
     const face = (o, u, v, n) => pips[n].map(([i, j]) => {
       const x = o[0] + u[0] * (0.5 + i * 0.28) + v[0] * (0.5 + j * 0.28), y = o[1] + u[1] * (0.5 + i * 0.28) + v[1] * (0.5 + j * 0.28);
       return E(x, y, s * 0.08, s * 0.06, 'fill="FILL" stroke="none"');

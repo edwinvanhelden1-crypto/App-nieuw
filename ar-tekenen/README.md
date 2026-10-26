@@ -1,5 +1,9 @@
 # AR Tekenen
 
+> **Android-app (APK):** download de nieuwste versie bij
+> [Releases → AR Tekenen – nieuwste APK](../../releases/tag/ar-tekenen-apk).
+> De APK wordt automatisch gebouwd door de workflow *Android APK* (map `android/`).
+
 Een gratis web-app (PWA) om tekeningen na te tekenen met augmented reality.
 Zet je telefoon op een glas of andere verhoging boven je papier, kijk door het
 scherm en trek de doorschijnende afbeelding over. Geen advertenties, geen account.
@@ -37,6 +41,17 @@ elke tekening altijd hetzelfde blijft. Daardoor werkt de bibliotheek ook offline
 Een nieuwe tekening toevoegen: voeg in een van de `draw-*.js`-bestanden een
 `['Titel', () => svgMarkup]` toe aan een lijst. Teken in een vlak van 200×200;
 gebruik `W` als vulling voor vormen die lijnen erachter moeten verbergen.
+
+## AI-illustraties
+
+Naast de vectortekeningen bevat de app een bibliotheek met AI-illustraties
+(gedetailleerde inkt-schetsen, kleurplaten, gekleurde cartoons, anime, retro
+cartoons). De onderwerpen staan in `tools/library-prompts.json`; de workflow
+*Tekeningen genereren* maakt ze met de gratis Pollinations-dienst, zet ze in
+`ar-tekenen/library/` en bouwt daarna een nieuwe APK. Onderwerpen toevoegen:
+voeg ze toe aan het JSON-bestand en push. Lukt het genereren niet zonder
+sleutel, maak dan een gratis token op pollinations.ai en zet die als secret
+`POLLINATIONS_TOKEN` in de repository.
 
 ## Starten
 

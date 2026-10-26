@@ -1,4 +1,4 @@
-import { W, F, C, E, P, L, D, G, S, M, R, POLY, ROT, polar, smooth, spiral, heart, rng } from './svg.js';
+import { W, F, K, C, E, P, L, D, G, S, M, R, POLY, ROT, polar, smooth, spiral, heart, rng, paint } from './svg.js';
 
 const NONE = 'stroke="none"';
 const shine = (x, y) => C(x, y, 1.8, `fill="#fff" ${NONE}`);
@@ -94,6 +94,22 @@ const ANIMALS = {
   }),
 };
 
+const ANIMAL_COLORS = {
+  kat: ['#f4a259'],
+  beer: ['#b07a52', '#b07a52', '#b07a52', '#ead2b5'],
+  konijn: ['#efe9f4'],
+  muis: ['#c4c4d4'],
+  vos: ['#f08a3c'],
+  varken: ['#f7b6c2', '#f7b6c2', '#f7b6c2', '#f28aa5'],
+  hond: ['#e8c08a', '#a8754a', '#a8754a', '#f7e6cc'],
+  kikker: ['#8fd16a'],
+  panda: [null],
+  kuiken: ['#ffd84d', '#f5953a'],
+  pinguin: ['#9fb3d1'],
+  uil: ['#c79a6a'],
+  eenhoorn: ['#fdf0fa', '#fdf0fa', '#ffd34d', '#fdf0fa'],
+};
+
 const ANIMAL_NAMES = {
   kat: 'Kat', beer: 'Beer', konijn: 'Konijn', muis: 'Muis', vos: 'Vos', varken: 'Varken', hond: 'Hond',
   kikker: 'Kikker', panda: 'Panda', kuiken: 'Kuiken', pinguin: 'Pinguïn', uil: 'Uil', eenhoorn: 'Eenhoorn',
@@ -110,7 +126,7 @@ function kawaii(animal, expr) {
     featuresFace = EXPRESSIONS[expr]({ ...face, my: 400 });
   }
   if (a.panda) featuresFace = featuresFace.replaceAll('FILL', '#fff');
-  return a.back + HEAD + a.front + featuresFace + (a.panda ? '' : blush(a));
+  return paint(a.back + HEAD + a.front, ANIMAL_COLORS[animal]) + featuresFace + (a.panda ? '' : blush(a));
 }
 
 export const kawaiiAnimals = [];
@@ -126,6 +142,29 @@ const face = (x, y, s = 1, expr = 'blij') => {
   const dx = 12 * s;
   const e = EXPRESSIONS[expr]({ dx: 12, ey: 0, my: 10 });
   return G(e, `translate(${x - 100 * s} ${y}) scale(${s})`) + G(blush({ dx, ey: 0 }), `translate(${x - 100} ${y - 4})`);
+};
+
+const THING_COLORS = {
+  'Cupcake': ['#7ec8e3', '#f9b8d0', '#e53b4b'],
+  'IJsje': ['#e7b26a', '#f7a8c4'],
+  'Donut': ['#e9b46f'],
+  'Koffiekop': ['#9ad1d4'],
+  'Melkpak': ['#7fb8f0'],
+  'Avocado': ['#4f8a3c', '#a0612f'],
+  'Aardbei': ['#e8484f', '#5cb85c'],
+  'Wolk': ['#dff1ff'],
+  'Zon': ['#ffd34d'],
+  'Maan': ['#ffe58a'],
+  'Ster': ['#ffd34d'],
+  'Hart': ['#ff6f91'],
+  'Wolkje met regen': ['#c9e3f7'],
+  'Taartpunt': ['#f6d7a7', '#e53b4b'],
+  'Melkshake': ['#f7a8c4', '#fff8ee', '#e53b4b'],
+  'Plantje': ['#d9774a', '#c8653c', '#6cc068'],
+  'Rijstbal': [null],
+  'Kaars': ['#f7c6d9', '#ffcc33'],
+  'Ballon': ['#ff6f91'],
+  'Cadeau': ['#6fb7f0', '#f05a7e', '#f05a7e', '#f05a7e', '#f05a7e'],
 };
 
 const KAWAII_THINGS = [
@@ -161,22 +200,54 @@ const KAWAII_THINGS = [
 
 export const kawaiiThings = KAWAII_THINGS.map(([t, draw, kind, fx, fy], i) => ({
   t,
-  d: () => draw() + face(fx, fy, kind === 'face2' ? 0.9 : 1, ['blij', 'lachend', 'knipoog', 'blij', 'verliefd'][i % 5]),
+  d: () => paint(draw(), THING_COLORS[t] || [null]) + face(fx, fy, kind === 'face2' ? 0.9 : 1, ['blij', 'lachend', 'knipoog', 'blij', 'verliefd'][i % 5]),
 }));
+
+const HAND_COLORS = {
+  Uil: ['#b88a5a', '#f2a43c'],
+  'Pinguïn': ['#3a4766', '#fffaf0', '#f2a43c'],
+  Eend: ['#ffd84d', '#f2953a'],
+  Kip: ['#f2ece0'],
+  Flamingo: ['#f59ab5'],
+  'Zittende kat': ['#f4a259'],
+  Hond: ['#e8c08a', '#e8c08a', '#a8754a', '#a8754a', '#f7e6cc', '#f27a8a', '#f2c94c'],
+  Olifant: ['#b8c4d6'],
+  Leeuw: [...Array(14).fill('#d9822b'), '#e0952f', '#f2c26b'],
+  Schildpad: ['#8fc46a', '#8fc46a', '#8fc46a', '#4f8a3c'],
+  Walvis: ['#6aa6d8'],
+  Octopus: ['#e86a8a'],
+  Krab: ['#e8543c', '#e8543c', '#e8543c', null],
+  Slak: ['#c8d68a', '#d9a05b'],
+  Bij: ['#dff1ff', '#dff1ff', '#f7d23e', '#f7d23e'],
+  Egel: ['#8a6a50', '#e8c9a0'],
+  Dinosaurus: ['#7cc46c', '#f2a43c'],
+  Konijn: ['#d8d0c8'],
+  Giraf: ['#f2c26b'],
+  'Vos (zittend)': ['#f08a3c'],
+  Muis: ['#c4c4d4'],
+  Kwal: ['#c79ae8'],
+  Zeester: ['#f2954a'],
+  Schelp: ['#f7c6a8'],
+  Zeepaardje: ['#f2c94c'],
+  'Vuurtoren in zee': ['#f5efe6', '#ffe58a', '#e84a3a'],
+  Golf: ['#5aa8e0'],
+  'Duikbril en snorkel': ['#f2c94c'],
+};
+const colorList = (arr) => arr.map(([t, d]) => ({ t, d: HAND_COLORS[t] ? () => paint(d(), HAND_COLORS[t]) : d }));
 
 // ---------- Birds ----------
 
 const BIRD_TYPES = [
-  { name: 'Mus', beak: 'kort', tail: 'kort', crest: false, bodyX: 46, head: 22 },
-  { name: 'Roodborstje', beak: 'kort', tail: 'kort', crest: false, bodyX: 44, head: 24, breast: true },
-  { name: 'Mees', beak: 'kort', tail: 'lang', crest: false, bodyX: 42, head: 22, cap: true },
-  { name: 'Kuifmees', beak: 'kort', tail: 'kort', crest: true, bodyX: 44, head: 22 },
-  { name: 'Papegaai', beak: 'haak', tail: 'lang', crest: false, bodyX: 40, head: 26 },
-  { name: 'Kolibrie', beak: 'naald', tail: 'kort', crest: false, bodyX: 36, head: 18, fly: true },
-  { name: 'Zwaluw', beak: 'kort', tail: 'gevorkt', crest: false, bodyX: 44, head: 20 },
-  { name: 'IJsvogel', beak: 'lang', tail: 'kort', crest: false, bodyX: 42, head: 26 },
-  { name: 'Kardinaal', beak: 'dik', tail: 'lang', crest: true, bodyX: 46, head: 24 },
-  { name: 'Toekan', beak: 'toekan', tail: 'kort', crest: false, bodyX: 42, head: 22 },
+  { name: 'Mus', c: ['#c9a27a', '#8a5a3a', '#a07050', '#e0b060'], beak: 'kort', tail: 'kort', crest: false, bodyX: 46, head: 22 },
+  { name: 'Roodborstje', c: ['#e8743c', '#8a6a50', '#9a7a5c', '#5a4a3a'], beak: 'kort', tail: 'kort', crest: false, bodyX: 44, head: 24, breast: true },
+  { name: 'Mees', c: ['#f2d64b', '#6a93c9', '#4a5f8a', '#555'], beak: 'kort', tail: 'lang', crest: false, bodyX: 42, head: 22, cap: true },
+  { name: 'Kuifmees', c: ['#d8c8b0', '#8a7a6a', '#d8c8b0', '#555'], beak: 'kort', tail: 'kort', crest: true, bodyX: 44, head: 22 },
+  { name: 'Papegaai', c: ['#3fbf5f', '#2f7fd8', '#e84a3a', '#f2c94c'], beak: 'haak', tail: 'lang', crest: false, bodyX: 40, head: 26 },
+  { name: 'Kolibrie', c: ['#3fbf9f', '#2f8f6f', '#d84a8a', '#444'], beak: 'naald', tail: 'kort', crest: false, bodyX: 36, head: 18, fly: true },
+  { name: 'Zwaluw', c: ['#f5efe6', '#2a3a6a', '#3a4a7a', '#444'], beak: 'kort', tail: 'gevorkt', crest: false, bodyX: 44, head: 20 },
+  { name: 'IJsvogel', c: ['#f08a3c', '#2aa6d8', '#2a86c8', '#444'], beak: 'lang', tail: 'kort', crest: false, bodyX: 42, head: 26 },
+  { name: 'Kardinaal', c: ['#d8312f', '#a82a2a', '#d8312f', '#f2a43c'], beak: 'dik', tail: 'lang', crest: true, bodyX: 46, head: 24 },
+  { name: 'Toekan', c: ['#3a404c', '#2a2f38', '#f5efe6', '#f59a2a'], beak: 'toekan', tail: 'kort', crest: false, bodyX: 42, head: 22 },
 ];
 
 function bird(type, seed) {
@@ -188,27 +259,27 @@ function bird(type, seed) {
   const branch = !type.fly;
   if (branch) {
     s += P(`M10 ${150 + r.range(-4, 4)}Q100 ${140 + r.range(-6, 6)} 190 ${156 + r.range(-6, 6)}`, 'stroke-width="4"');
-    s += P('M160 152Q170 130 186 126Q178 146 160 152Z', W) + P('M40 148Q36 128 20 120Q22 142 40 148Z', W);
+    s += P('M160 152Q170 130 186 126Q178 146 160 152Z', K('#6cc068')) + P('M40 148Q36 128 20 120Q22 142 40 148Z', K('#6cc068'));
   }
   // tail
   const tx = 56, ty = 124;
-  if (type.tail === 'kort') s += P(`M${tx + 10} ${ty - 8}L${tx - 30} ${ty + 22}L${tx - 22} ${ty + 30}L${tx + 16} ${ty + 6}Z`, W);
-  if (type.tail === 'lang') s += P(`M${tx + 10} ${ty - 8}L${tx - 44} ${ty + 56}L${tx - 32} ${ty + 60}L${tx + 18} ${ty + 6}Z`, W) + L(tx + 8, ty, tx - 36, ty + 56, 'stroke-width="1.5"');
-  if (type.tail === 'gevorkt') s += P(`M${tx + 10} ${ty - 8}L${tx - 48} ${ty + 30}L${tx - 14} ${ty + 12}L${tx - 40} ${ty + 46}L${tx + 18} ${ty + 6}Z`, W);
+  if (type.tail === 'kort') s += P(`M${tx + 10} ${ty - 8}L${tx - 30} ${ty + 22}L${tx - 22} ${ty + 30}L${tx + 16} ${ty + 6}Z`, K(type.c[1]));
+  if (type.tail === 'lang') s += P(`M${tx + 10} ${ty - 8}L${tx - 44} ${ty + 56}L${tx - 32} ${ty + 60}L${tx + 18} ${ty + 6}Z`, K(type.c[1])) + L(tx + 8, ty, tx - 36, ty + 56, 'stroke-width="1.5"');
+  if (type.tail === 'gevorkt') s += P(`M${tx + 10} ${ty - 8}L${tx - 48} ${ty + 30}L${tx - 14} ${ty + 12}L${tx - 40} ${ty + 46}L${tx + 18} ${ty + 6}Z`, K(type.c[1]));
   // legs
   if (branch) s += P('M96 140l-4 14M108 140l2 14', 'stroke-width="2.4"') + P('M86 156l6-2 6 2M104 156l6-2 6 2', 'stroke-width="2"');
   // body
-  s += G(E(98, 112, type.bodyX, 32, W), `rotate(${tilt} 98 112)`);
+  s += G(E(98, 112, type.bodyX, 32, K(type.c[0])), `rotate(${tilt} 98 112)`);
   if (type.breast) s += P(`M${hx - 8} ${hy + 18}Q${hx + 10} ${hy + 40} 120 132`, 'stroke-width="1.8"');
   // wing
   const wy = r.range(-4, 4);
-  s += P(`M${72} ${100 + wy}Q100 ${86 + wy} 122 ${102 + wy}Q100 ${128 + wy} 60 ${136 + wy}Q66 ${116 + wy} 72 ${100 + wy}Z`, W);
+  s += P(`M${72} ${100 + wy}Q100 ${86 + wy} 122 ${102 + wy}Q100 ${128 + wy} 60 ${136 + wy}Q66 ${116 + wy} 72 ${100 + wy}Z`, K(type.c[1]));
   s += P(`M78 ${118 + wy}L100 ${112 + wy}M72 ${126 + wy}L94 ${122 + wy}`, 'stroke-width="1.6"');
-  if (type.fly) s += P(`M90 ${96}Q70 40 40 30Q60 70 70 100`, W);
+  if (type.fly) s += P(`M90 ${96}Q70 40 40 30Q60 70 70 100`, K(type.c[1]));
   // head
-  s += C(hx, hy, type.head, W);
+  s += C(hx, hy, type.head, K(type.c[2]));
   if (type.cap) s += P(`M${hx - type.head} ${hy - 4}Q${hx} ${hy - 14} ${hx + type.head} ${hy - 4}`, 'stroke-width="1.8"');
-  if (type.crest) s += P(`M${hx - 14} ${hy - 16}L${hx - 20} ${hy - 40}L${hx - 6} ${hy - 22}L${hx - 4} ${hy - 44}L${hx + 4} ${hy - 22}`, W);
+  if (type.crest) s += P(`M${hx - 14} ${hy - 16}L${hx - 20} ${hy - 40}L${hx - 6} ${hy - 22}L${hx - 4} ${hy - 44}L${hx + 4} ${hy - 22}`, K(type.c[2]));
   // beak
   const bx = hx + type.head - 3, by = hy + 2;
   const beaks = {
@@ -219,7 +290,7 @@ function bird(type, seed) {
     haak: `M${bx - 2} ${by - 10}Q${bx + 24} ${by - 10} ${bx + 18} ${by + 16}Q${bx + 10} ${by + 4} ${bx} ${by + 8}Z`,
     toekan: `M${bx - 4} ${by - 12}Q${bx + 60} ${by - 14} ${bx + 58} ${by + 6}Q${bx + 30} ${by + 14} ${bx - 2} ${by + 10}Z`,
   };
-  s += P(beaks[type.beak], W);
+  s += P(beaks[type.beak], K(type.c[3]));
   if (type.beak === 'toekan') s += P(`M${bx} ${by}Q${bx + 30} ${by - 2} ${bx + 56} ${by + 2}`, 'stroke-width="1.6"');
   // eye
   s += D(hx + 6, hy - 4, 4.2) + shine(hx + 7.5, hy - 5.5);
@@ -237,7 +308,7 @@ const HAND_BIRDS = [
     P('M84 118l6 6 6-6M104 118l6 6 6-6M94 134l6 6 6-6M84 150l6 6 6-6M104 150l6 6 6-6', 'stroke-width="1.8"') +
     P('M20 172H180', 'stroke-width="4"') + S(P('M84 166v10M90 166v10'))],
   ['Pinguïn', () => P('M100 24Q146 24 150 100Q156 160 136 180H64Q44 160 50 100Q54 24 100 24Z', W) +
-    P('M100 62Q76 62 72 110Q70 160 84 176H116Q130 160 128 110Q124 62 100 62Z') + S(P('M54 96Q26 120 32 150Q46 134 54 124')) +
+    P('M100 62Q76 62 72 110Q70 160 84 176H116Q130 160 128 110Q124 62 100 62Z', W) + S(P('M54 96Q26 120 32 150Q46 134 54 124')) +
     S(D(86, 56, 4.5)) + P('M92 66L108 66L100 80Z', W) + S(E(80, 182, 16, 6, W))],
   ['Zwaan', () => P('M30 140Q40 180 100 180Q170 180 178 130Q150 140 120 134Q132 100 112 70Q100 40 116 30Q132 22 140 36', W) +
     P('M140 36L156 44L140 48') + D(130, 34, 3) + P('M50 140Q80 110 120 134', 'stroke-width="2"') + P('M10 186Q40 178 70 186T130 186T190 186', 'stroke-width="2"')],
@@ -249,7 +320,7 @@ const HAND_BIRDS = [
   ['Flamingo', () => P('M60 90Q60 60 100 64Q130 66 128 92Q124 116 90 116Q60 116 60 90Z', W) + P('M116 72Q140 60 130 30Q120 10 104 24Q98 34 106 40') +
     P('M106 40L94 52Q90 56 96 56L108 46') + D(110, 26, 2.5) + P('M96 116V186M96 140L110 154L104 160', 'stroke-width="2.2"') + P('M84 186h24')],
 ];
-export const handBirds = HAND_BIRDS.map(([t, d]) => ({ t, d }));
+export const handBirds = colorList(HAND_BIRDS);
 
 // ---------- Hand drawn animals ----------
 
@@ -301,7 +372,7 @@ const HAND_ANIMALS = [
   ['Muis', () => P('M150 160Q190 160 184 130', 'stroke-width="2"') + S(C(70, 70, 22, W)) + P('M40 160Q40 92 100 90Q160 92 160 160Z', W) + D(84, 110, 4) + D(116, 110, 4) + E(100, 124, 5, 4, F) +
     S(L(60, 120, 84, 124, 'stroke-width="1.5"') + L(62, 132, 84, 128, 'stroke-width="1.5"'))],
 ];
-export const handAnimals = HAND_ANIMALS.map(([t, d]) => ({ t, d }));
+export const handAnimals = colorList(HAND_ANIMALS);
 
 // ---------- Butterflies ----------
 
@@ -309,14 +380,15 @@ function butterfly(seed) {
   const r = rng(seed);
   const up = [[100, 92], [r.range(70, 84), r.range(40, 56)], [r.range(26, 40), r.range(22, 40)], [r.range(14, 26), r.range(62, 84)], [r.range(46, 64), r.range(96, 106)]];
   const low = [[100, 104], [r.range(56, 70), r.range(110, 118)], [r.range(26, 44), r.range(130, 150)], [r.range(46, 60), r.range(164, 182)], [r.range(80, 92), r.range(150, 166)]];
-  let wing = P(smooth(up, true, 0.9), W) + P(smooth(low, true, 0.9), W);
+  const pal = r.pick([['#f59a2a', '#f7c948'], ['#5aa8e0', '#9ad1f5'], ['#e86a8a', '#f7b6c8'], ['#9b6bd6', '#c9b0f0'], ['#3fbf9f', '#f7e26b'], ['#e8543c', '#f2954a']]);
+  let wing = P(smooth(up, true, 0.9), K(pal[0])) + P(smooth(low, true, 0.9), K(pal[1]));
   const kind = r.int(0, 3);
   if (kind === 0) wing += C(r.range(48, 58), r.range(62, 70), r.range(8, 13)) + C(r.range(60, 66), r.range(130, 140), r.range(5, 9));
   if (kind === 1) wing += P(smooth([[96, 94], [70, 60], [36, 46], [28, 72], [60, 96]], false), 'stroke-width="1.6"') + P(smooth([[96, 106], [70, 124], [52, 156]], false), 'stroke-width="1.6"');
   if (kind === 2) for (let i = 0; i < 6; i++) wing += D(...polar(56, 70, 24, i * 50 + 200), 3);
   if (kind === 3) wing += P(`M100 92L${up[2][0] + 10} ${up[2][1] + 12}M100 94L${up[3][0] + 10} ${up[3][1]}M100 104L${low[2][0] + 10} ${low[2][1]}`, 'stroke-width="1.6"');
   if (r.chance(0.5)) wing += P(smooth([up[1], up[2], up[3], up[4]].map(([x, y]) => [x + (100 - x) * 0.18, y + (98 - y) * 0.18]), false), 'stroke-width="1.4" stroke-dasharray="1 4"');
-  return S(wing) + E(100, 104, 6, 34, W) + C(100, 66, 7, W) + S(P('M97 60Q90 36 78 28') + C(77, 27, 2.6, F));
+  return S(wing) + E(100, 104, 6, 34, K('#4a3a3a')) + C(100, 66, 7, K('#4a3a3a')) + S(P('M97 60Q90 36 78 28') + C(77, 27, 2.6, F));
 }
 export const butterflies = Array.from({ length: 24 }, (_, i) => ({ t: `Vlinder ${i + 1}`, d: () => butterfly(i + 7) }));
 
@@ -342,7 +414,8 @@ function fish(seed) {
   if (pattern === 1) for (let i = 0; i < 4; i++) for (let j = -1; j <= 1; j++) { const x = x0 + len * (0.25 + i * 0.1), y = 100 + j * h * 0.4; s += P(`M${x} ${y - 6}Q${x - 7} ${y} ${x} ${y + 6}`, 'stroke-width="1.6"'); }
   if (pattern === 2) for (let i = 0; i < 7; i++) s += C(x0 + len * r.range(0.2, 0.62), 100 + r.range(-0.5, 0.5) * h, r.range(2, 5));
   s += C(184, 60, 3) + C(180, 42, 5) + C(186, 22, 4);
-  return s;
+  const pal = r.pick([['#f59a2a', '#f7c948'], ['#5aa8e0', '#2f6fb8'], ['#e86a8a', '#b84a6a'], ['#3fbf9f', '#2a8f7a'], ['#f7d23e', '#5aa8e0'], ['#9b6bd6', '#f2954a']]);
+  return paint(s, [pal[1], pal[1], pal[1], pal[0], null]);
 }
 export const fishes = Array.from({ length: 20 }, (_, i) => ({ t: `Vis ${i + 1}`, d: () => fish(i + 3) }));
 
@@ -363,4 +436,4 @@ const SEA = [
     P('M10 170H190') + P('M70 140Q90 110 120 110M84 160Q100 132 130 128', 'stroke-width="1.6"')],
   ['Duikbril en snorkel', () => R(36, 70, 128, 60, 26, W) + R(48, 80, 46, 40, 18) + R(106, 80, 46, 40, 18) + P('M164 96H176V30H184', 'stroke-width="5"')],
 ];
-export const sea = SEA.map(([t, d]) => ({ t, d }));
+export const sea = colorList(SEA);

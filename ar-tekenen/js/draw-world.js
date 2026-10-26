@@ -1,7 +1,25 @@
-import { W, F, C, E, P, L, D, G, S, R, POLY, ROT, polar, smooth, spiral, heart, star, rng } from './svg.js';
+import { W, F, K, C, E, P, L, D, G, S, R, POLY, ROT, polar, smooth, spiral, heart, star, rng, paint } from './svg.js';
 
 const thin = 'stroke-width="1.6"';
-const list = (arr) => arr.map(([t, d]) => ({ t, d }));
+const COLORS = {
+  Vulkaan: ['#8a6a5a'], 'Eiland met palmboom': ['#f2d68a', '#b5835a', '#5cb85c'], Waterval: ['#8a9a8a', '#8a9a8a', '#bfe3f7'], Bergtop: ['#8a9ab8', '#ffffff'],
+  'Bliksem en wolk': ['#c9d3e0', '#f7d23e'], 'Blad met nerven': ['#6cc068'], Varen: ['#5cb85c'], Zonsondergang: ['#f2954a'], Paddenstoelen: ['#e84a3a', '#e84a3a'],
+  Tulp: ['#5cb85c', '#e84a6a'], Roos: ['#5cb85c', '#e84a4a'], Zonnebloem: [...Array(18).fill('#f7c931'), '#7a4a2a'], Monsterablad: ['#3f9a4f'], Lavendel: ['#9b7ad8'],
+  'Plant in pot': ['#d9774a', '#c8653c', '#5cb85c'], 'Klavertje vier': ['#5cb85c'], Bloemenkrans: ['#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#6cc068', '#f7a8c4', '#f7a8c4', '#f7a8c4', '#f7a8c4', '#f7a8c4', '#f2c94c', '#c9a0f0', '#c9a0f0', '#c9a0f0', '#c9a0f0', '#c9a0f0', '#f2c94c', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#f2c94c'],
+  Windmolen: ['#7a4a3a', '#5a3a2a', '#3a6a3a', '#f5efe6', '#f5efe6', '#f5efe6', '#f5efe6', '#f5efe6'], Kasteel: ['#c9c3b5', '#b5ae9f'], Vuurtoren: ['#f5efe6', '#ffe58a', '#e84a3a', '#6b4226'],
+  Kerk: ['#d8cbb5', '#a0522d', '#d8cbb5', '#a0522d', '#6b4226'], Eiffeltoren: ['#9a7a5a'], Iglo: ['#e8f4fa', '#bfd8e8'], Tent: ['#f2954a'], Pagode: ['#e84a3a'],
+  Tempel: ['#e8e0d0'], 'Toren met klok': ['#d8cbb5', '#3a6a8a'],
+  'Maan in raam': ['#2a3a6a'], 'Stapel boeken': ['#5aa8e0', '#e86a8a', '#7cc46c', '#f5efe6'], Kaarsen: ['#f7e6cc', '#ffcc33'], 'Hand met bloem': ['#f6d0b1', '#f7a8c4', '#f2c94c'],
+  'Zon met gezicht (boho)': ['#e8a05a'], 'Vaas met takken': ['#d9a07a', '#c9b08a'], 'Koffie en boek': ['#f5efe6', '#d9a07a'], Hangplant: ['#d9a07a', '#6cc068'], 'Spiegel met plant': ['#e8c9a0', '#d9774a', '#6cc068'],
+  Astronaut: ['#eef2f8'], Ufo: ['#9aa3b5', '#bfe3f7'], 'Maan met sterren': ['#ffe58a'], Zonnestelsel: ['#ffd34d', '#b5a99a', '#f2c26b', '#5aa8e0', '#e86a4a'], Komeet: ['#9ad8f2'],
+  Telescoop: ['#3a4766', '#3a4766', '#3a4766'], Sterrenbeeld: ['#ffe58a'], 'Raket in de ruimte': ['#eef2f8', '#7fc8f0', '#e84a3a', '#e84a3a', '#f2954a'],
+  Draak: ['#5cb85c', '#5cb85c', '#5cb85c', '#f2a43c'], Spookje: ['#f2f2ff'], Toverdrank: ['#c9a0f0', '#a0522d'], 'Kristallen bol': ['#c9e3f7', '#9a6a4a'], Toverstaf: ['#3a3a4a', '#f2c94c'],
+  Eenhoorn: ['#fdf0fa', '#f2c94c'], Zeemeermin: ['#3fbf9f', '#f6d0b1', '#e86a8a'], Fee: ['#c9e3f7', '#c9e3f7', '#f6d0b1', '#f7a8c4'], 'Kasteel in de wolken': ['#e8c9f0'], Draakenei: ['#8fd16a'],
+  Kerstboom: ['#8a5a3a', '#3f9a4f', '#3f9a4f', '#3f9a4f', '#f2c94c', '#e84a3a', '#5aa8e0', '#f2c94c', '#e84a3a', '#5aa8e0', '#f2c94c'], Sneeuwpop: ['#ffffff', '#ffffff', '#ffffff', '#3a3a4a', '#3a3a4a', '#f2954a'],
+  Pompoen: ['#f2954a'], Pompoenlantaarn: ['#f2954a'], 'Kaars met hulst': ['#e84a3a', '#ffcc33', '#3f9a4f', '#d8312f', '#d8312f'], Sinterklaasschoen: ['#3a3a4a', '#e84a3a'],
+  'Hartjes (Valentijn)': ['#e84a6a', '#f7a8c4'], Paashaas: ['#d8d0c8'],
+};
+const list = (arr) => arr.map(([t, d]) => ({ t, d: COLORS[t] ? () => paint(d(), COLORS[t]) : d }));
 const many = (n, title, fn, offset = 0) => Array.from({ length: n }, (_, i) => ({ t: `${title} ${i + 1}`, d: () => fn(i + offset) }));
 const fx = (p) => p.map((v) => +v.toFixed(1)).join(' ');
 
@@ -10,9 +28,10 @@ const fx = (p) => p.map((v) => +v.toFixed(1)).join(' ');
 function landscape(seed) {
   const r = rng(seed);
   const round = seed % 3 === 0;
-  let s = '';
+  const night = r.chance(0.35);
+  let s = R(0, 0, 200, 200, 0, K(night ? '#2a3a6a' : '#cfeaf8') + ' stroke="none"');
   const sunX = r.range(50, 150), sunY = r.range(40, 70);
-  s += r.chance(0.5) ? C(sunX, sunY, r.range(14, 22)) : P(`M${sunX} ${sunY - 18}Q${sunX - 26} ${sunY} ${sunX} ${sunY + 18}Q${sunX - 12} ${sunY} ${sunX} ${sunY - 18}Z`);
+  s += r.chance(0.5) ? C(sunX, sunY, r.range(14, 22), K(night ? '#ffe58a' : '#ffd34d')) : P(`M${sunX} ${sunY - 18}Q${sunX - 26} ${sunY} ${sunX} ${sunY + 18}Q${sunX - 12} ${sunY} ${sunX} ${sunY - 18}Z`, K('#ffe58a'));
   // mountains
   const layers = r.int(2, 3);
   for (let l = 0; l < layers; l++) {
@@ -26,14 +45,14 @@ function landscape(seed) {
       pts.push([Math.min(x, 200), base - r.range(0, 20) + l * 10]);
     }
     pts.push([200, base + 30]);
-    s += POLY(pts, false, W);
+    s += POLY(pts, false, K(['#9aa8c8', '#6a9a7a', '#4f8a5a'][l]));
     if (l === 0) pts.slice(1, -1).forEach((p, i) => { if (i % 2 === 0) s += P(`M${fx(p)}l-8 14l6 -4l4 6l6 -8l4 4`, thin); });
   }
   // trees
   const trees = r.int(2, 6);
   for (let i = 0; i < trees; i++) {
     const tx = r.range(14, 186), ty = r.range(160, 176), h = r.range(18, 34);
-    s += POLY([[tx, ty - h], [tx + h * 0.35, ty], [tx - h * 0.35, ty]], true, W) + L(tx, ty, tx, ty + 6);
+    s += POLY([[tx, ty - h], [tx + h * 0.35, ty], [tx - h * 0.35, ty]], true, K('#2f7a3f')) + L(tx, ty, tx, ty + 6);
   }
   // water or path
   if (r.chance(0.5)) s += P('M0 182Q50 176 100 182T200 182M30 192Q70 188 110 192', thin);
@@ -48,27 +67,27 @@ function tree(seed) {
   const kind = ['loof', 'den', 'kaal', 'palm', 'wilg', 'bloesem'][seed % 6];
   let s = '';
   if (kind === 'den') {
-    s += R(92, 160, 16, 26, 2, W);
+    s += R(92, 160, 16, 26, 2, K('#8a5a3a'));
     for (let i = 0; i < 4; i++) {
       const y = 160 - i * 34, w = 64 - i * 12;
-      s += P(`M${100 - w} ${y}L100 ${y - 56}L${100 + w} ${y}Q100 ${y - 8} ${100 - w} ${y}Z`, W);
+      s += P(`M${100 - w} ${y}L100 ${y - 56}L${100 + w} ${y}Q100 ${y - 8} ${100 - w} ${y}Z`, K('#2f8a4f'));
     }
     return s + P('M10 186H190', thin);
   }
   if (kind === 'palm') {
-    s += P('M96 186Q90 120 112 70L120 72Q102 130 110 186Z', W);
+    s += P('M96 186Q90 120 112 70L120 72Q102 130 110 186Z', K('#b5835a'));
     for (let i = 0; i < 6; i++) {
       const a = -80 + i * 32, end = polar(116, 70, 70, a), mid = polar(116, 70, 40, a - 8);
-      s += P(`M116 70Q${fx(mid)} ${fx(end)}Q${fx(polar(116, 70, 46, a + 10))} 116 70Z`, W);
+      s += P(`M116 70Q${fx(mid)} ${fx(end)}Q${fx(polar(116, 70, 46, a + 10))} 116 70Z`, K('#4fae5a'));
     }
-    return s + C(110, 80, 7, W) + C(124, 82, 7, W) + P('M10 186H190', thin);
+    return s + C(110, 80, 7, K('#7a4a2a')) + C(124, 82, 7, K('#7a4a2a')) + P('M10 186H190', thin);
   }
   // branching trees
   const branch = (x, y, len, ang, depth) => {
     if (depth === 0 || len < 4) return '';
     const [x2, y2] = polar(x, y, len, ang);
     let out = L(x, y, x2, y2, `stroke-width="${Math.max(1.2, depth * 1.3)}"`);
-    if (depth <= 2 && kind === 'bloesem') out += C(x2, y2, 4, W);
+    if (depth <= 2 && kind === 'bloesem') out += C(x2, y2, 4, K('#f7b6c8'));
     if (depth <= 1 && kind === 'wilg') out += P(`M${fx([x2, y2])}q${r.range(-4, 4)} 20 ${r.range(-6, 6)} 40`, 'stroke-width="1"');
     const spread = r.range(18, 34);
     out += branch(x2, y2, len * r.range(0.66, 0.78), ang - spread, depth - 1);
@@ -78,8 +97,8 @@ function tree(seed) {
   };
   if (kind === 'loof') {
     const pts = Array.from({ length: 14 }, (_, i) => polar(100, 78, r.range(52, 66), i * (360 / 14)));
-    s += P('M90 186L94 120L80 100M106 120L120 96M94 120L106 120L110 186', W);
-    s += P(smooth(pts), W) + Array.from({ length: 6 }, () => { const [x, y] = polar(100, 78, r.range(10, 40), r.range(0, 360)); return P(`M${fx([x, y])}q5 -6 10 0`, thin); }).join('');
+    s += P('M90 186L94 120L80 100M106 120L120 96M94 120L106 120L110 186', K('#8a5a3a'));
+    s += P(smooth(pts), K(r.pick(['#5cb85c', '#7cc46c', '#f2954a', '#e8b83a']))) + Array.from({ length: 6 }, () => { const [x, y] = polar(100, 78, r.range(10, 40), r.range(0, 360)); return P(`M${fx([x, y])}q5 -6 10 0`, thin); }).join('');
     return s + P('M10 186H190', thin);
   }
   s += branch(100, 186, 46, 0, kind === 'kaal' ? 8 : 7);
@@ -91,11 +110,12 @@ function flower(seed) {
   const n = r.pick([5, 6, 8, 10, 12]);
   const shape = r.int(0, 3);
   const cx = 100, cy = 78, pr = r.range(36, 50);
+  const petalC = r.pick(['#e84a6a', '#f7a8c4', '#9b6bd6', '#5aa8e0', '#f2954a', '#f7d23e', '#ffffff', '#e84a3a']);
   let s = '';
   // stem and leaves
   s += P(`M100 ${cy + 20}Q${r.range(90, 110)} 140 100 190`, 'stroke-width="3"');
-  s += P('M100 150Q70 120 54 136Q72 160 100 150Z', W) + P('M100 150Q70 140 58 138', thin);
-  if (r.chance(0.6)) s += P('M101 170Q130 140 148 152Q130 176 101 170Z', W);
+  s += P('M100 150Q70 120 54 136Q72 160 100 150Z', K('#5cb85c')) + P('M100 150Q70 140 58 138', thin);
+  if (r.chance(0.6)) s += P('M101 170Q130 140 148 152Q130 176 101 170Z', K('#5cb85c'));
   const petal = (len, wid) => {
     if (shape === 0) return E(cx, cy - len / 2, wid, len / 2, W);
     if (shape === 1) return P(`M${cx} ${cy}Q${cx - wid * 1.6} ${cy - len * 0.6} ${cx} ${cy - len}Q${cx + wid * 1.6} ${cy - len * 0.6} ${cx} ${cy}Z`, W);
@@ -103,31 +123,32 @@ function flower(seed) {
     return P(`M${cx} ${cy}L${cx - wid} ${cy - len * 0.7}L${cx} ${cy - len}L${cx + wid} ${cy - len * 0.7}Z`, W);
   };
   const doubleLayer = r.chance(0.4);
-  if (doubleLayer) s += ROT(petal(pr * 1.1, pr * 0.24), n, cx, cy, 180 / n);
-  s += ROT(petal(pr, pr * 0.26), n, cx, cy);
+  if (doubleLayer) s += paint(ROT(petal(pr * 1.1, pr * 0.24), n, cx, cy, 180 / n), [petalC]);
+  s += paint(ROT(petal(pr, pr * 0.26), n, cx, cy), [petalC]);
   if (r.chance(0.5)) s += ROT(L(cx, cy - pr * 0.3, cx, cy - pr * 0.75, 'stroke-width="1.2"'), n, cx, cy);
-  s += C(cx, cy, pr * 0.28, W);
+  s += C(cx, cy, pr * 0.28, K('#f2c94c'));
   for (let i = 0; i < 7; i++) s += D(...polar(cx, cy, pr * 0.15, i * 51), 1.6);
   return s;
 }
 
 function cactus(seed) {
   const r = rng(seed);
-  let s = P('M56 140H144L134 190H66Z', W) + R(50, 130, 100, 16, 4, W);
+  let s = P('M56 140H144L134 190H66Z', K('#d9774a')) + R(50, 130, 100, 16, 4, K('#c8653c'));
   if (r.chance(0.5)) s += P('M66 160H134', thin);
   const kind = r.int(0, 2);
+  const green = r.pick(['#5cb85c', '#3f9a6f', '#7cc46c']);
   if (kind === 0) {
-    s += P('M84 130V50Q84 34 100 34Q116 34 116 50V130Z', W);
-    s += P('M84 96H70Q60 96 60 84V64Q60 56 67 56Q74 56 74 64V82H84', W);
-    if (r.chance(0.7)) s += P('M116 82H130Q140 82 140 70V54Q140 46 133 46Q126 46 126 54V68H116', W);
+    s += P('M84 130V50Q84 34 100 34Q116 34 116 50V130Z', K(green));
+    s += P('M84 96H70Q60 96 60 84V64Q60 56 67 56Q74 56 74 64V82H84', K(green));
+    if (r.chance(0.7)) s += P('M116 82H130Q140 82 140 70V54Q140 46 133 46Q126 46 126 54V68H116', K(green));
     s += P('M100 44V126', thin);
   } else if (kind === 1) {
-    s += E(100, 100, 42, 34, W) + P('M100 66V134M78 72Q70 100 78 128M122 72Q130 100 122 128', thin);
+    s += E(100, 100, 42, 34, K(green)) + P('M100 66V134M78 72Q70 100 78 128M122 72Q130 100 122 128', thin);
   } else {
-    s += E(84, 108, 22, 26, W) + E(118, 100, 20, 34, W) + E(100, 74, 14, 18, W);
+    s += E(84, 108, 22, 26, K(green)) + E(118, 100, 20, 34, K(green)) + E(100, 74, 14, 18, K(green));
   }
   for (let i = 0; i < 10; i++) { const x = r.range(72, 128), y = r.range(50, 124); s += P(`M${x.toFixed(1)} ${y.toFixed(1)}l-3 -3M${x.toFixed(1)} ${y.toFixed(1)}l3 -3`, 'stroke-width="1"'); }
-  if (r.chance(0.5)) s += ROT(E(100, 26, 4, 8, W), 5, 100, 34);
+  if (r.chance(0.5)) s += ROT(E(100, 26, 4, 8, K('#f7a8c4')), 5, 100, 34);
   return s;
 }
 
@@ -172,11 +193,12 @@ export const flowers = [
 function house(seed) {
   const r = rng(seed);
   const roof = ['zadel', 'trap', 'hals', 'klok', 'plat', 'schuur'][seed % 6];
+  const wallC = r.pick(['#c8664a', '#e8d8b8', '#a0522d', '#f2e6c8', '#8fb8d8', '#d88a6a']), roofC = r.pick(['#7a3a2a', '#3a4766', '#5a5a5a', '#a0422a']);
   const w = r.range(90, 120), x0 = 100 - w / 2, x1 = 100 + w / 2, base = 180, top = r.range(90, 110);
   let s = '';
   if (roof === 'zadel' || roof === 'schuur') {
-    if (r.chance(0.6)) s += R(x1 - 30, top - 50, 14, 30, 1, W);
-    s += P(`M${x0 - 8} ${top}L100 ${top - 60}L${x1 + 8} ${top}Z`, W);
+    if (r.chance(0.6)) s += R(x1 - 30, top - 50, 14, 30, 1, K('#8a4a3a'));
+    s += P(`M${x0 - 8} ${top}L100 ${top - 60}L${x1 + 8} ${top}Z`, K(roofC));
   }
   const gableTop = top - 70;
   if (roof === 'trap') {
@@ -185,12 +207,12 @@ function house(seed) {
     for (let i = 0; i < steps; i++) { const y = top - (i + 1) * ((top - gableTop) / (steps + 1)); pts.push([x0 + i * sw, y], [x0 + (i + 1) * sw, y]); }
     const peak = [[x0 + steps * sw, gableTop], [x1 - steps * sw, gableTop]];
     const right = pts.slice(1).map(([x, y]) => [200 - x, y]).reverse();
-    s += POLY([...pts, ...peak, ...right, [x1, top]], false, W);
+    s += POLY([...pts, ...peak, ...right, [x1, top]], false, K(wallC));
   }
-  if (roof === 'hals') s += P(`M${x0} ${top}Q${x0 + 14} ${top - 10} ${x0 + 24} ${top - 34}V${gableTop}H${x1 - 24}V${top - 34}Q${x1 - 14} ${top - 10} ${x1} ${top}Z`, W) + P(`M${x0 + 20} ${gableTop}L100 ${gableTop - 14}L${x1 - 20} ${gableTop}`, W);
-  if (roof === 'klok') s += P(`M${x0} ${top}Q${x0 + 4} ${top - 20} ${x0 + 22} ${top - 30}Q${x0 + 28} ${gableTop} 100 ${gableTop - 6}Q${x1 - 28} ${gableTop} ${x1 - 22} ${top - 30}Q${x1 - 4} ${top - 20} ${x1} ${top}Z`, W);
-  if (roof === 'plat') s += R(x0 - 6, top - 10, w + 12, 12, 2, W);
-  s += R(x0, top, w, base - top, 0, W);
+  if (roof === 'hals') s += P(`M${x0} ${top}Q${x0 + 14} ${top - 10} ${x0 + 24} ${top - 34}V${gableTop}H${x1 - 24}V${top - 34}Q${x1 - 14} ${top - 10} ${x1} ${top}Z`, K(wallC)) + P(`M${x0 + 20} ${gableTop}L100 ${gableTop - 14}L${x1 - 20} ${gableTop}`, K(wallC));
+  if (roof === 'klok') s += P(`M${x0} ${top}Q${x0 + 4} ${top - 20} ${x0 + 22} ${top - 30}Q${x0 + 28} ${gableTop} 100 ${gableTop - 6}Q${x1 - 28} ${gableTop} ${x1 - 22} ${top - 30}Q${x1 - 4} ${top - 20} ${x1} ${top}Z`, K(wallC));
+  if (roof === 'plat') s += R(x0 - 6, top - 10, w + 12, 12, 2, K('#5a5a5a'));
+  s += R(x0, top, w, base - top, 0, K(wallC));
   if (roof === 'schuur') s += P(`M${x0 - 8} ${top}L100 ${top - 60}L${x1 + 8} ${top}`, 'stroke-width="4"');
   // windows
   const cols = r.int(2, 3), rows = r.int(1, 2);
@@ -198,14 +220,14 @@ function house(seed) {
   for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
     const wx = x0 + ((i + 0.5) * w) / cols - ww / 2, wy = top + 12 + j * 34;
     if (wy + wh > base - 44 && Math.abs(wx + ww / 2 - 100) < 18) continue;
-    s += R(wx, wy, ww, wh, 1, W) + L(wx + ww / 2, wy, wx + ww / 2, wy + wh, thin) + L(wx, wy + wh / 2, wx + ww, wy + wh / 2, thin);
+    s += R(wx, wy, ww, wh, 1, K('#bfe3f7')) + L(wx + ww / 2, wy, wx + ww / 2, wy + wh, thin) + L(wx, wy + wh / 2, wx + ww, wy + wh / 2, thin);
     if (r.chance(0.4)) s += P(`M${wx - 3} ${wy}H${wx + ww + 3}`, 'stroke-width="3"');
   }
   if (roof === 'trap' || roof === 'hals' || roof === 'klok') s += C(100, gableTop + 26, 7) + L(100, gableTop + 19, 100, gableTop + 33, thin) + L(93, gableTop + 26, 107, gableTop + 26, thin);
   // door
-  s += r.chance(0.5) ? P(`M90 ${base}V${base - 32}Q100 ${base - 44} 110 ${base - 32}V${base}`, W) : R(90, base - 40, 20, 40, 1, W);
+  s += r.chance(0.5) ? P(`M90 ${base}V${base - 32}Q100 ${base - 44} 110 ${base - 32}V${base}`, K('#6b4226')) : R(90, base - 40, 20, 40, 1, K('#3a6a8a'));
   s += D(106, base - 18, 1.8) + P(`M84 ${base}h32v4h-32z`, thin);
-  if (r.chance(0.5)) s += Array.from({ length: 5 }, (_, i) => C(x0 - 2 + i * 6, base - 4, 4, W) + C(x1 + 2 - i * 6, base - 4, 4, W)).join('');
+  if (r.chance(0.5)) s += Array.from({ length: 5 }, (_, i) => C(x0 - 2 + i * 6, base - 4, 4, K('#e86a8a')) + C(x1 + 2 - i * 6, base - 4, 4, K('#f2c94c'))).join('');
   return s + P('M6 186H194', thin);
 }
 
@@ -216,13 +238,14 @@ function skyline(seed) {
     const w = r.range(18, 34), h = r.range(50, 150);
     const t = 180 - h;
     const kind = r.int(0, 3);
+    const bc = r.pick(['#9aa8c8', '#7a8aa8', '#b8c4d6', '#5a6a8a', '#c9b8a8']);
     if (kind === 1) s += P(`M${x + w / 2} ${t - 20}V${t}`, 'stroke-width="2"');
-    if (kind === 2) s += POLY([[x, t], [x + w / 2, t - 14], [x + w, t]], true, W);
-    s += R(x, t, Math.min(w, 194 - x), h, 0, W);
-    for (let wy = t + 8; wy < 170; wy += 12) for (let wx = x + 4; wx < x + w - 6; wx += 8) if (r.chance(0.7)) s += R(wx, wy, 4, 6, 0, thin);
+    if (kind === 2) s += POLY([[x, t], [x + w / 2, t - 14], [x + w, t]], true, K(bc));
+    s += R(x, t, Math.min(w, 194 - x), h, 0, K(bc));
+    for (let wy = t + 8; wy < 170; wy += 12) for (let wx = x + 4; wx < x + w - 6; wx += 8) if (r.chance(0.7)) s += R(wx, wy, 4, 6, 0, K('#ffe58a') + ' stroke-width="1.6"');
     x += w + r.range(-4, 4);
   }
-  return s + P('M0 180H200') + C(r.range(30, 170), 30, 10);
+  return R(0, 0, 200, 180, 0, K('#f7c9a0') + ' stroke="none"') + s + P('M0 180H200') + C(r.range(30, 170), 30, 10, K('#ffd34d'));
 }
 
 export const architecture = [
@@ -437,12 +460,14 @@ const FONTS = {
   sierlijk: 'Brush Script MT, Segoe Script, cursive',
 };
 
+const bubbleColor = (text) => ['#f7a8c4', '#7fc8f0', '#f7d23e', '#a8e0a0', '#c9a0f0', '#f7b07a'][[...text].reduce((a, c) => a + c.charCodeAt(0), 0) % 6];
+
 export function lettering(text, style = 'bubbel') {
   const len = [...text].length;
   const size = len === 1 ? 170 : len === 2 ? 110 : len <= 4 ? 84 : len <= 7 ? 66 : 48;
   const fit = len >= 3 ? `textLength="${style === 'bubbel' ? 168 : 176}" lengthAdjust="spacingAndGlyphs"` : '';
   const t = (a) => `<text x="100" y="${100 + size * 0.36}" font-size="${size}" text-anchor="middle" ${fit} font-family="${FONTS[style] || FONTS.bubbel}" font-weight="${style === 'sierlijk' ? 400 : 900}" ${a}>${text.replace(/[<&>"]/g, '')}</text>`;
-  if (style === 'bubbel') return t('stroke-width="16"') + t('stroke="#fff" fill="#fff" stroke-width="11"');
+  if (style === 'bubbel') return t('stroke-width="16"') + t(`stroke="#fff" data-ks="${bubbleColor(text)}" ${K(bubbleColor(text))} stroke-width="11"`);
   if (style === 'schaduw') return G(t('stroke-width="2.5" fill="#fff"'), 'translate(6 6)') + t('stroke-width="2.5" fill="#fff"');
   return t('stroke-width="2" fill="#fff"');
 }
@@ -461,12 +486,13 @@ export const letters = [
 function planet(seed) {
   const r = rng(seed);
   let s = '';
+  s += R(0, 0, 200, 200, 0, K('#1f2a4a') + ' stroke="none"');
   for (let i = 0; i < 14; i++) s += r.chance(0.5) ? star(r.range(10, 190), r.range(10, 190), r.range(3, 6), 1.5, 4) : D(r.range(10, 190), r.range(10, 190), 1.5);
   const pr = r.range(36, 56);
   const ring = r.chance(0.6);
   const tilt = r.range(-30, 30);
   if (ring) s += G(P(`M${100 - pr * 1.8} 100A${pr * 1.8} ${pr * 0.4} 0 0 0 ${100 + pr * 1.8} 100`), `rotate(${tilt} 100 100)`).replace('<path', '<path fill="none"');
-  s += C(100, 100, pr, W);
+  s += C(100, 100, pr, K(r.pick(['#f2954a', '#5aa8e0', '#e86a8a', '#9b6bd6', '#f2c94c', '#3fbf9f', '#e8543c'])));
   const bands = r.int(0, 4);
   for (let i = 0; i < bands; i++) { const y = r.range(-0.7, 0.7) * pr; const w = Math.sqrt(pr * pr - y * y); s += G(P(`M${100 - w} ${100 + y}Q100 ${100 + y + r.range(-8, 8)} ${100 + w} ${100 + y}`, thin), `rotate(${tilt} 100 100)`); }
   if (!bands) for (let i = 0; i < 4; i++) { const [x, y] = polar(100, 100, r.range(0, pr * 0.6), r.range(0, 360)); s += C(x, y, r.range(4, 9), thin); }
@@ -494,19 +520,20 @@ export const space = [
 function monster(seed) {
   const r = rng(seed);
   const pts = Array.from({ length: 10 }, (_, i) => polar(100, 110, r.range(50, 70), i * 36));
+  const body = r.pick(['#8fd16a', '#9b6bd6', '#5aa8e0', '#f2954a', '#e86a8a', '#3fbf9f', '#f7d23e']);
   let s = '';
   const horns = r.int(0, 2);
-  if (horns === 1) s += S(P('M66 64Q50 30 60 20Q66 40 80 54', W));
-  if (horns === 2) s += S(P('M80 56L72 20L94 48', W) + C(72, 18, 5, W));
+  if (horns === 1) s += S(P('M66 64Q50 30 60 20Q66 40 80 54', K('#f5efe6')));
+  if (horns === 2) s += S(P('M80 56L72 20L94 48', K(body)) + C(72, 18, 5, K('#f2c94c')));
   s += S(P(`M50 150L40 ${170 + r.range(0, 10)}M60 156L58 ${176 + r.range(0, 8)}`, 'stroke-width="6"'));
   s += S(P(`M46 110Q${r.range(14, 26)} ${r.range(90, 130)} ${r.range(18, 30)} ${r.range(60, 90)}`, 'stroke-width="4"'));
-  s += P(smooth(pts), W);
+  s += P(smooth(pts), K(body));
   const eyes = r.int(1, 3);
   if (eyes === 1) s += C(100, 92, 20, W) + C(100, 94, 9, 'fill="FILL"');
   if (eyes === 2) s += S(C(80, 92, 13, W) + C(81, 94, 6, 'fill="FILL"'));
   if (eyes === 3) s += C(100, 80, 10, W) + D(100, 82, 5) + S(C(76, 98, 10, W) + D(77, 100, 5));
   const mouthW = r.range(18, 30);
-  s += P(`M${100 - mouthW} 122Q100 ${150 + r.range(0, 10)} ${100 + mouthW} 122Z`, W);
+  s += P(`M${100 - mouthW} 122Q100 ${150 + r.range(0, 10)} ${100 + mouthW} 122Z`, K('#a8324a'));
   if (r.chance(0.7)) s += P(`M${100 - mouthW * 0.6} 124l5 8l5 -7M${100 + mouthW * 0.6} 124l-5 8l-5 -7`, W);
   for (let i = 0; i < r.int(0, 5); i++) { const [x, y] = polar(100, 110, r.range(30, 46), r.range(100, 260)); s += C(x, y, r.range(3, 7), thin); }
   return s;
@@ -531,7 +558,8 @@ function robot(seed) {
   const legs = r.chance(0.5);
   if (legs) s += S(R(78, 160, 14, 20, 2, W) + R(72, 178, 26, 10, 3, W));
   else s += P('M70 160H130V176Q130 186 120 186H80Q70 186 70 176Z', W) + [82, 100, 118].map((x) => C(x, 174, 6)).join('');
-  return s;
+  const bodyC = r.pick(['#9aa8c8', '#5aa8e0', '#f2954a', '#7cc46c', '#e86a8a', '#cfd6e6']);
+  return paint(s, ['#e84a3a', '#6a7488', '#6a7488', bodyC, '#6a7488', bodyC, '#6a7488']);
 }
 
 export const fantasy = [
@@ -558,7 +586,7 @@ export const fantasy = [
 
 function bauble(seed) {
   const r = rng(seed);
-  let s = P('M100 10V40', thin) + R(88, 36, 24, 14, 3, W) + C(100, 110, 62, W);
+  let s = P('M100 10V40', thin) + R(88, 36, 24, 14, 3, K('#d8b04a')) + C(100, 110, 62, K(r.pick(['#e84a3a', '#2f7fd8', '#3f9a4f', '#9b6bd6', '#f2c94c', '#e86a8a'])));
   const kind = seed % 4;
   if (kind === 0) s += P('M38 100Q100 120 162 100M40 126Q100 146 160 126', thin) + Array.from({ length: 6 }, (_, i) => star(58 + i * 17, 113 + Math.sin(i) * 3, 5, 2)).join('');
   if (kind === 1) s += P('M44 80Q60 96 76 80Q92 96 108 80Q124 96 140 80Q150 92 156 86M40 130Q56 146 72 130Q88 146 104 130Q120 146 136 130Q148 142 160 132', thin);
@@ -569,7 +597,7 @@ function bauble(seed) {
 
 function egg(seed) {
   const r = rng(seed);
-  let s = P('M100 20Q150 20 156 110Q160 180 100 180Q40 180 44 110Q50 20 100 20Z', W);
+  let s = P('M100 20Q150 20 156 110Q160 180 100 180Q40 180 44 110Q50 20 100 20Z', K(r.pick(['#f7a8c4', '#a8e0f0', '#f7e26b', '#c9a0f0', '#a8e0a0', '#f7c6a0'])));
   const bands = r.int(2, 4);
   for (let i = 0; i < bands; i++) {
     const y = 60 + i * (110 / bands) + r.range(-6, 6);

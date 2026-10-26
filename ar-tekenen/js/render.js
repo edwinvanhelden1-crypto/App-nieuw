@@ -1,4 +1,4 @@
-import { toSvg } from './svg.js';
+import { toSvg, isColored } from './svg.js';
 
 const svgUrl = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 
@@ -8,7 +8,8 @@ export function innerOf(item) {
   return innerCache.get(item.id);
 }
 
-export const thumbUrl = (item) => svgUrl(toSvg(innerOf(item), { width: 2.5 }));
+export const hasColor = (item) => !item.src && isColored(innerOf(item));
+export const thumbUrl = (item) => item.src || svgUrl(toSvg(innerOf(item), { width: 2.5, colored: true }));
 
 // Split a drawing into at most `max` steps for the learning mode. Clip paths
 // are needed by every step, so they are kept in front of each one.
@@ -56,15 +57,29 @@ function darknessToAlpha(ctx, w, h, color, gain = 1) {
   ctx.putImageData(data, 0, 0);
 }
 
-export async function renderSvgTo(canvas, inner, { color, width, mode }) {
+// Coloured drawings keep their colours; only the white paper becomes transparent.
+function whiteToAlpha(ctx, w, h) {
+  const data = ctx.getImageData(0, 0, w, h);
+  const px = data.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const d = 255 - Math.min(px[i], px[i + 1], px[i + 2]);
+    px[i + 3] = Math.min(255, d * 5);
+  }
+  ctx.putImageData(data, 0, 0);
+}
+
+export async function renderSvgTo(canvas, inner, { color, width, mode, kleur }) {
   const size = 1200;
   canvas.width = size;
   canvas.height = size;
-  const img = await loadImage(svgUrl(toSvg(inner, { color: '#000000', width, mode, bg: true }).replace('width="200" height="200"', `width="${size}" height="${size}"`)));
+  const colored = kleur && isColored(inner);
+  const svg = toSvg(inner, { color: colored ? color : '#000000', width, mode, bg: true, colored });
+  const img = await loadImage(svgUrl(svg.replace('width="200" height="200"', `width="${size}" height="${size}"`)));
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.clearRect(0, 0, size, size);
   ctx.drawImage(img, 0, 0, size, size);
-  darknessToAlpha(ctx, size, size, color);
+  if (colored) whiteToAlpha(ctx, size, size);
+  else darknessToAlpha(ctx, size, size, color);
 }
 
 export async function renderPhotoTo(canvas, img, { color, process, level }) {

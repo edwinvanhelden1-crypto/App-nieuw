@@ -1,0 +1,2076 @@
+{
+ "styles": {
+  "schets": "detailed black and white ink line art illustration, coloring book page, fine pen hatching and shading, clean pure white background, centered composition, high detail, no text, no watermark",
+  "kleur": "cute colorful cartoon illustration, clean bold black outlines, vibrant flat colors, soft shading, pure white background, centered, no text, no watermark",
+  "anime": "anime manga style illustration, clean crisp line art, soft cel shading, vibrant colors, pure white background, no text, no watermark",
+  "oneline": "minimalist continuous one line drawing, single black line on pure white background, elegant, no text",
+  "lijn": "clean simple black outline coloring page for kids, smooth uniform black lines, no shading, no hatching, no grey, pure white background, full body, centered, no text, no watermark",
+  "retro": "vintage 1930s rubber hose cartoon style, black and white with red and yellow accents, pie-cut eyes, white gloves, big shoes, clean bold outlines, pure white background, full body, no text, no watermark"
+ },
+ "categories": [
+  {
+   "id": "dieren",
+   "name": "Dieren",
+   "items": [
+    {
+     "title": "Koala",
+     "prompt": "cute baby koala sitting on a eucalyptus branch with leaves",
+     "style": "schets",
+     "file": "koala.webp"
+    },
+    {
+     "title": "Leeuw",
+     "prompt": "majestic lion portrait with flowing mane",
+     "style": "schets",
+     "file": "leeuw.webp"
+    },
+    {
+     "title": "Tijger",
+     "prompt": "tiger walking through tall grass",
+     "style": "schets",
+     "file": "tijger.webp"
+    },
+    {
+     "title": "Wolf",
+     "prompt": "wolf howling on a rock",
+     "style": "schets",
+     "file": "wolf.webp"
+    },
+    {
+     "title": "Vos",
+     "prompt": "cute fox curled up sleeping",
+     "style": "schets",
+     "file": "vos.webp"
+    },
+    {
+     "title": "Uil",
+     "prompt": "owl perched on a branch",
+     "style": "schets",
+     "file": "uil.webp"
+    },
+    {
+     "title": "Olifant",
+     "prompt": "baby elephant playing with water",
+     "style": "schets",
+     "file": "olifant.webp"
+    },
+    {
+     "title": "Paard",
+     "prompt": "galloping horse with flowing mane",
+     "style": "schets",
+     "file": "paard.webp"
+    },
+    {
+     "title": "Kat",
+     "prompt": "fluffy kitten playing with a ball of yarn",
+     "style": "schets",
+     "file": "kat.webp"
+    },
+    {
+     "title": "Puppy",
+     "prompt": "cute puppy sitting with big eyes",
+     "style": "schets",
+     "file": "puppy.webp"
+    },
+    {
+     "title": "Panda",
+     "prompt": "panda eating bamboo",
+     "style": "schets",
+     "file": "panda.webp"
+    },
+    {
+     "title": "Hert",
+     "prompt": "deer with antlers standing in the forest",
+     "style": "schets",
+     "file": "hert.webp"
+    },
+    {
+     "title": "Konijn",
+     "prompt": "bunny rabbit sitting in the grass",
+     "style": "schets",
+     "file": "konijn.webp"
+    },
+    {
+     "title": "Eekhoorn",
+     "prompt": "squirrel holding an acorn",
+     "style": "schets",
+     "file": "eekhoorn.webp"
+    },
+    {
+     "title": "Schildpad",
+     "prompt": "sea turtle swimming",
+     "style": "schets",
+     "file": "schildpad.webp"
+    },
+    {
+     "title": "Giraf",
+     "prompt": "giraffe eating leaves from a tree",
+     "style": "schets",
+     "file": "giraf.webp"
+    },
+    {
+     "title": "Beer",
+     "prompt": "brown bear standing in a river catching fish",
+     "style": "schets",
+     "file": "beer.webp"
+    },
+    {
+     "title": "Egel",
+     "prompt": "cute hedgehog with a mushroom",
+     "style": "schets",
+     "file": "egel.webp"
+    },
+    {
+     "title": "Vlinder",
+     "prompt": "butterfly with detailed patterned wings",
+     "style": "schets",
+     "file": "vlinder.webp"
+    },
+    {
+     "title": "Kameleon",
+     "prompt": "chameleon on a twig",
+     "style": "schets",
+     "file": "kameleon.webp"
+    },
+    {
+     "title": "Dolfijn",
+     "prompt": "dolphin jumping out of the water",
+     "style": "schets",
+     "file": "dolfijn.webp"
+    },
+    {
+     "title": "Wasbeer",
+     "prompt": "raccoon peeking out of a log",
+     "style": "schets",
+     "file": "wasbeer.webp"
+    },
+    {
+     "title": "Kat (kleur)",
+     "prompt": "cute cat sitting",
+     "style": "kleur",
+     "file": "kat-kleur.webp"
+    },
+    {
+     "title": "Puppy (kleur)",
+     "prompt": "happy puppy with a bone",
+     "style": "kleur",
+     "file": "puppy-kleur.webp"
+    },
+    {
+     "title": "Leeuw (kleur)",
+     "prompt": "friendly cartoon lion",
+     "style": "kleur",
+     "file": "leeuw-kleur.webp"
+    },
+    {
+     "title": "Olifant (kleur)",
+     "prompt": "baby elephant",
+     "style": "kleur",
+     "file": "olifant-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "vogels",
+   "name": "Vogels",
+   "items": [
+    {
+     "title": "Papegaai",
+     "prompt": "macaw parrot on a branch",
+     "style": "schets",
+     "file": "papegaai.webp"
+    },
+    {
+     "title": "Mus",
+     "prompt": "sparrow on a wire",
+     "style": "schets",
+     "file": "mus.webp"
+    },
+    {
+     "title": "IJsvogel",
+     "prompt": "kingfisher on a branch above water",
+     "style": "schets",
+     "file": "ijsvogel.webp"
+    },
+    {
+     "title": "Uil in vlucht",
+     "prompt": "owl flying with spread wings",
+     "style": "schets",
+     "file": "uil-in-vlucht.webp"
+    },
+    {
+     "title": "Kolibrie",
+     "prompt": "hummingbird drinking from a flower",
+     "style": "schets",
+     "file": "kolibrie.webp"
+    },
+    {
+     "title": "Adelaar",
+     "prompt": "bald eagle head portrait",
+     "style": "schets",
+     "file": "adelaar.webp"
+    },
+    {
+     "title": "Pauw",
+     "prompt": "peacock with open tail feathers",
+     "style": "schets",
+     "file": "pauw.webp"
+    },
+    {
+     "title": "Flamingo",
+     "prompt": "flamingo standing on one leg",
+     "style": "schets",
+     "file": "flamingo.webp"
+    },
+    {
+     "title": "Pinguïn",
+     "prompt": "penguin family on ice",
+     "style": "schets",
+     "file": "pinguin.webp"
+    },
+    {
+     "title": "Zwaan",
+     "prompt": "swan swimming on a lake",
+     "style": "schets",
+     "file": "zwaan.webp"
+    },
+    {
+     "title": "Toekan",
+     "prompt": "toucan on a tropical branch",
+     "style": "schets",
+     "file": "toekan.webp"
+    },
+    {
+     "title": "Roodborstje",
+     "prompt": "robin bird on a snowy branch",
+     "style": "schets",
+     "file": "roodborstje.webp"
+    },
+    {
+     "title": "Haan",
+     "prompt": "rooster crowing",
+     "style": "schets",
+     "file": "haan.webp"
+    },
+    {
+     "title": "Kraai",
+     "prompt": "crow sitting on a fence",
+     "style": "schets",
+     "file": "kraai.webp"
+    },
+    {
+     "title": "Papegaai (kleur)",
+     "prompt": "parrot",
+     "style": "kleur",
+     "file": "papegaai-kleur.webp"
+    },
+    {
+     "title": "Toekan (kleur)",
+     "prompt": "toucan",
+     "style": "kleur",
+     "file": "toekan-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "anime",
+   "name": "Anime",
+   "items": [
+    {
+     "title": "Anime jongen",
+     "prompt": "anime boy with spiky black hair and a jacket, upper body",
+     "style": "anime",
+     "file": "anime-jongen.webp"
+    },
+    {
+     "title": "Anime meisje met boek",
+     "prompt": "anime girl with long purple hair reading a book",
+     "style": "anime",
+     "file": "anime-meisje-met-boek.webp"
+    },
+    {
+     "title": "Anime meisje met kat",
+     "prompt": "anime girl hugging a cat",
+     "style": "anime",
+     "file": "anime-meisje-met-kat.webp"
+    },
+    {
+     "title": "Ninja",
+     "prompt": "anime ninja boy in action pose",
+     "style": "anime",
+     "file": "ninja.webp"
+    },
+    {
+     "title": "Magisch meisje",
+     "prompt": "magical girl with a wand and ribbons",
+     "style": "anime",
+     "file": "magisch-meisje.webp"
+    },
+    {
+     "title": "Samurai",
+     "prompt": "anime samurai with katana",
+     "style": "anime",
+     "file": "samurai.webp"
+    },
+    {
+     "title": "Schoolmeisje",
+     "prompt": "anime school girl with backpack waving",
+     "style": "anime",
+     "file": "schoolmeisje.webp"
+    },
+    {
+     "title": "Chibi meisje",
+     "prompt": "chibi anime girl with big eyes and twin tails",
+     "style": "anime",
+     "file": "chibi-meisje.webp"
+    },
+    {
+     "title": "Chibi jongen",
+     "prompt": "chibi anime boy with headphones",
+     "style": "anime",
+     "file": "chibi-jongen.webp"
+    },
+    {
+     "title": "Elfje",
+     "prompt": "anime elf girl with pointy ears in a forest",
+     "style": "anime",
+     "file": "elfje.webp"
+    },
+    {
+     "title": "Anime vos-meisje",
+     "prompt": "anime girl with fox ears and tail",
+     "style": "anime",
+     "file": "anime-vos-meisje.webp"
+    },
+    {
+     "title": "Held",
+     "prompt": "anime hero boy with sword and cape",
+     "style": "anime",
+     "file": "held.webp"
+    },
+    {
+     "title": "Anime meisje met bloemen",
+     "prompt": "anime girl with flowers in her hair, portrait",
+     "style": "anime",
+     "file": "anime-meisje-met-bloemen.webp"
+    },
+    {
+     "title": "Anime gamer",
+     "prompt": "anime boy playing video games",
+     "style": "anime",
+     "file": "anime-gamer.webp"
+    },
+    {
+     "title": "Anime schets jongen",
+     "prompt": "anime boy portrait",
+     "style": "schets",
+     "file": "anime-schets-jongen.webp"
+    },
+    {
+     "title": "Anime schets meisje",
+     "prompt": "anime girl portrait with long hair",
+     "style": "schets",
+     "file": "anime-schets-meisje.webp"
+    },
+    {
+     "title": "Chibi schets",
+     "prompt": "chibi character",
+     "style": "schets",
+     "file": "chibi-schets.webp"
+    }
+   ]
+  },
+  {
+   "id": "figuren",
+   "name": "Figuren (kleur & kleurplaat)",
+   "items": [
+    {
+     "title": "Elfje (kleurplaat)",
+     "prompt": "cute cartoon elf kid with pointy ears, scarf, belt and boots, full body",
+     "style": "lijn",
+     "file": "elfje-kleurplaat.webp"
+    },
+    {
+     "title": "Elfje (kleur)",
+     "prompt": "cute cartoon elf kid with pointy ears, scarf, belt and boots, full body",
+     "style": "kleur",
+     "file": "elfje-kleur.webp"
+    },
+    {
+     "title": "Kabouter (kleurplaat)",
+     "prompt": "cute cartoon garden gnome with red hat",
+     "style": "lijn",
+     "file": "kabouter-kleurplaat.webp"
+    },
+    {
+     "title": "Kabouter (kleur)",
+     "prompt": "cute cartoon garden gnome with red hat",
+     "style": "kleur",
+     "file": "kabouter-kleur.webp"
+    },
+    {
+     "title": "Fee (kleurplaat)",
+     "prompt": "cute cartoon fairy girl with wings",
+     "style": "lijn",
+     "file": "fee-kleurplaat.webp"
+    },
+    {
+     "title": "Fee (kleur)",
+     "prompt": "cute cartoon fairy girl with wings",
+     "style": "kleur",
+     "file": "fee-kleur.webp"
+    },
+    {
+     "title": "Piraatje (kleurplaat)",
+     "prompt": "cute cartoon pirate kid with hat and sword",
+     "style": "lijn",
+     "file": "piraatje-kleurplaat.webp"
+    },
+    {
+     "title": "Piraatje (kleur)",
+     "prompt": "cute cartoon pirate kid with hat and sword",
+     "style": "kleur",
+     "file": "piraatje-kleur.webp"
+    },
+    {
+     "title": "Heksje (kleurplaat)",
+     "prompt": "cute cartoon little witch girl with broom",
+     "style": "lijn",
+     "file": "heksje-kleurplaat.webp"
+    },
+    {
+     "title": "Heksje (kleur)",
+     "prompt": "cute cartoon little witch girl with broom",
+     "style": "kleur",
+     "file": "heksje-kleur.webp"
+    },
+    {
+     "title": "Tovenaartje (kleurplaat)",
+     "prompt": "cute cartoon wizard boy with star hat and wand",
+     "style": "lijn",
+     "file": "tovenaartje-kleurplaat.webp"
+    },
+    {
+     "title": "Tovenaartje (kleur)",
+     "prompt": "cute cartoon wizard boy with star hat and wand",
+     "style": "kleur",
+     "file": "tovenaartje-kleur.webp"
+    },
+    {
+     "title": "Vikingkind (kleurplaat)",
+     "prompt": "cute cartoon viking kid with horned helmet",
+     "style": "lijn",
+     "file": "vikingkind-kleurplaat.webp"
+    },
+    {
+     "title": "Vikingkind (kleur)",
+     "prompt": "cute cartoon viking kid with horned helmet",
+     "style": "kleur",
+     "file": "vikingkind-kleur.webp"
+    },
+    {
+     "title": "Ridder (kleurplaat)",
+     "prompt": "cute cartoon little knight with shield",
+     "style": "lijn",
+     "file": "ridder-kleurplaat.webp"
+    },
+    {
+     "title": "Ridder (kleur)",
+     "prompt": "cute cartoon little knight with shield",
+     "style": "kleur",
+     "file": "ridder-kleur.webp"
+    },
+    {
+     "title": "Prinses (kleurplaat)",
+     "prompt": "cute cartoon princess with crown and dress",
+     "style": "lijn",
+     "file": "prinses-kleurplaat.webp"
+    },
+    {
+     "title": "Prinses (kleur)",
+     "prompt": "cute cartoon princess with crown and dress",
+     "style": "kleur",
+     "file": "prinses-kleur.webp"
+    },
+    {
+     "title": "Cowboy (kleurplaat)",
+     "prompt": "cute cartoon cowboy kid with hat",
+     "style": "lijn",
+     "file": "cowboy-kleurplaat.webp"
+    },
+    {
+     "title": "Cowboy (kleur)",
+     "prompt": "cute cartoon cowboy kid with hat",
+     "style": "kleur",
+     "file": "cowboy-kleur.webp"
+    },
+    {
+     "title": "Ninja (kleurplaat)",
+     "prompt": "cute cartoon ninja kid",
+     "style": "lijn",
+     "file": "ninja-kleurplaat.webp"
+    },
+    {
+     "title": "Ninja (kleur)",
+     "prompt": "cute cartoon ninja kid",
+     "style": "kleur",
+     "file": "ninja-kleur.webp"
+    },
+    {
+     "title": "Zeemeermin (kleurplaat)",
+     "prompt": "cute cartoon mermaid girl",
+     "style": "lijn",
+     "file": "zeemeermin-kleurplaat.webp"
+    },
+    {
+     "title": "Zeemeermin (kleur)",
+     "prompt": "cute cartoon mermaid girl",
+     "style": "kleur",
+     "file": "zeemeermin-kleur.webp"
+    },
+    {
+     "title": "Astronautje (kleurplaat)",
+     "prompt": "cute cartoon kid astronaut",
+     "style": "lijn",
+     "file": "astronautje-kleurplaat.webp"
+    },
+    {
+     "title": "Astronautje (kleur)",
+     "prompt": "cute cartoon kid astronaut",
+     "style": "kleur",
+     "file": "astronautje-kleur.webp"
+    },
+    {
+     "title": "Superheldin (kleurplaat)",
+     "prompt": "cute cartoon superhero girl with cape",
+     "style": "lijn",
+     "file": "superheldin-kleurplaat.webp"
+    },
+    {
+     "title": "Superheldin (kleur)",
+     "prompt": "cute cartoon superhero girl with cape",
+     "style": "kleur",
+     "file": "superheldin-kleur.webp"
+    },
+    {
+     "title": "Holbewoner (kleurplaat)",
+     "prompt": "cute cartoon caveman kid with club",
+     "style": "lijn",
+     "file": "holbewoner-kleurplaat.webp"
+    },
+    {
+     "title": "Holbewoner (kleur)",
+     "prompt": "cute cartoon caveman kid with club",
+     "style": "kleur",
+     "file": "holbewoner-kleur.webp"
+    },
+    {
+     "title": "Robotjongen (kleurplaat)",
+     "prompt": "cute cartoon boy robot",
+     "style": "lijn",
+     "file": "robotjongen-kleurplaat.webp"
+    },
+    {
+     "title": "Robotjongen (kleur)",
+     "prompt": "cute cartoon boy robot",
+     "style": "kleur",
+     "file": "robotjongen-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "retro",
+   "name": "Retro cartoons",
+   "items": [
+    {
+     "title": "Retro kat",
+     "prompt": "cartoon cat waving",
+     "style": "retro",
+     "file": "retro-kat.webp"
+    },
+    {
+     "title": "Retro hond",
+     "prompt": "cartoon dog running happily",
+     "style": "retro",
+     "file": "retro-hond.webp"
+    },
+    {
+     "title": "Retro beer",
+     "prompt": "cartoon bear dancing",
+     "style": "retro",
+     "file": "retro-beer.webp"
+    },
+    {
+     "title": "Retro varken",
+     "prompt": "cartoon pig playing trumpet",
+     "style": "retro",
+     "file": "retro-varken.webp"
+    },
+    {
+     "title": "Retro koe",
+     "prompt": "cartoon cow tipping hat",
+     "style": "retro",
+     "file": "retro-koe.webp"
+    },
+    {
+     "title": "Retro kikker",
+     "prompt": "cartoon frog jumping",
+     "style": "retro",
+     "file": "retro-kikker.webp"
+    },
+    {
+     "title": "Retro uil",
+     "prompt": "cartoon owl reading book",
+     "style": "retro",
+     "file": "retro-uil.webp"
+    },
+    {
+     "title": "Retro konijn",
+     "prompt": "cartoon rabbit pointing up",
+     "style": "retro",
+     "file": "retro-konijn.webp"
+    }
+   ]
+  },
+  {
+   "id": "cartoon",
+   "name": "Cartoon",
+   "items": [
+    {
+     "title": "Jongen die zwaait",
+     "prompt": "cartoon boy waving hello",
+     "style": "kleur",
+     "file": "jongen-die-zwaait.webp"
+    },
+    {
+     "title": "Meisje met ballon",
+     "prompt": "cartoon girl holding a balloon",
+     "style": "kleur",
+     "file": "meisje-met-ballon.webp"
+    },
+    {
+     "title": "Skateboarder",
+     "prompt": "cartoon kid on a skateboard",
+     "style": "kleur",
+     "file": "skateboarder.webp"
+    },
+    {
+     "title": "Voetballer",
+     "prompt": "cartoon kid playing soccer",
+     "style": "kleur",
+     "file": "voetballer.webp"
+    },
+    {
+     "title": "Superheld",
+     "prompt": "cartoon kid superhero with cape",
+     "style": "kleur",
+     "file": "superheld.webp"
+    },
+    {
+     "title": "Prinses",
+     "prompt": "cartoon princess with crown",
+     "style": "kleur",
+     "file": "prinses.webp"
+    },
+    {
+     "title": "Piraat",
+     "prompt": "cartoon pirate with parrot",
+     "style": "kleur",
+     "file": "piraat.webp"
+    },
+    {
+     "title": "Astronaut",
+     "prompt": "cartoon astronaut floating",
+     "style": "kleur",
+     "file": "astronaut.webp"
+    },
+    {
+     "title": "Ridder",
+     "prompt": "cartoon knight with shield",
+     "style": "kleur",
+     "file": "ridder.webp"
+    },
+    {
+     "title": "Tovenaar",
+     "prompt": "cartoon wizard with hat and wand",
+     "style": "kleur",
+     "file": "tovenaar.webp"
+    },
+    {
+     "title": "Clown",
+     "prompt": "friendly cartoon clown",
+     "style": "kleur",
+     "file": "clown.webp"
+    },
+    {
+     "title": "Kok",
+     "prompt": "cartoon chef holding a cake",
+     "style": "kleur",
+     "file": "kok.webp"
+    },
+    {
+     "title": "Brandweerman",
+     "prompt": "cartoon firefighter",
+     "style": "kleur",
+     "file": "brandweerman.webp"
+    },
+    {
+     "title": "Robot",
+     "prompt": "cute cartoon robot",
+     "style": "kleur",
+     "file": "robot.webp"
+    },
+    {
+     "title": "Dinosaurus",
+     "prompt": "cute cartoon dinosaur",
+     "style": "kleur",
+     "file": "dinosaurus.webp"
+    },
+    {
+     "title": "Eenhoorn",
+     "prompt": "cute cartoon unicorn",
+     "style": "kleur",
+     "file": "eenhoorn.webp"
+    },
+    {
+     "title": "Draakje",
+     "prompt": "cute baby dragon",
+     "style": "kleur",
+     "file": "draakje.webp"
+    },
+    {
+     "title": "Monstertje",
+     "prompt": "cute friendly little monster",
+     "style": "kleur",
+     "file": "monstertje.webp"
+    },
+    {
+     "title": "Jongen die zwaait (kleurplaat)",
+     "prompt": "cartoon boy waving hello",
+     "style": "lijn",
+     "file": "jongen-die-zwaait-kleurplaat.webp"
+    },
+    {
+     "title": "Meisje met ballon (kleurplaat)",
+     "prompt": "cartoon girl holding a balloon",
+     "style": "lijn",
+     "file": "meisje-met-ballon-kleurplaat.webp"
+    },
+    {
+     "title": "Skateboarder (kleurplaat)",
+     "prompt": "cartoon kid on a skateboard",
+     "style": "lijn",
+     "file": "skateboarder-kleurplaat.webp"
+    },
+    {
+     "title": "Voetballer (kleurplaat)",
+     "prompt": "cartoon kid playing soccer",
+     "style": "lijn",
+     "file": "voetballer-kleurplaat.webp"
+    },
+    {
+     "title": "Superheld (kleurplaat)",
+     "prompt": "cartoon kid superhero with cape",
+     "style": "lijn",
+     "file": "superheld-kleurplaat.webp"
+    },
+    {
+     "title": "Prinses (kleurplaat)",
+     "prompt": "cartoon princess with crown",
+     "style": "lijn",
+     "file": "prinses-kleurplaat.webp"
+    },
+    {
+     "title": "Piraat (kleurplaat)",
+     "prompt": "cartoon pirate with parrot",
+     "style": "lijn",
+     "file": "piraat-kleurplaat.webp"
+    },
+    {
+     "title": "Astronaut (kleurplaat)",
+     "prompt": "cartoon astronaut floating",
+     "style": "lijn",
+     "file": "astronaut-kleurplaat.webp"
+    }
+   ]
+  },
+  {
+   "id": "portret",
+   "name": "Portret",
+   "items": [
+    {
+     "title": "Vrouw met krullen",
+     "prompt": "portrait of a woman with curly hair smiling",
+     "style": "schets",
+     "file": "vrouw-met-krullen.webp"
+    },
+    {
+     "title": "Man met baard",
+     "prompt": "portrait of a man with a beard",
+     "style": "schets",
+     "file": "man-met-baard.webp"
+    },
+    {
+     "title": "Oude man",
+     "prompt": "portrait of an old man with wrinkles",
+     "style": "schets",
+     "file": "oude-man.webp"
+    },
+    {
+     "title": "Meisje met vlechten",
+     "prompt": "portrait of a girl with braids",
+     "style": "schets",
+     "file": "meisje-met-vlechten.webp"
+    },
+    {
+     "title": "Jongen met pet",
+     "prompt": "portrait of a boy wearing a cap",
+     "style": "schets",
+     "file": "jongen-met-pet.webp"
+    },
+    {
+     "title": "Vrouw met hoed",
+     "prompt": "portrait of a woman wearing a sun hat",
+     "style": "schets",
+     "file": "vrouw-met-hoed.webp"
+    },
+    {
+     "title": "Profiel",
+     "prompt": "side profile portrait of a woman",
+     "style": "schets",
+     "file": "profiel.webp"
+    },
+    {
+     "title": "Oma",
+     "prompt": "portrait of a smiling grandmother with glasses",
+     "style": "schets",
+     "file": "oma.webp"
+    },
+    {
+     "title": "Baby",
+     "prompt": "portrait of a happy baby",
+     "style": "schets",
+     "file": "baby.webp"
+    },
+    {
+     "title": "Vrouw met knot",
+     "prompt": "portrait of a woman with hair in a bun",
+     "style": "schets",
+     "file": "vrouw-met-knot.webp"
+    },
+    {
+     "title": "Lachende man",
+     "prompt": "portrait of a laughing young man",
+     "style": "schets",
+     "file": "lachende-man.webp"
+    },
+    {
+     "title": "Vrouw met sjaal",
+     "prompt": "portrait of a woman with a scarf",
+     "style": "schets",
+     "file": "vrouw-met-sjaal.webp"
+    }
+   ]
+  },
+  {
+   "id": "aesthetic",
+   "name": "Aesthetic",
+   "items": [
+    {
+     "title": "Meisje bij raam",
+     "prompt": "girl sitting by a window with plants reading",
+     "style": "schets",
+     "file": "meisje-bij-raam.webp"
+    },
+    {
+     "title": "Café-tafel",
+     "prompt": "aesthetic cafe table with coffee and croissant",
+     "style": "schets",
+     "file": "cafe-tafel.webp"
+    },
+    {
+     "title": "Kamer met planten",
+     "prompt": "cozy room with plants and books",
+     "style": "schets",
+     "file": "kamer-met-planten.webp"
+    },
+    {
+     "title": "Fiets met bloemen",
+     "prompt": "bicycle with a basket of flowers",
+     "style": "schets",
+     "file": "fiets-met-bloemen.webp"
+    },
+    {
+     "title": "Meisje met paraplu",
+     "prompt": "girl with umbrella in the rain",
+     "style": "schets",
+     "file": "meisje-met-paraplu.webp"
+    },
+    {
+     "title": "Bureau",
+     "prompt": "aesthetic desk with lamp, laptop and plants",
+     "style": "schets",
+     "file": "bureau.webp"
+    },
+    {
+     "title": "Boekenkast",
+     "prompt": "bookshelf with books and plants",
+     "style": "schets",
+     "file": "boekenkast.webp"
+    },
+    {
+     "title": "Theepot en kopjes",
+     "prompt": "teapot and cups with flowers",
+     "style": "schets",
+     "file": "theepot-en-kopjes.webp"
+    },
+    {
+     "title": "Vaas met bloemen",
+     "prompt": "vase with wild flowers",
+     "style": "schets",
+     "file": "vaas-met-bloemen.webp"
+    },
+    {
+     "title": "Hand met bloem",
+     "prompt": "hand holding a flower",
+     "style": "schets",
+     "file": "hand-met-bloem.webp"
+    },
+    {
+     "title": "Kaarsen en boeken",
+     "prompt": "candles and stacked books",
+     "style": "schets",
+     "file": "kaarsen-en-boeken.webp"
+    },
+    {
+     "title": "Zonnehoed en tas",
+     "prompt": "summer hat and bag aesthetic",
+     "style": "schets",
+     "file": "zonnehoed-en-tas.webp"
+    }
+   ]
+  },
+  {
+   "id": "anatomie",
+   "name": "Anatomie",
+   "items": [
+    {
+     "title": "Hand",
+     "prompt": "realistic open hand study",
+     "style": "schets",
+     "file": "hand.webp"
+    },
+    {
+     "title": "Vuist",
+     "prompt": "realistic fist study",
+     "style": "schets",
+     "file": "vuist.webp"
+    },
+    {
+     "title": "Oog",
+     "prompt": "realistic human eye study",
+     "style": "schets",
+     "file": "oog.webp"
+    },
+    {
+     "title": "Lippen",
+     "prompt": "realistic lips study",
+     "style": "schets",
+     "file": "lippen.webp"
+    },
+    {
+     "title": "Neus",
+     "prompt": "realistic nose study",
+     "style": "schets",
+     "file": "neus.webp"
+    },
+    {
+     "title": "Oor",
+     "prompt": "realistic ear study",
+     "style": "schets",
+     "file": "oor.webp"
+    },
+    {
+     "title": "Voeten",
+     "prompt": "realistic feet study",
+     "style": "schets",
+     "file": "voeten.webp"
+    },
+    {
+     "title": "Handen gevouwen",
+     "prompt": "folded hands study",
+     "style": "schets",
+     "file": "handen-gevouwen.webp"
+    },
+    {
+     "title": "Gezicht van voren",
+     "prompt": "front face proportions study",
+     "style": "schets",
+     "file": "gezicht-van-voren.webp"
+    },
+    {
+     "title": "Schedel",
+     "prompt": "human skull study",
+     "style": "schets",
+     "file": "schedel.webp"
+    },
+    {
+     "title": "Wijzende hand",
+     "prompt": "hand pointing finger study",
+     "style": "schets",
+     "file": "wijzende-hand.webp"
+    },
+    {
+     "title": "Hand met potlood",
+     "prompt": "hand holding a pencil study",
+     "style": "schets",
+     "file": "hand-met-potlood.webp"
+    }
+   ]
+  },
+  {
+   "id": "natuur",
+   "name": "Natuur",
+   "items": [
+    {
+     "title": "Bergen",
+     "prompt": "mountain landscape with pine trees and lake",
+     "style": "schets",
+     "file": "bergen.webp"
+    },
+    {
+     "title": "Bos",
+     "prompt": "forest path with tall trees",
+     "style": "schets",
+     "file": "bos.webp"
+    },
+    {
+     "title": "Waterval",
+     "prompt": "waterfall in the jungle",
+     "style": "schets",
+     "file": "waterval.webp"
+    },
+    {
+     "title": "Strand",
+     "prompt": "beach with palm trees and waves",
+     "style": "schets",
+     "file": "strand.webp"
+    },
+    {
+     "title": "Zonsondergang",
+     "prompt": "sunset over the sea with clouds",
+     "style": "schets",
+     "file": "zonsondergang.webp"
+    },
+    {
+     "title": "Boom",
+     "prompt": "big old oak tree",
+     "style": "schets",
+     "file": "boom.webp"
+    },
+    {
+     "title": "Weide",
+     "prompt": "meadow with wildflowers",
+     "style": "schets",
+     "file": "weide.webp"
+    },
+    {
+     "title": "Rivier",
+     "prompt": "river through a valley",
+     "style": "schets",
+     "file": "rivier.webp"
+    },
+    {
+     "title": "Molen in landschap",
+     "prompt": "dutch windmill in a landscape with tulips",
+     "style": "schets",
+     "file": "molen-in-landschap.webp"
+    },
+    {
+     "title": "Vuurtoren aan zee",
+     "prompt": "lighthouse on rocks by the sea",
+     "style": "schets",
+     "file": "vuurtoren-aan-zee.webp"
+    },
+    {
+     "title": "Paddenstoelen",
+     "prompt": "mushrooms in the forest",
+     "style": "schets",
+     "file": "paddenstoelen.webp"
+    },
+    {
+     "title": "Woestijn",
+     "prompt": "desert with cactus and dunes",
+     "style": "schets",
+     "file": "woestijn.webp"
+    },
+    {
+     "title": "Landschap (kleur)",
+     "prompt": "landscape with mountains and lake",
+     "style": "kleur",
+     "file": "landschap-kleur.webp"
+    },
+    {
+     "title": "Zonsondergang (kleur)",
+     "prompt": "sunset beach",
+     "style": "kleur",
+     "file": "zonsondergang-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "voorwerpen",
+   "name": "Voorwerpen",
+   "items": [
+    {
+     "title": "Dobbelstenen",
+     "prompt": "two dice",
+     "style": "schets",
+     "file": "dobbelstenen.webp"
+    },
+    {
+     "title": "Papieren vliegtuig",
+     "prompt": "paper airplane flying",
+     "style": "schets",
+     "file": "papieren-vliegtuig.webp"
+    },
+    {
+     "title": "Ster",
+     "prompt": "3d geometric star",
+     "style": "schets",
+     "file": "ster.webp"
+    },
+    {
+     "title": "Camera",
+     "prompt": "vintage camera",
+     "style": "schets",
+     "file": "camera.webp"
+    },
+    {
+     "title": "Wekker",
+     "prompt": "vintage alarm clock",
+     "style": "schets",
+     "file": "wekker.webp"
+    },
+    {
+     "title": "Sleutels",
+     "prompt": "antique keys on a ring",
+     "style": "schets",
+     "file": "sleutels.webp"
+    },
+    {
+     "title": "Boek",
+     "prompt": "open old book with pages",
+     "style": "schets",
+     "file": "boek.webp"
+    },
+    {
+     "title": "Lamp",
+     "prompt": "old oil lamp",
+     "style": "schets",
+     "file": "lamp.webp"
+    },
+    {
+     "title": "Gitaar",
+     "prompt": "acoustic guitar",
+     "style": "schets",
+     "file": "gitaar.webp"
+    },
+    {
+     "title": "Kroon",
+     "prompt": "royal crown with jewels",
+     "style": "schets",
+     "file": "kroon.webp"
+    },
+    {
+     "title": "Zandloper",
+     "prompt": "hourglass",
+     "style": "schets",
+     "file": "zandloper.webp"
+    },
+    {
+     "title": "Kompas",
+     "prompt": "antique compass",
+     "style": "schets",
+     "file": "kompas.webp"
+    },
+    {
+     "title": "Sneakers",
+     "prompt": "pair of sneakers",
+     "style": "schets",
+     "file": "sneakers.webp"
+    },
+    {
+     "title": "Theekop",
+     "prompt": "teacup with saucer",
+     "style": "schets",
+     "file": "theekop.webp"
+    }
+   ]
+  },
+  {
+   "id": "muziek",
+   "name": "Muziek",
+   "items": [
+    {
+     "title": "Trompet",
+     "prompt": "trumpet",
+     "style": "schets",
+     "file": "trompet.webp"
+    },
+    {
+     "title": "Harp",
+     "prompt": "harp",
+     "style": "schets",
+     "file": "harp.webp"
+    },
+    {
+     "title": "Cello",
+     "prompt": "cello",
+     "style": "schets",
+     "file": "cello.webp"
+    },
+    {
+     "title": "Viool",
+     "prompt": "violin with bow",
+     "style": "schets",
+     "file": "viool.webp"
+    },
+    {
+     "title": "Piano",
+     "prompt": "grand piano",
+     "style": "schets",
+     "file": "piano.webp"
+    },
+    {
+     "title": "Saxofoon",
+     "prompt": "saxophone",
+     "style": "schets",
+     "file": "saxofoon.webp"
+    },
+    {
+     "title": "Drumstel",
+     "prompt": "drum kit",
+     "style": "schets",
+     "file": "drumstel.webp"
+    },
+    {
+     "title": "Elektrische gitaar",
+     "prompt": "electric guitar",
+     "style": "schets",
+     "file": "elektrische-gitaar.webp"
+    },
+    {
+     "title": "Koptelefoon",
+     "prompt": "headphones",
+     "style": "schets",
+     "file": "koptelefoon.webp"
+    },
+    {
+     "title": "Microfoon",
+     "prompt": "vintage microphone",
+     "style": "schets",
+     "file": "microfoon.webp"
+    },
+    {
+     "title": "Accordeon",
+     "prompt": "accordion",
+     "style": "schets",
+     "file": "accordeon.webp"
+    },
+    {
+     "title": "Fluit",
+     "prompt": "flute",
+     "style": "schets",
+     "file": "fluit.webp"
+    }
+   ]
+  },
+  {
+   "id": "mensen",
+   "name": "Mensen",
+   "items": [
+    {
+     "title": "Wandelaar",
+     "prompt": "man walking with a cane in the city street",
+     "style": "schets",
+     "file": "wandelaar.webp"
+    },
+    {
+     "title": "Gitarist",
+     "prompt": "street musician playing guitar",
+     "style": "schets",
+     "file": "gitarist.webp"
+    },
+    {
+     "title": "Danseres",
+     "prompt": "ballet dancer in a pose",
+     "style": "schets",
+     "file": "danseres.webp"
+    },
+    {
+     "title": "Fietser",
+     "prompt": "person riding a bicycle",
+     "style": "schets",
+     "file": "fietser.webp"
+    },
+    {
+     "title": "Lezend meisje",
+     "prompt": "girl reading under a tree",
+     "style": "schets",
+     "file": "lezend-meisje.webp"
+    },
+    {
+     "title": "Hardloper",
+     "prompt": "runner sprinting",
+     "style": "schets",
+     "file": "hardloper.webp"
+    },
+    {
+     "title": "Moeder en kind",
+     "prompt": "mother holding a child",
+     "style": "schets",
+     "file": "moeder-en-kind.webp"
+    },
+    {
+     "title": "Schilder",
+     "prompt": "painter at an easel",
+     "style": "schets",
+     "file": "schilder.webp"
+    },
+    {
+     "title": "Skateboarder",
+     "prompt": "teenager on a skateboard",
+     "style": "schets",
+     "file": "skateboarder.webp"
+    },
+    {
+     "title": "Voetballer",
+     "prompt": "soccer player kicking a ball",
+     "style": "schets",
+     "file": "voetballer.webp"
+    }
+   ]
+  },
+  {
+   "id": "architectuur",
+   "name": "Architectuur",
+   "items": [
+    {
+     "title": "Grachtenpanden",
+     "prompt": "amsterdam canal houses with bicycles",
+     "style": "schets",
+     "file": "grachtenpanden.webp"
+    },
+    {
+     "title": "Kasteel",
+     "prompt": "fairytale castle on a hill",
+     "style": "schets",
+     "file": "kasteel.webp"
+    },
+    {
+     "title": "Trap met bogen",
+     "prompt": "old stairs with arches and plants",
+     "style": "schets",
+     "file": "trap-met-bogen.webp"
+    },
+    {
+     "title": "Tempel",
+     "prompt": "asian temple",
+     "style": "schets",
+     "file": "tempel.webp"
+    },
+    {
+     "title": "Eiffeltoren",
+     "prompt": "eiffel tower",
+     "style": "schets",
+     "file": "eiffeltoren.webp"
+    },
+    {
+     "title": "Kerk",
+     "prompt": "old church with tower",
+     "style": "schets",
+     "file": "kerk.webp"
+    },
+    {
+     "title": "Huisje",
+     "prompt": "cozy cottage with garden",
+     "style": "schets",
+     "file": "huisje.webp"
+    },
+    {
+     "title": "Brug",
+     "prompt": "old stone bridge over a river",
+     "style": "schets",
+     "file": "brug.webp"
+    },
+    {
+     "title": "Straatje",
+     "prompt": "narrow european street with cafes",
+     "style": "schets",
+     "file": "straatje.webp"
+    },
+    {
+     "title": "Vuurtoren",
+     "prompt": "lighthouse",
+     "style": "schets",
+     "file": "vuurtoren.webp"
+    },
+    {
+     "title": "Molen",
+     "prompt": "dutch windmill",
+     "style": "schets",
+     "file": "molen.webp"
+    },
+    {
+     "title": "Boomhut",
+     "prompt": "treehouse",
+     "style": "schets",
+     "file": "boomhut.webp"
+    }
+   ]
+  },
+  {
+   "id": "oneline",
+   "name": "One Line",
+   "items": [
+    {
+     "title": "Olifant",
+     "prompt": "elephant",
+     "style": "oneline",
+     "file": "olifant.webp"
+    },
+    {
+     "title": "Twee gezichten",
+     "prompt": "two faces kissing",
+     "style": "oneline",
+     "file": "twee-gezichten.webp"
+    },
+    {
+     "title": "Bergen en zon",
+     "prompt": "mountains and sun",
+     "style": "oneline",
+     "file": "bergen-en-zon.webp"
+    },
+    {
+     "title": "Kat",
+     "prompt": "cat",
+     "style": "oneline",
+     "file": "kat.webp"
+    },
+    {
+     "title": "Hand",
+     "prompt": "hand holding a flower",
+     "style": "oneline",
+     "file": "hand.webp"
+    },
+    {
+     "title": "Vrouwengezicht",
+     "prompt": "woman face",
+     "style": "oneline",
+     "file": "vrouwengezicht.webp"
+    },
+    {
+     "title": "Bloem",
+     "prompt": "flower",
+     "style": "oneline",
+     "file": "bloem.webp"
+    },
+    {
+     "title": "Vogel",
+     "prompt": "bird flying",
+     "style": "oneline",
+     "file": "vogel.webp"
+    },
+    {
+     "title": "Hart",
+     "prompt": "heart with hands",
+     "style": "oneline",
+     "file": "hart.webp"
+    },
+    {
+     "title": "Vis",
+     "prompt": "fish",
+     "style": "oneline",
+     "file": "vis.webp"
+    }
+   ]
+  },
+  {
+   "id": "eten",
+   "name": "Eten & café",
+   "items": [
+    {
+     "title": "Donuts",
+     "prompt": "stack of donuts",
+     "style": "schets",
+     "file": "donuts.webp"
+    },
+    {
+     "title": "IJscoupe",
+     "prompt": "ice cream sundae with cherry",
+     "style": "schets",
+     "file": "ijscoupe.webp"
+    },
+    {
+     "title": "Café-terras",
+     "prompt": "cafe terrace with umbrella",
+     "style": "schets",
+     "file": "cafe-terras.webp"
+    },
+    {
+     "title": "Koffie",
+     "prompt": "cup of coffee with latte art and coffee beans",
+     "style": "schets",
+     "file": "koffie.webp"
+    },
+    {
+     "title": "Taart",
+     "prompt": "layered cake with strawberries",
+     "style": "schets",
+     "file": "taart.webp"
+    },
+    {
+     "title": "Croissants",
+     "prompt": "croissants in a basket",
+     "style": "schets",
+     "file": "croissants.webp"
+    },
+    {
+     "title": "Hamburger",
+     "prompt": "big hamburger",
+     "style": "schets",
+     "file": "hamburger.webp"
+    },
+    {
+     "title": "Pizza",
+     "prompt": "pizza",
+     "style": "schets",
+     "file": "pizza.webp"
+    },
+    {
+     "title": "Fruitmand",
+     "prompt": "fruit basket",
+     "style": "schets",
+     "file": "fruitmand.webp"
+    },
+    {
+     "title": "Cupcakes",
+     "prompt": "cupcakes",
+     "style": "schets",
+     "file": "cupcakes.webp"
+    },
+    {
+     "title": "Donut (kleur)",
+     "prompt": "donut with sprinkles",
+     "style": "kleur",
+     "file": "donut-kleur.webp"
+    },
+    {
+     "title": "IJsje (kleur)",
+     "prompt": "ice cream cone",
+     "style": "kleur",
+     "file": "ijsje-kleur.webp"
+    },
+    {
+     "title": "Cupcake (kleur)",
+     "prompt": "cupcake",
+     "style": "kleur",
+     "file": "cupcake-kleur.webp"
+    },
+    {
+     "title": "Bubble tea (kleur)",
+     "prompt": "bubble tea",
+     "style": "kleur",
+     "file": "bubble-tea-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "voertuigen",
+   "name": "Voertuigen",
+   "items": [
+    {
+     "title": "Sportauto",
+     "prompt": "red sports car",
+     "style": "kleur",
+     "file": "sportauto.webp"
+    },
+    {
+     "title": "Oldtimer",
+     "prompt": "vintage classic car",
+     "style": "kleur",
+     "file": "oldtimer.webp"
+    },
+    {
+     "title": "Politieauto",
+     "prompt": "police car",
+     "style": "kleur",
+     "file": "politieauto.webp"
+    },
+    {
+     "title": "Brandweerauto",
+     "prompt": "fire truck",
+     "style": "kleur",
+     "file": "brandweerauto.webp"
+    },
+    {
+     "title": "Bus",
+     "prompt": "school bus",
+     "style": "kleur",
+     "file": "bus.webp"
+    },
+    {
+     "title": "Raceauto",
+     "prompt": "race car",
+     "style": "kleur",
+     "file": "raceauto.webp"
+    },
+    {
+     "title": "Jeep",
+     "prompt": "off-road jeep",
+     "style": "kleur",
+     "file": "jeep.webp"
+    },
+    {
+     "title": "Motor",
+     "prompt": "motorcycle",
+     "style": "kleur",
+     "file": "motor.webp"
+    },
+    {
+     "title": "Vliegtuig",
+     "prompt": "airplane",
+     "style": "kleur",
+     "file": "vliegtuig.webp"
+    },
+    {
+     "title": "Helikopter",
+     "prompt": "helicopter",
+     "style": "kleur",
+     "file": "helikopter.webp"
+    },
+    {
+     "title": "Trein",
+     "prompt": "steam train",
+     "style": "kleur",
+     "file": "trein.webp"
+    },
+    {
+     "title": "Tractor",
+     "prompt": "farm tractor",
+     "style": "kleur",
+     "file": "tractor.webp"
+    },
+    {
+     "title": "Zeilboot",
+     "prompt": "sailboat",
+     "style": "kleur",
+     "file": "zeilboot.webp"
+    },
+    {
+     "title": "Raket",
+     "prompt": "rocket",
+     "style": "kleur",
+     "file": "raket.webp"
+    },
+    {
+     "title": "Sportauto (schets)",
+     "prompt": "sports car",
+     "style": "schets",
+     "file": "sportauto-schets.webp"
+    },
+    {
+     "title": "Oldtimer (schets)",
+     "prompt": "vintage car",
+     "style": "schets",
+     "file": "oldtimer-schets.webp"
+    },
+    {
+     "title": "Motor (schets)",
+     "prompt": "motorcycle",
+     "style": "schets",
+     "file": "motor-schets.webp"
+    },
+    {
+     "title": "Scooter (schets)",
+     "prompt": "vespa scooter",
+     "style": "schets",
+     "file": "scooter-schets.webp"
+    }
+   ]
+  },
+  {
+   "id": "kawaii",
+   "name": "Kawaii",
+   "items": [
+    {
+     "title": "Kawaii kat",
+     "prompt": "kawaii cute cat",
+     "style": "kleur",
+     "file": "kawaii-kat.webp"
+    },
+    {
+     "title": "Kawaii panda",
+     "prompt": "kawaii panda",
+     "style": "kleur",
+     "file": "kawaii-panda.webp"
+    },
+    {
+     "title": "Kawaii eenhoorn",
+     "prompt": "kawaii unicorn",
+     "style": "kleur",
+     "file": "kawaii-eenhoorn.webp"
+    },
+    {
+     "title": "Kawaii avocado",
+     "prompt": "kawaii avocado",
+     "style": "kleur",
+     "file": "kawaii-avocado.webp"
+    },
+    {
+     "title": "Kawaii boba",
+     "prompt": "kawaii bubble tea",
+     "style": "kleur",
+     "file": "kawaii-boba.webp"
+    },
+    {
+     "title": "Kawaii sushi",
+     "prompt": "kawaii sushi",
+     "style": "kleur",
+     "file": "kawaii-sushi.webp"
+    },
+    {
+     "title": "Kawaii wolk",
+     "prompt": "kawaii cloud with rainbow",
+     "style": "kleur",
+     "file": "kawaii-wolk.webp"
+    },
+    {
+     "title": "Kawaii hamster",
+     "prompt": "kawaii hamster",
+     "style": "kleur",
+     "file": "kawaii-hamster.webp"
+    },
+    {
+     "title": "Kawaii pinguïn",
+     "prompt": "kawaii penguin",
+     "style": "kleur",
+     "file": "kawaii-pinguin.webp"
+    },
+    {
+     "title": "Kawaii aardbei",
+     "prompt": "kawaii strawberry",
+     "style": "kleur",
+     "file": "kawaii-aardbei.webp"
+    }
+   ]
+  },
+  {
+   "id": "bloemen",
+   "name": "Bloemen & planten",
+   "items": [
+    {
+     "title": "Roos",
+     "prompt": "rose with leaves",
+     "style": "schets",
+     "file": "roos.webp"
+    },
+    {
+     "title": "Zonnebloem",
+     "prompt": "sunflower",
+     "style": "schets",
+     "file": "zonnebloem.webp"
+    },
+    {
+     "title": "Tulpen",
+     "prompt": "bouquet of tulips",
+     "style": "schets",
+     "file": "tulpen.webp"
+    },
+    {
+     "title": "Lotus",
+     "prompt": "lotus flower on water",
+     "style": "schets",
+     "file": "lotus.webp"
+    },
+    {
+     "title": "Pioenroos",
+     "prompt": "peony",
+     "style": "schets",
+     "file": "pioenroos.webp"
+    },
+    {
+     "title": "Lelie",
+     "prompt": "lily",
+     "style": "schets",
+     "file": "lelie.webp"
+    },
+    {
+     "title": "Cactus",
+     "prompt": "cactus in a pot",
+     "style": "schets",
+     "file": "cactus.webp"
+    },
+    {
+     "title": "Monstera",
+     "prompt": "monstera plant in a pot",
+     "style": "schets",
+     "file": "monstera.webp"
+    },
+    {
+     "title": "Lavendel",
+     "prompt": "lavender bunch",
+     "style": "schets",
+     "file": "lavendel.webp"
+    },
+    {
+     "title": "Kersenbloesem",
+     "prompt": "cherry blossom branch",
+     "style": "schets",
+     "file": "kersenbloesem.webp"
+    },
+    {
+     "title": "Rozen (kleur)",
+     "prompt": "roses",
+     "style": "kleur",
+     "file": "rozen-kleur.webp"
+    },
+    {
+     "title": "Zonnebloem (kleur)",
+     "prompt": "sunflower",
+     "style": "kleur",
+     "file": "zonnebloem-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "zee",
+   "name": "Zee & oceaan",
+   "items": [
+    {
+     "title": "Zeeschildpad",
+     "prompt": "sea turtle",
+     "style": "schets",
+     "file": "zeeschildpad.webp"
+    },
+    {
+     "title": "Octopus",
+     "prompt": "octopus",
+     "style": "schets",
+     "file": "octopus.webp"
+    },
+    {
+     "title": "Kwal",
+     "prompt": "jellyfish",
+     "style": "schets",
+     "file": "kwal.webp"
+    },
+    {
+     "title": "Zeepaardje",
+     "prompt": "seahorse",
+     "style": "schets",
+     "file": "zeepaardje.webp"
+    },
+    {
+     "title": "Walvis",
+     "prompt": "whale",
+     "style": "schets",
+     "file": "walvis.webp"
+    },
+    {
+     "title": "Koraalrif",
+     "prompt": "coral reef with fish",
+     "style": "schets",
+     "file": "koraalrif.webp"
+    },
+    {
+     "title": "Haai",
+     "prompt": "shark",
+     "style": "schets",
+     "file": "haai.webp"
+    },
+    {
+     "title": "Clownvis",
+     "prompt": "clownfish in anemone",
+     "style": "kleur",
+     "file": "clownvis.webp"
+    },
+    {
+     "title": "Zeemeermin",
+     "prompt": "mermaid on a rock",
+     "style": "schets",
+     "file": "zeemeermin.webp"
+    },
+    {
+     "title": "Schelpen",
+     "prompt": "seashells",
+     "style": "schets",
+     "file": "schelpen.webp"
+    }
+   ]
+  },
+  {
+   "id": "fantasie",
+   "name": "Fantasie",
+   "items": [
+    {
+     "title": "Draak",
+     "prompt": "dragon with wings",
+     "style": "schets",
+     "file": "draak.webp"
+    },
+    {
+     "title": "Eenhoorn",
+     "prompt": "unicorn",
+     "style": "schets",
+     "file": "eenhoorn.webp"
+    },
+    {
+     "title": "Fee",
+     "prompt": "fairy with wings sitting on a mushroom",
+     "style": "schets",
+     "file": "fee.webp"
+    },
+    {
+     "title": "Feniks",
+     "prompt": "phoenix bird",
+     "style": "schets",
+     "file": "feniks.webp"
+    },
+    {
+     "title": "Kasteel in de wolken",
+     "prompt": "castle in the clouds",
+     "style": "schets",
+     "file": "kasteel-in-de-wolken.webp"
+    },
+    {
+     "title": "Tovenaar",
+     "prompt": "wizard with staff",
+     "style": "schets",
+     "file": "tovenaar.webp"
+    },
+    {
+     "title": "Zeemeermin",
+     "prompt": "mermaid",
+     "style": "schets",
+     "file": "zeemeermin.webp"
+    },
+    {
+     "title": "Griffioen",
+     "prompt": "griffin",
+     "style": "schets",
+     "file": "griffioen.webp"
+    },
+    {
+     "title": "Draak (kleur)",
+     "prompt": "cute dragon",
+     "style": "kleur",
+     "file": "draak-kleur.webp"
+    },
+    {
+     "title": "Eenhoorn (kleur)",
+     "prompt": "unicorn with rainbow mane",
+     "style": "kleur",
+     "file": "eenhoorn-kleur.webp"
+    }
+   ]
+  },
+  {
+   "id": "ruimte",
+   "name": "Ruimte",
+   "items": [
+    {
+     "title": "Astronaut",
+     "prompt": "astronaut floating in space",
+     "style": "kleur",
+     "file": "astronaut.webp"
+    },
+    {
+     "title": "Planeten",
+     "prompt": "solar system planets",
+     "style": "kleur",
+     "file": "planeten.webp"
+    },
+    {
+     "title": "Raket",
+     "prompt": "rocket launching",
+     "style": "kleur",
+     "file": "raket.webp"
+    },
+    {
+     "title": "Ufo",
+     "prompt": "ufo with alien",
+     "style": "kleur",
+     "file": "ufo.webp"
+    },
+    {
+     "title": "Maan",
+     "prompt": "moon with stars",
+     "style": "kleur",
+     "file": "maan.webp"
+    },
+    {
+     "title": "Astronaut (schets)",
+     "prompt": "astronaut helmet",
+     "style": "schets",
+     "file": "astronaut-schets.webp"
+    }
+   ]
+  },
+  {
+   "id": "feestdagen",
+   "name": "Feestdagen",
+   "items": [
+    {
+     "title": "Kerstman",
+     "prompt": "santa claus",
+     "style": "kleur",
+     "file": "kerstman.webp"
+    },
+    {
+     "title": "Kerstboom",
+     "prompt": "christmas tree with presents",
+     "style": "kleur",
+     "file": "kerstboom.webp"
+    },
+    {
+     "title": "Sneeuwpop",
+     "prompt": "snowman",
+     "style": "kleur",
+     "file": "sneeuwpop.webp"
+    },
+    {
+     "title": "Pompoen",
+     "prompt": "halloween pumpkin",
+     "style": "kleur",
+     "file": "pompoen.webp"
+    },
+    {
+     "title": "Paashaas",
+     "prompt": "easter bunny with eggs",
+     "style": "kleur",
+     "file": "paashaas.webp"
+    },
+    {
+     "title": "Verjaardagstaart",
+     "prompt": "birthday cake with candles",
+     "style": "kleur",
+     "file": "verjaardagstaart.webp"
+    },
+    {
+     "title": "Sinterklaas",
+     "prompt": "sinterklaas with mitre and staff",
+     "style": "kleur",
+     "file": "sinterklaas.webp"
+    },
+    {
+     "title": "Valentijn",
+     "prompt": "valentine hearts",
+     "style": "kleur",
+     "file": "valentijn.webp"
+    }
+   ]
+  }
+ ]
+}

@@ -5,6 +5,19 @@
 
 export const W = 'fill="#fff"';
 export const F = 'fill="FILL"';
+// A fill that is white in line mode and `c` in colour mode.
+export const K = (c) => `fill="#fff" data-k="${c}"`;
+
+// Colour the plain white fills of a drawing in order of appearance; the last
+// colour is reused for the rest, `null` keeps a fill white.
+export function paint(markup, palette) {
+  let i = 0;
+  return markup.replace(/fill="#fff"(?! data-k)/g, () => {
+    const c = palette[Math.min(i++, palette.length - 1)];
+    return c ? `fill="#fff" data-k="${c}"` : 'fill="#fff"';
+  });
+}
+export const isColored = (markup) => markup.includes('data-k="');
 
 const n = (v) => +v.toFixed(1);
 const pt = (p) => `${n(p[0])} ${n(p[1])}`;
@@ -94,7 +107,8 @@ export function rng(seed) {
 }
 
 // Wrap inner markup into a complete SVG document.
-export function toSvg(inner, { color = '#111', width = 2.5, mode = 'lijn', bg = false } = {}) {
+export function toSvg(inner, { color = '#111', width = 2.5, mode = 'lijn', bg = false, colored = false } = {}) {
+  if (colored) inner = inner.replace(/fill="#fff" data-k="([^"]+)"/g, 'fill="$1"').replace(/stroke="#fff" data-ks="([^"]+)"/g, 'stroke="$1"');
   const dash = mode === 'stippel' ? 'stroke-dasharray="0.1 6"' : mode === 'streep' ? 'stroke-dasharray="7 6"' : '';
   const filter =
     mode === 'schets'

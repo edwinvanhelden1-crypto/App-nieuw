@@ -1,5 +1,5 @@
-import { categories, getItem, getCategory, totalCount } from './catalog.js';
-import { innerOf, thumbUrl, splitSteps, stepInner, renderSvgTo, renderPhotoTo, loadImage } from './render.js';
+import { categories, getItem, getCategory, totalCount, loadLibrary } from './catalog.js';
+import { innerOf, thumbUrl, hasColor, splitSteps, stepInner, renderSvgTo, renderPhotoTo, loadImage } from './render.js';
 import { lettering } from './draw-world.js';
 import { toSvg } from './svg.js';
 import * as sketches from './sketches.js';
@@ -18,7 +18,7 @@ const store = {
   },
 };
 
-const settings = Object.assign({ color: '#111111', width: 2.5, mode: 'lijn', opacity: 60 }, store.get('settings', {}));
+const settings = Object.assign({ color: '#111111', width: 2.5, mode: 'lijn', opacity: 60, kleur: true }, store.get('settings', {}));
 const saveSettings = () => store.set('settings', settings);
 let favorites = store.get('favorites', []);
 let recent = store.get('recent', []);
@@ -77,7 +77,7 @@ function initHome() {
   const butterfly = getItem('dieren-17') || categories[3].items[0];
   $('#ar-phone-img').src = thumbUrl(butterfly);
   $('#ar-bubble-img').src = thumbUrl(butterfly);
-  $('#count-note').textContent = `${totalCount} tekeningen in ${categories.length} categorieën · gratis en zonder advertenties`;
+  $('#count-note').textContent = `${totalCount()} tekeningen in ${categories.length} categorieën · gratis en zonder advertenties`;
 }
 
 // ---------- Thumbnails (lazy) ----------
@@ -137,7 +137,9 @@ function buildRows() {
     if (rec.length) box.appendChild(row('Recent', rec, null, false));
   }
   for (const c of categories) {
-    box.appendChild(row(`${c.name} <small>${c.items.length}</small>`, c.items.slice(0, 10), () => go((learn ? 'lcat/' : 'cat/') + c.id), learn));
+    const items = learn ? c.items.filter((it) => !it.src) : c.items;
+    if (!items.length) continue;
+    box.appendChild(row(`${c.name} <small>${items.length}</small>`, items.slice(0, 10), () => go((learn ? 'lcat/' : 'cat/') + c.id), learn));
   }
 }
 
@@ -145,7 +147,7 @@ $('#search').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
   if (!q) { buildRows(); return; }
   const hits = [];
-  for (const c of categories) for (const it of c.items) if (it.title.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)) hits.push(it);
+  for (const c of categories) for (const it of c.items) if ((!rowsLearn || !it.src) && it.title.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)) hits.push(it);
   const box = $('#rows');
   box.innerHTML = '';
   const grid = document.createElement('div');
@@ -161,7 +163,7 @@ function showCategory(id, learn) {
   $('#cat-title').textContent = learn ? `Leer: ${c.name}` : c.name;
   const grid = $('#cat-grid');
   grid.innerHTML = '';
-  for (const it of c.items) grid.appendChild(thumb(it, learn));
+  for (const it of learn ? c.items.filter((x) => !x.src) : c.items) grid.appendChild(thumb(it, learn));
 }
 
 // ---------- Learn mode ----------
@@ -178,7 +180,7 @@ function showLesson(id) {
 function renderLesson() {
   const { split, n } = lesson;
   const total = split.steps.length;
-  $('#les-img').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(toSvg(stepInner(split, n), { width: 2.5 }));
+  $('#les-img').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(toSvg(stepInner(split, n), { width: 2.5, colored: true }));
   $('#les-step').textContent = `Stap ${n + 1} van ${total}`;
   $('#les-prev').disabled = n === 0;
   $('#les-next').textContent = n === total - 1 ? 'Klaar!' : 'Volgende stap';
@@ -195,10 +197,19 @@ $('#les-ar').addEventListener('click', () => openItem(lesson.item, { steps: less
 
 let source = null; // { kind: 'svg', item, inner, steps?, n } | { kind: 'photo', img, process, level }
 
-function openItem(item, learnState) {
+async function openItem(item, learnState) {
   recent = [item.id, ...recent.filter((x) => x !== item.id)].slice(0, 12);
   store.set('recent', recent);
   rowsDirty = true;
+  if (item.src) {
+    try {
+      source = { kind: 'photo', item, img: await loadImage(item.src), process: item.process, level: 50 };
+      go('tekenen');
+    } catch {
+      toast('Deze afbeelding kon niet geladen worden');
+    }
+    return;
+  }
   source = { kind: 'svg', item, inner: innerOf(item), steps: learnState?.steps || null, n: learnState?.n || 0 };
   go('tekenen');
 }
@@ -319,6 +330,13 @@ async function showSketches() {
     const card = document.createElement('div');
     card.className = 'sketch';
     card.innerHTML = `<img alt="Schets" src="${url}"><div class="row"><a class="btn small ghost" download="schets-${s.id}.jpg" href="${url}">Bewaar</a><button class="btn small ghost danger">Wis</button></div>`;
+    if (window.AndroidApp) {
+      card.querySelector('a').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const b64 = await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(',')[1]); fr.readAsDataURL(s.blob); });
+        toast(window.AndroidApp.saveImage(b64) ? 'Bewaard in je galerij' : 'Bewaren is niet gelukt');
+      });
+    }
     card.querySelector('.danger').addEventListener('click', async () => {
       await sketches.remove(s.id);
       showSketches();
@@ -449,10 +467,12 @@ function showTrace() {
   $('#t-width-val').textContent = settings.width;
   $('#t-width-row').hidden = source.kind !== 'svg';
   $('#t-modes').hidden = source.kind !== 'svg';
-  $('#t-fav').hidden = !(source.kind === 'svg' && source.item.id);
+  $('#t-fav').hidden = !source.item?.id;
+  $('#t-kleur').hidden = !(source.kind === 'svg' && hasColor(source.item));
   $('#t-fav').setAttribute('aria-pressed', String(favorites.includes(source.item?.id)));
   chips($('#t-colors'), COLORS, settings.color, (v) => { settings.color = v; saveSettings(); renderOverlay(); });
   chips($('#t-modes'), MODES, settings.mode, (v) => { settings.mode = v; saveSettings(); renderOverlay(); });
+  chips($('#t-kleur'), [[true, 'In kleur'], [false, 'Alleen lijnen']], settings.kleur, (v) => { settings.kleur = v; saveSettings(); renderOverlay(); });
   updateSteps();
   renderOverlay();
   setLightbox(lightbox);
@@ -617,7 +637,13 @@ $('#clear-recent').addEventListener('click', () => {
 
 initHome();
 route();
+loadLibrary().then(() => {
+  initHome();
+  rowsDirty = true;
+  if (current === 'objecten') buildRows();
+  if (current === 'categorie') route();
+});
 
-if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.AndroidApp) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

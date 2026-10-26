@@ -44,6 +44,35 @@ export const categories = CATEGORIES.map(([id, name, items]) => ({
 const byId = new Map();
 for (const c of categories) for (const it of c.items) byId.set(it.id, it);
 
+// Illustrations made with AI (library/index.json, filled by tools/generate-library.mjs).
+// They are put in front of the drawings of the same category.
+export async function loadLibrary() {
+  let index;
+  try {
+    const res = await fetch('library/index.json', { cache: 'no-cache' });
+    if (!res.ok) return;
+    index = await res.json();
+  } catch {
+    return;
+  }
+  for (const lc of index.categories || []) {
+    let cat = categories.find((c) => c.id === lc.id);
+    if (!cat) {
+      cat = { id: lc.id, name: lc.name, items: [] };
+      categories.splice(lc.position ?? categories.length, 0, cat);
+    }
+    const items = lc.items.map((it) => ({
+      id: `${lc.id}-ai-${it.file}`,
+      title: it.title,
+      cat: lc.id,
+      src: `library/${lc.id}/${it.file}`,
+      process: it.style === 'schets' ? 'schets' : 'origineel',
+    }));
+    for (const it of items) byId.set(it.id, it);
+    cat.items.unshift(...items);
+  }
+}
+
 export const getItem = (id) => byId.get(id);
 export const getCategory = (id) => categories.find((c) => c.id === id);
-export const totalCount = byId.size;
+export const totalCount = () => byId.size;
