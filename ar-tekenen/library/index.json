@@ -1009,6 +1009,63 @@
      "file": "hamburger.webp",
      "title": "Hamburger",
      "style": "schets"
+    },
+    {
+     "file": "pizza.webp",
+     "title": "Pizza",
+     "style": "schets"
+    },
+    {
+     "file": "cupcakes.webp",
+     "title": "Cupcakes",
+     "style": "schets"
+    },
+    {
+     "file": "donut-kleur.webp",
+     "title": "Donut (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "ijsje-kleur.webp",
+     "title": "IJsje (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "cupcake-kleur.webp",
+     "title": "Cupcake (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "bubble-tea-kleur.webp",
+     "title": "Bubble tea (kleur)",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "voertuigen",
+   "name": "Voertuigen",
+   "position": 16,
+   "items": [
+    {
+     "file": "oldtimer.webp",
+     "title": "Oldtimer",
+     "style": "kleur"
+    },
+    {
+     "file": "brandweerauto.webp",
+     "title": "Brandweerauto",
+     "style": "kleur"
+    },
+    {
+     "file": "bus.webp",
+     "title": "Bus",
+     "style": "kleur"
+    },
+    {
+     "file": "raceauto.webp",
+     "title": "Raceauto",
+     "style": "kleur"
     }
    ]
   }
