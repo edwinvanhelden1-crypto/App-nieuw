@@ -377,6 +377,70 @@
      "style": "kleur"
     }
    ]
+  },
+  {
+   "id": "retro",
+   "name": "Retro cartoons",
+   "position": 4,
+   "items": [
+    {
+     "file": "retro-hond.webp",
+     "title": "Retro hond",
+     "style": "retro"
+    },
+    {
+     "file": "retro-beer.webp",
+     "title": "Retro beer",
+     "style": "retro"
+    },
+    {
+     "file": "retro-varken.webp",
+     "title": "Retro varken",
+     "style": "retro"
+    },
+    {
+     "file": "retro-uil.webp",
+     "title": "Retro uil",
+     "style": "retro"
+    }
+   ]
+  },
+  {
+   "id": "cartoon",
+   "name": "Cartoon",
+   "position": 5,
+   "items": [
+    {
+     "file": "jongen-die-zwaait.webp",
+     "title": "Jongen die zwaait",
+     "style": "kleur"
+    },
+    {
+     "file": "meisje-met-ballon.webp",
+     "title": "Meisje met ballon",
+     "style": "kleur"
+    },
+    {
+     "file": "skateboarder.webp",
+     "title": "Skateboarder",
+     "style": "kleur"
+    },
+    {
+     "file": "voetballer.webp",
+     "title": "Voetballer",
+     "style": "kleur"
+    },
+    {
+     "file": "superheld.webp",
+     "title": "Superheld",
+     "style": "kleur"
+    },
+    {
+     "file": "prinses.webp",
+     "title": "Prinses",
+     "style": "kleur"
+    }
+   ]
   }
  ]
 }
