@@ -546,6 +546,63 @@
      "file": "meisje-met-vlechten.webp",
      "title": "Meisje met vlechten",
      "style": "schets"
+    },
+    {
+     "file": "jongen-met-pet.webp",
+     "title": "Jongen met pet",
+     "style": "schets"
+    },
+    {
+     "file": "vrouw-met-hoed.webp",
+     "title": "Vrouw met hoed",
+     "style": "schets"
+    },
+    {
+     "file": "oma.webp",
+     "title": "Oma",
+     "style": "schets"
+    },
+    {
+     "file": "vrouw-met-knot.webp",
+     "title": "Vrouw met knot",
+     "style": "schets"
+    },
+    {
+     "file": "lachende-man.webp",
+     "title": "Lachende man",
+     "style": "schets"
+    },
+    {
+     "file": "vrouw-met-sjaal.webp",
+     "title": "Vrouw met sjaal",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "aesthetic",
+   "name": "Aesthetic",
+   "position": 7,
+   "items": [
+    {
+     "file": "meisje-bij-raam.webp",
+     "title": "Meisje bij raam",
+     "style": "schets"
+    },
+    {
+     "file": "kamer-met-planten.webp",
+     "title": "Kamer met planten",
+     "style": "schets"
+    },
+    {
+     "file": "fiets-met-bloemen.webp",
+     "title": "Fiets met bloemen",
+     "style": "schets"
+    },
+    {
+     "file": "meisje-met-paraplu.webp",
+     "title": "Meisje met paraplu",
+     "style": "schets"
     }
    ]
   }
