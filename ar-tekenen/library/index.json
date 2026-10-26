@@ -717,6 +717,63 @@
      "file": "weide.webp",
      "title": "Weide",
      "style": "schets"
+    },
+    {
+     "file": "rivier.webp",
+     "title": "Rivier",
+     "style": "schets"
+    },
+    {
+     "file": "vuurtoren-aan-zee.webp",
+     "title": "Vuurtoren aan zee",
+     "style": "schets"
+    },
+    {
+     "file": "woestijn.webp",
+     "title": "Woestijn",
+     "style": "schets"
+    },
+    {
+     "file": "landschap-kleur.webp",
+     "title": "Landschap (kleur)",
+     "style": "kleur"
+    },
+    {
+     "file": "zonsondergang-kleur.webp",
+     "title": "Zonsondergang (kleur)",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "voorwerpen",
+   "name": "Voorwerpen",
+   "position": 10,
+   "items": [
+    {
+     "file": "dobbelstenen.webp",
+     "title": "Dobbelstenen",
+     "style": "schets"
+    },
+    {
+     "file": "papieren-vliegtuig.webp",
+     "title": "Papieren vliegtuig",
+     "style": "schets"
+    },
+    {
+     "file": "ster.webp",
+     "title": "Ster",
+     "style": "schets"
+    },
+    {
+     "file": "camera.webp",
+     "title": "Camera",
+     "style": "schets"
+    },
+    {
+     "file": "wekker.webp",
+     "title": "Wekker",
+     "style": "schets"
     }
    ]
   }
