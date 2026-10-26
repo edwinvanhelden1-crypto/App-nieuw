@@ -161,6 +161,63 @@
      "file": "zwaan.webp",
      "title": "Zwaan",
      "style": "schets"
+    },
+    {
+     "file": "toekan.webp",
+     "title": "Toekan",
+     "style": "schets"
+    },
+    {
+     "file": "roodborstje.webp",
+     "title": "Roodborstje",
+     "style": "schets"
+    },
+    {
+     "file": "haan.webp",
+     "title": "Haan",
+     "style": "schets"
+    },
+    {
+     "file": "kraai.webp",
+     "title": "Kraai",
+     "style": "schets"
+    },
+    {
+     "file": "toekan-kleur.webp",
+     "title": "Toekan (kleur)",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "anime",
+   "name": "Anime",
+   "position": 2,
+   "items": [
+    {
+     "file": "anime-jongen.webp",
+     "title": "Anime jongen",
+     "style": "anime"
+    },
+    {
+     "file": "anime-meisje-met-boek.webp",
+     "title": "Anime meisje met boek",
+     "style": "anime"
+    },
+    {
+     "file": "anime-meisje-met-kat.webp",
+     "title": "Anime meisje met kat",
+     "style": "anime"
+    },
+    {
+     "file": "ninja.webp",
+     "title": "Ninja",
+     "style": "anime"
+    },
+    {
+     "file": "magisch-meisje.webp",
+     "title": "Magisch meisje",
+     "style": "anime"
     }
    ]
   }
