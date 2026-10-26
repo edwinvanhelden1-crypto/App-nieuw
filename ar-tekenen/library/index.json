@@ -888,6 +888,70 @@
      "file": "schilder.webp",
      "title": "Schilder",
      "style": "schets"
+    },
+    {
+     "file": "skateboarder.webp",
+     "title": "Skateboarder",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "architectuur",
+   "name": "Architectuur",
+   "position": 13,
+   "items": [
+    {
+     "file": "kasteel.webp",
+     "title": "Kasteel",
+     "style": "schets"
+    },
+    {
+     "file": "trap-met-bogen.webp",
+     "title": "Trap met bogen",
+     "style": "schets"
+    },
+    {
+     "file": "tempel.webp",
+     "title": "Tempel",
+     "style": "schets"
+    },
+    {
+     "file": "kerk.webp",
+     "title": "Kerk",
+     "style": "schets"
+    },
+    {
+     "file": "huisje.webp",
+     "title": "Huisje",
+     "style": "schets"
+    },
+    {
+     "file": "straatje.webp",
+     "title": "Straatje",
+     "style": "schets"
+    },
+    {
+     "file": "vuurtoren.webp",
+     "title": "Vuurtoren",
+     "style": "schets"
+    },
+    {
+     "file": "boomhut.webp",
+     "title": "Boomhut",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "oneline",
+   "name": "One Line",
+   "position": 14,
+   "items": [
+    {
+     "file": "twee-gezichten.webp",
+     "title": "Twee gezichten",
+     "style": "oneline"
     }
    ]
   }
