@@ -2,7 +2,7 @@
 
 > **Android-app (APK):** download de nieuwste versie bij
 > [Releases → AR Tekenen – nieuwste APK](../../releases/tag/ar-tekenen-apk).
-> De APK wordt automatisch gebouwd door de workflow *Android APK* (map `android/`).
+> De APK wordt automatisch gebouwd door de workflow *AR Tekenen APK* (map `android/`).
 
 Een gratis web-app (PWA) om tekeningen na te tekenen met augmented reality.
 Zet je telefoon op een glas of andere verhoging boven je papier, kijk door het

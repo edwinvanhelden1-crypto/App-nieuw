@@ -1,18 +1,18 @@
-name: Tekeningen genereren
+name: AR Tekenen tekeningen genereren
 
 on:
   push:
     paths:
       - 'tools/library-prompts.json'
       - 'tools/generate-library.mjs'
-      - '.github/workflows/library.yml'
+      - '.github/workflows/ar-tekenen-library.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: library-${{ github.ref }}
+  group: ar-tekenen-library-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -44,4 +44,4 @@ jobs:
   apk:
     needs: generate
     if: ${{ !cancelled() }}
-    uses: ./.github/workflows/android.yml
+    uses: ./.github/workflows/ar-tekenen-apk.yml
