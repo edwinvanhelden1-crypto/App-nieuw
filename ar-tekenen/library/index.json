@@ -831,6 +831,63 @@
      "file": "elektrische-gitaar.webp",
      "title": "Elektrische gitaar",
      "style": "schets"
+    },
+    {
+     "file": "microfoon.webp",
+     "title": "Microfoon",
+     "style": "schets"
+    },
+    {
+     "file": "accordeon.webp",
+     "title": "Accordeon",
+     "style": "schets"
+    },
+    {
+     "file": "fluit.webp",
+     "title": "Fluit",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "mensen",
+   "name": "Mensen",
+   "position": 12,
+   "items": [
+    {
+     "file": "wandelaar.webp",
+     "title": "Wandelaar",
+     "style": "schets"
+    },
+    {
+     "file": "gitarist.webp",
+     "title": "Gitarist",
+     "style": "schets"
+    },
+    {
+     "file": "danseres.webp",
+     "title": "Danseres",
+     "style": "schets"
+    },
+    {
+     "file": "fietser.webp",
+     "title": "Fietser",
+     "style": "schets"
+    },
+    {
+     "file": "hardloper.webp",
+     "title": "Hardloper",
+     "style": "schets"
+    },
+    {
+     "file": "moeder-en-kind.webp",
+     "title": "Moeder en kind",
+     "style": "schets"
+    },
+    {
+     "file": "schilder.webp",
+     "title": "Schilder",
+     "style": "schets"
     }
    ]
   }
