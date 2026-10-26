@@ -1294,6 +1294,70 @@
      "file": "feniks.webp",
      "title": "Feniks",
      "style": "schets"
+    },
+    {
+     "file": "kasteel-in-de-wolken.webp",
+     "title": "Kasteel in de wolken",
+     "style": "schets"
+    },
+    {
+     "file": "zeemeermin.webp",
+     "title": "Zeemeermin",
+     "style": "schets"
+    },
+    {
+     "file": "eenhoorn-kleur.webp",
+     "title": "Eenhoorn (kleur)",
+     "style": "kleur"
+    }
+   ]
+  },
+  {
+   "id": "ruimte",
+   "name": "Ruimte",
+   "position": 21,
+   "items": [
+    {
+     "file": "astronaut.webp",
+     "title": "Astronaut",
+     "style": "kleur"
+    },
+    {
+     "file": "planeten.webp",
+     "title": "Planeten",
+     "style": "kleur"
+    },
+    {
+     "file": "raket.webp",
+     "title": "Raket",
+     "style": "kleur"
+    },
+    {
+     "file": "ufo.webp",
+     "title": "Ufo",
+     "style": "kleur"
+    },
+    {
+     "file": "maan.webp",
+     "title": "Maan",
+     "style": "kleur"
+    },
+    {
+     "file": "astronaut-schets.webp",
+     "title": "Astronaut (schets)",
+     "style": "schets"
+    }
+   ]
+  },
+  {
+   "id": "feestdagen",
+   "name": "Feestdagen",
+   "position": 22,
+   "items": [
+    {
+     "file": "kerstman.webp",
+     "title": "Kerstman",
+     "style": "kleur"
     }
    ]
   }
