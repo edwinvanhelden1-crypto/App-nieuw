@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio – Edwin Molenaar</title>
+  <meta name="description" content="Websites, backends en Android-apps gebouwd door Edwin Molenaar.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f97316'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' text-anchor='middle' fill='%230b0f14'%3EEM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#diensten">Diensten</a>
+        <a href="portfolio.html" class="active" aria-current="page">Portfolio</a>
+        <a href="over-mij.html">Over mij</a>
+        <a href="contact.html" class="btn btn-sm">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <img class="hero-bg" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1920&q=70" alt="" aria-hidden="true">
+      <div class="container hero-content">
+        <p class="eyebrow">Portfolio</p>
+        <h1>Werk waar ik trots op ben</h1>
+        <p class="lead">Een selectie van websites, backendsystemen en Android-apps. Elk project is maatwerk, gebouwd rond het doel van de klant.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="filters" role="group" aria-label="Filter projecten">
+          <button class="filter active" data-filter="all">Alle</button>
+          <button class="filter" data-filter="web">Websites</button>
+          <button class="filter" data-filter="backend">Backend</button>
+          <button class="filter" data-filter="android">Android</button>
+        </div>
+        <div class="projects" id="project-grid">
+          <article class="project" data-cat="web">
+            <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Web-app · AI</span>
+              <h3>AI Foto Studio</h3>
+              <p>Foto-app die AI-modellen volledig in de browser draait: foto's beschrijven, objecten herkennen en achtergronden verwijderen. Zonder server en privacyvriendelijk.</p>
+              <div class="tech-tags"><span>JavaScript</span><span>Web Workers</span><span>Transformers.js</span></div>
+            </div>
+          </article>
+          <article class="project" data-cat="backend">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Backend · Dashboard</span>
+              <h3>Klantportaal &amp; dashboard</h3>
+              <p>Beveiligd portaal met eigen API, rapportages en koppeling met het boekhoudpakket.</p>
+              <div class="tech-tags"><span>Node.js</span><span>PostgreSQL</span><span>React</span></div>
+            </div>
+          </article>
+          <article class="project" data-cat="android">
+            <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Android</span>
+              <h3>Planning-app voor monteurs</h3>
+              <p>Android-app met offline werkbonnen, foto's en digitale handtekening, gesynchroniseerd met de backend.</p>
+              <div class="tech-tags"><span>Kotlin</span><span>Jetpack Compose</span><span>Room</span></div>
+            </div>
+          </article>
+          <article class="project" data-cat="web">
+            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Website · Webshop</span>
+              <h3>Webshop voor een lokale ondernemer</h3>
+              <p>Snelle webshop met iDEAL-betalingen, voorraadbeheer en een eenvoudig beheerpaneel.</p>
+              <div class="tech-tags"><span>PHP</span><span>MySQL</span><span>Mollie</span></div>
+            </div>
+          </article>
+          <article class="project" data-cat="backend">
+            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Backend · API</span>
+              <h3>Koppelingsplatform</h3>
+              <p>REST-API die bestellingen, voorraad en verzending tussen drie systemen automatisch synchroniseert.</p>
+              <div class="tech-tags"><span>Python</span><span>Docker</span><span>REST</span></div>
+            </div>
+          </article>
+          <article class="project" data-cat="android">
+            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
+            <div class="project-body">
+              <span class="tag">Android · Backend</span>
+              <h3>Ledenapp voor een sportclub</h3>
+              <p>App met roosters, pushmeldingen en inschrijvingen, met een webbeheeromgeving voor het bestuur.</p>
+              <div class="tech-tags"><span>Kotlin</span><span>Firebase</span><span>Node.js</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container cta-inner">
+        <div>
+          <h2>Heb je een project in gedachten?</h2>
+          <p>Vertel me over je idee. Je krijgt binnen één werkdag een reactie.</p>
+        </div>
+        <a href="contact.html" class="btn">Neem contact op</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
+        <p>Websites, backend en Android-apps. Van idee tot livegang, uit één hand.</p>
+      </div>
+      <div>
+        <h4>Pagina's</h4>
+        <a href="index.html">Home</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="over-mij.html">Over mij</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h4>Diensten</h4>
+        <a href="index.html#diensten">Websites</a>
+        <a href="index.html#diensten">Backend &amp; API's</a>
+        <a href="index.html#diensten">Android-apps</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:info@jouwdomein.nl">info@jouwdomein.nl</a>
+        <span>Nederland</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> Edwin Molenaar</span>
+      <span>Foto's: <a href="https://unsplash.com" rel="noopener">Unsplash</a></span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

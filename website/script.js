@@ -24,7 +24,7 @@ document.querySelectorAll("img").forEach((img) =>
 );
 
 // Elementen laten infaden bij scrollen
-const revealItems = document.querySelectorAll(".section-head, .service, .project, .split > *, .contact > *");
+const revealItems = document.querySelectorAll(".section-head, .service, .project, .split > *, .contact > *, .value, .skill-group, .faq");
 revealItems.forEach((el) => el.classList.add("reveal"));
 if ("IntersectionObserver" in window) {
   const io = new IntersectionObserver((entries) => {
@@ -40,14 +40,28 @@ if ("IntersectionObserver" in window) {
   revealItems.forEach((el) => el.classList.add("visible"));
 }
 
+// Portfolio-filter
+document.querySelectorAll(".filter").forEach((btn) =>
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter").forEach((b) => b.classList.toggle("active", b === btn));
+    const f = btn.dataset.filter;
+    document.querySelectorAll("#project-grid .project").forEach((p) => {
+      p.hidden = f !== "all" && p.dataset.cat !== f;
+    });
+  })
+);
+
 // Contactformulier: opent het e-mailprogramma met een ingevuld bericht
 const CONTACT_EMAIL = "info@jouwdomein.nl";
-document.getElementById("contact-form").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const data = new FormData(e.target);
-  const subject = `Aanvraag: ${data.get("type")} – ${data.get("naam")}`;
-  const body = `Naam: ${data.get("naam")}\nE-mail: ${data.get("email")}\nType: ${data.get("type")}\n\n${data.get("bericht")}`;
-  window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-});
+const form = document.getElementById("contact-form");
+if (form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const subject = `Aanvraag: ${data.get("type")} – ${data.get("naam")}`;
+    const body = `Naam: ${data.get("naam")}\nE-mail: ${data.get("email")}\nType: ${data.get("type")}\nBudget: ${data.get("budget")}\n\n${data.get("bericht")}`;
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+}
 
 document.getElementById("year").textContent = new Date().getFullYear();

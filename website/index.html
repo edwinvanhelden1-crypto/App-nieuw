@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Edwin van Helden – Websites, backend &amp; Android-apps</title>
-  <meta name="description" content="Ik bouw snelle, professionele websites met een solide backend en native Android-apps. Van idee tot livegang.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f97316'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='16' text-anchor='middle' fill='%230b0f14'%3EEH%3C/text%3E%3C/svg%3E">
+  <title>Edwin Molenaar – Websites, backend &amp; Android-apps</title>
+  <meta name="description" content="Edwin Molenaar bouwt snelle, professionele websites met een solide backend en native Android-apps.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f97316'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' text-anchor='middle' fill='%230b0f14'%3EEM%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -14,31 +14,30 @@
 <body>
   <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a href="#top" class="logo"><span class="logo-mark">EH</span> Edwin van Helden</a>
+      <a href="index.html" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
       <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav class="nav-links" id="nav-links">
-        <a href="#diensten">Diensten</a>
-        <a href="#werkwijze">Werkwijze</a>
-        <a href="#projecten">Projecten</a>
-        <a href="#over">Over mij</a>
-        <a href="#contact" class="btn btn-sm">Offerte aanvragen</a>
+        <a href="index.html" class="active" aria-current="page">Home</a>
+        <a href="index.html#diensten">Diensten</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="over-mij.html">Over mij</a>
+        <a href="contact.html" class="btn btn-sm">Contact</a>
       </nav>
     </div>
   </header>
 
-  <main id="top">
-    <!-- Hero -->
+  <main>
     <section class="hero">
-      <img class="hero-bg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=75" alt="" aria-hidden="true">
+      <img class="hero-bg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=70" alt="" aria-hidden="true">
       <div class="container hero-content">
         <p class="eyebrow">Webontwikkeling · Backend · Android</p>
         <h1>Ik bouw digitale producten <span class="accent">die werken.</span></h1>
-        <p class="lead">Van een professionele website tot een complete webapplicatie met database en API, en een native Android-app die in de Play Store staat. Alles uit één hand.</p>
+        <p class="lead">Van een professionele website tot een complete webapplicatie met database en API, en een native Android-app in de Play Store. Alles uit één hand.</p>
         <div class="hero-actions">
-          <a href="#contact" class="btn">Start je project</a>
-          <a href="#projecten" class="btn btn-ghost">Bekijk projecten</a>
+          <a href="contact.html" class="btn">Start je project</a>
+          <a href="portfolio.html" class="btn btn-ghost">Bekijk portfolio</a>
         </div>
         <ul class="hero-stats">
           <li><strong>Full-stack</strong><span>front- én backend</span></li>
@@ -48,7 +47,6 @@
       </div>
     </section>
 
-    <!-- Diensten -->
     <section class="section" id="diensten">
       <div class="container">
         <div class="section-head">
@@ -100,14 +98,12 @@
       </div>
     </section>
 
-    <!-- Tech -->
     <section class="tech-band">
       <div class="container tech-inner">
         <span>HTML &amp; CSS</span><span>JavaScript</span><span>TypeScript</span><span>React</span><span>Node.js</span><span>PHP</span><span>Python</span><span>PostgreSQL</span><span>MySQL</span><span>Kotlin</span><span>Jetpack Compose</span><span>Firebase</span><span>Docker</span><span>Git</span>
       </div>
     </section>
 
-    <!-- Werkwijze -->
     <section class="section section-light" id="werkwijze">
       <div class="container split">
         <div class="split-media">
@@ -126,100 +122,83 @@
       </div>
     </section>
 
-    <!-- Projecten -->
-    <section class="section" id="projecten">
+    <section class="section">
       <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">Projecten</p>
-          <h2>Recent werk</h2>
-          <p>Een greep uit de websites, systemen en apps die ik heb gebouwd.</p>
+        <div class="section-head section-head-row">
+          <div>
+            <p class="eyebrow">Portfolio</p>
+            <h2>Recent werk</h2>
+          </div>
+          <a href="portfolio.html" class="link-arrow">Alle projecten &rarr;</a>
         </div>
         <div class="projects">
-          <article class="project">
-            <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=900&q=70" alt="Camera en foto's" loading="lazy">
+          <article class="project" data-cat="web">
+            <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
             <div class="project-body">
               <span class="tag">Web-app · AI</span>
               <h3>AI Foto Studio</h3>
-              <p>Foto-app die AI-modellen volledig in de browser draait: beschrijven, objecten herkennen en achtergrond verwijderen.</p>
+              <p>Foto-app die AI-modellen volledig in de browser draait: foto's beschrijven, objecten herkennen en achtergronden verwijderen. Zonder server en privacyvriendelijk.</p>
             </div>
           </article>
-          <article class="project">
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=70" alt="Laptop met dashboard en grafieken" loading="lazy">
+          <article class="project" data-cat="backend">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
             <div class="project-body">
               <span class="tag">Backend · Dashboard</span>
               <h3>Klantportaal &amp; dashboard</h3>
               <p>Beveiligd portaal met eigen API, rapportages en koppeling met het boekhoudpakket.</p>
             </div>
           </article>
-          <article class="project">
-            <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=900&q=70" alt="Smartphone met apps" loading="lazy">
+          <article class="project" data-cat="android">
+            <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=900&q=70" alt="" loading="lazy">
             <div class="project-body">
               <span class="tag">Android</span>
               <h3>Planning-app voor monteurs</h3>
-              <p>Android-app met offline werkbonnen, foto's en handtekening, gesynchroniseerd met de backend.</p>
+              <p>Android-app met offline werkbonnen, foto's en digitale handtekening, gesynchroniseerd met de backend.</p>
             </div>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- Over mij -->
-    <section class="section section-dark" id="over">
-      <div class="container split split-reverse">
+    <section class="cta">
+      <div class="container cta-inner">
         <div>
-          <p class="eyebrow">Over mij</p>
-          <h2>Eén developer, het hele traject</h2>
-          <p>Ik ben Edwin van Helden, full-stack developer. Ik bouw websites, de backend erachter en Android-apps die daarop aansluiten. Omdat ik alles zelf doe, heb je één aanspreekpunt, korte lijnen en geen schakels die langs elkaar heen werken.</p>
-          <p>Mijn uitgangspunt: degelijke techniek, eerlijke prijzen en software waar je jaren mee vooruit kunt.</p>
-          <div class="pillars">
-            <div><strong>Snel</strong><span>geoptimaliseerd voor laadtijd</span></div>
-            <div><strong>Veilig</strong><span>best practices &amp; updates</span></div>
-            <div><strong>Schaalbaar</strong><span>groeit mee met je bedrijf</span></div>
-          </div>
+          <h2>Heb je een project in gedachten?</h2>
+          <p>Vertel me over je idee. Je krijgt binnen één werkdag een reactie.</p>
         </div>
-        <div class="split-media">
-          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1100&q=70" alt="Code op een scherm" loading="lazy">
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA + contact -->
-    <section class="section" id="contact">
-      <div class="container contact">
-        <div>
-          <p class="eyebrow">Contact</p>
-          <h2>Klaar om te bouwen?</h2>
-          <p>Vertel kort over je idee. Je krijgt binnen één werkdag een reactie en, als het klikt, een vrijblijvende offerte.</p>
-          <ul class="contact-list">
-            <li><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><a href="mailto:info@jouwdomein.nl">info@jouwdomein.nl</a></li>
-            <li><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Nederland – op locatie of op afstand</li>
-          </ul>
-        </div>
-        <form class="form" id="contact-form">
-          <div class="field-row">
-            <label>Naam<input name="naam" required autocomplete="name"></label>
-            <label>E-mail<input name="email" type="email" required autocomplete="email"></label>
-          </div>
-          <label>Wat wil je laten bouwen?
-            <select name="type">
-              <option>Website</option>
-              <option>Webapplicatie / backend</option>
-              <option>Android-app</option>
-              <option>Combinatie</option>
-            </select>
-          </label>
-          <label>Bericht<textarea name="bericht" rows="5" required></textarea></label>
-          <button class="btn" type="submit">Verstuur aanvraag</button>
-        </form>
+        <a href="contact.html" class="btn">Neem contact op</a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="container footer-inner">
-      <span>&copy; <span id="year"></span> Edwin van Helden</span>
-      <span>Websites · Backend · Android-apps</span>
-      <span class="credit">Foto's: <a href="https://unsplash.com" rel="noopener">Unsplash</a></span>
+    <div class="container footer-grid">
+      <div>
+        <a href="index.html" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
+        <p>Websites, backend en Android-apps. Van idee tot livegang, uit één hand.</p>
+      </div>
+      <div>
+        <h4>Pagina's</h4>
+        <a href="index.html">Home</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="over-mij.html">Over mij</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <div>
+        <h4>Diensten</h4>
+        <a href="index.html#diensten">Websites</a>
+        <a href="index.html#diensten">Backend &amp; API's</a>
+        <a href="index.html#diensten">Android-apps</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:info@jouwdomein.nl">info@jouwdomein.nl</a>
+        <span>Nederland</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>&copy; <span id="year"></span> Edwin Molenaar</span>
+      <span>Foto's: <a href="https://unsplash.com" rel="noopener">Unsplash</a></span>
     </div>
   </footer>
 

@@ -46,8 +46,15 @@ HTTPS of `localhost`.
 
 ## Portfoliowebsite (`website/`)
 
-In de map `website/` staat een losse, professionele portfoliowebsite
-(websites, backend en Android-apps). Open `website/index.html` of start
-`python3 -m http.server` in die map. Pas het e-mailadres
-`info@jouwdomein.nl` aan in `website/index.html` en `website/script.js`.
-Foto's komen van Unsplash.
+In de map `website/` staat de portfoliowebsite van Edwin Molenaar
+(websites, backend en Android-apps) met vier pagina's:
+
+- `index.html` – home met diensten, werkwijze en recent werk
+- `portfolio.html` – alle projecten, te filteren op soort
+- `over-mij.html` – introductie, kernwaarden en vaardigheden
+- `contact.html` – contactformulier, contactgegevens en veelgestelde vragen
+
+Open `website/index.html` of start `python3 -m http.server` in die map.
+Pas het e-mailadres `info@jouwdomein.nl` aan in de HTML-bestanden en in
+`website/script.js`. Foto's komen van Unsplash. Screenshots staan in
+`screenshots/`; daar zijn de foto's vervangen door placeholders.
