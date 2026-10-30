@@ -43,3 +43,11 @@ HTTPS of `localhost`.
 - `style.css` – opmaak (licht en donker thema)
 - `app.js` – foto laden, camera, filters, tekenen en downloaden
 - `worker.js` – laadt en draait de AI-modellen buiten de hoofdthread
+
+## Portfoliowebsite (`website/`)
+
+In de map `website/` staat een losse, professionele portfoliowebsite
+(websites, backend en Android-apps). Open `website/index.html` of start
+`python3 -m http.server` in die map. Pas het e-mailadres
+`info@jouwdomein.nl` aan in `website/index.html` en `website/script.js`.
+Foto's komen van Unsplash.
