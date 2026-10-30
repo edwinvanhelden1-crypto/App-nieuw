@@ -23,8 +23,8 @@ python3 -m http.server 8000
 ## Aanpassen
 
 - Vervang `info@jouwdomein.nl` in de HTML-bestanden en in `script.js`.
-- Foto's komen van [Pexels](https://www.pexels.com) (gratis te gebruiken, ook zakelijk).
-- Screenshots staan in `screenshots/` (foto's daarin zijn placeholders).
+- Afbeeldingen zijn eigen SVG-illustraties in de map `img/`.
+- Screenshots staan in `screenshots/`.
 
 ## Online zetten (GitHub Pages)
 
