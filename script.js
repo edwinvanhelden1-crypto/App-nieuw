@@ -24,7 +24,7 @@ document.querySelectorAll("img").forEach((img) =>
 );
 
 // Elementen laten infaden bij scrollen
-const revealItems = document.querySelectorAll(".section-head, .service, .project, .split > *, .contact > *, .value, .skill-group, .faq");
+const revealItems = document.querySelectorAll(".section-head, .service, .project, .split > *, .contact > *, .value, .skill-group, .faq, .plan, .case");
 revealItems.forEach((el) => el.classList.add("reveal"));
 if ("IntersectionObserver" in window) {
   const io = new IntersectionObserver((entries) => {
