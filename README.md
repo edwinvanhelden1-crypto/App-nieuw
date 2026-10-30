@@ -6,12 +6,12 @@ Statische HTML/CSS/JS, zonder build-stap.
 ## Pagina's
 
 - `index.html` – home met diensten, werkwijze en recent werk
-- `portfolio.html` – alle projecten, te filteren op soort
+- `portfolio.html` – projecten (Edgeflow en Wendaro Connect)
 - `over-mij.html` – introductie, kernwaarden en vaardigheden
 - `contact.html` – contactformulier, contactgegevens en veelgestelde vragen
 
 `style.css` bevat de opmaak; alle kleuren staan als variabelen bovenaan.
-`script.js` regelt het mobiele menu, de portfoliofilter en het contactformulier.
+`script.js` regelt het mobiele menu en het contactformulier.
 
 ## Bekijken
 

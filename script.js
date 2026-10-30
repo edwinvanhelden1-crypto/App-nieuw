@@ -40,17 +40,6 @@ if ("IntersectionObserver" in window) {
   revealItems.forEach((el) => el.classList.add("visible"));
 }
 
-// Portfolio-filter
-document.querySelectorAll(".filter").forEach((btn) =>
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter").forEach((b) => b.classList.toggle("active", b === btn));
-    const f = btn.dataset.filter;
-    document.querySelectorAll("#project-grid .project").forEach((p) => {
-      p.hidden = f !== "all" && p.dataset.cat !== f;
-    });
-  })
-);
-
 // Contactformulier: opent het e-mailprogramma met een ingevuld bericht
 const CONTACT_EMAIL = "info@jouwdomein.nl";
 const form = document.getElementById("contact-form");
