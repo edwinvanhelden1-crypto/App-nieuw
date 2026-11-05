@@ -74,7 +74,19 @@ niet in git opgeslagen. Maak er op de server zelf back-ups van.
 
 ## Instagram
 
-In `instagram/` staan zes stories (1080 × 1920) om de site aan te kondigen:
-aankondiging, even voorstellen, wat ik doe, recent werk, zo werk ik en een
-oproep om een DM te sturen. Tekst en logo staan binnen de veilige zone, zodat
-de knoppen van Instagram niets afdekken.
+In `instagram/` staan negen stories (1080 × 1920): aankondiging, even voorstellen,
+wat ik doe, een tip (check je eigen website), een veelgestelde vraag (wat kost een
+website), zo werk ik, een peiling (met lege ruimte voor de poll-sticker van
+Instagram), een oproep om een DM te sturen en "nu online" voor als de site live gaat.
+Tekst en logo staan binnen de veilige zone, zodat de knoppen van Instagram niets afdekken.
+
+## Huisstijl
+
+In `huisstijl/` staan:
+
+- `email-handtekening.html` – open in je browser, selecteer alles, kopieer en plak in
+  de handtekening-instellingen van Gmail of Outlook. Het logo wordt geladen van
+  molenaar-design.nl en is zichtbaar zodra de site online staat.
+- `visitekaartje-drukklaar.pdf` – voor- en achterkant, 85 × 55 mm met 3 mm afloop,
+  lettertypes ingesloten. Geschikt voor drukkerijen zoals Drukwerkdeal of Vistaprint.
+- `visitekaartje-voorkant.png` / `-achterkant.png` – voorbeelden op ware grootte (300 dpi).
