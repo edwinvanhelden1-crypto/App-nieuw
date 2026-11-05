@@ -74,10 +74,12 @@ niet in git opgeslagen. Maak er op de server zelf back-ups van.
 
 ## Instagram
 
-In `instagram/` staan negen stories (1080 × 1920): aankondiging, even voorstellen,
-wat ik doe, een tip (check je eigen website), een veelgestelde vraag (wat kost een
-website), zo werk ik, een peiling (met lege ruimte voor de poll-sticker van
-Instagram), een oproep om een DM te sturen en "nu online" voor als de site live gaat.
+In `instagram/` staan drie reclamestories (1080 × 1920):
+
+- `story-01-reclame-website.png` – "Tijd voor een nieuwe website?"
+- `story-02-reclame-app.png` – "Een eigen app voor je bedrijf?"
+- `story-03-reclame-waarom.png` – "Eén aanspreekpunt, van idee tot online."
+
 Tekst en logo staan binnen de veilige zone, zodat de knoppen van Instagram niets afdekken.
 
 ## Huisstijl
