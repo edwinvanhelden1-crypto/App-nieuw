@@ -90,6 +90,8 @@ In `instagram/` staan vier reclamestories (1080 × 1920):
 
 Tekst en logo staan binnen de veilige zone, zodat de knoppen van Instagram niets afdekken.
 
+Daarnaast staat er een vierkante post (1080 × 1080) met alle info: `post-vierkant-alle-info.png`.
+
 ## Huisstijl
 
 In `huisstijl/` staan:
