@@ -10,7 +10,7 @@ $icons = [
 $homeProjects = projects(true);
 $reviews = approved_reviews();
 
-layout_head('Edwin Molenaar – webdeveloper en Android-ontwikkelaar', 'Edwin Molenaar bouwt websites, backends en Android-apps voor ondernemers.', 'home');
+layout_head('Molenaar Design – websites, backend en Android-apps', 'Molenaar Design: Edwin Molenaar bouwt websites, backends en Android-apps voor ondernemers.', 'home');
 ?>
   <main>
     <section class="hero">

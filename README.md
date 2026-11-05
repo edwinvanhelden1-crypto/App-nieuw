@@ -1,6 +1,7 @@
-# Edwin Molenaar – portfoliowebsite
+# Molenaar Design – website
 
-Website van Edwin Molenaar: websites, backend en Android-apps. Gebouwd in PHP
+Website van Molenaar Design (Edwin Molenaar), te vinden op molenaar-design.nl:
+websites, backend en Android-apps. Gebouwd in PHP
 met een SQLite-database, zodat alles via een beheerpagina aan te passen is.
 
 ## Pagina's
@@ -37,7 +38,7 @@ Ga naar `/beheer/`. Daar pas je aan:
 2. Upload alle bestanden naar de webmap, inclusief de verborgen `.htaccess`-bestanden.
 3. Zorg dat de mappen `data/` en `uploads/` schrijfbaar zijn voor PHP.
 4. Log in via het slotje rechtsonder in de footer van de homepage, of ga naar
-   `https://jouwdomein.nl/beheer/`. Gebruik het startwachtwoord dat je van
+   `https://molenaar-design.nl/beheer/`. Gebruik het startwachtwoord dat je van
    Claude hebt gekregen (in `includes/config.php` staat alleen een versleutelde
    versie). Kies daarna bij Account meteen een eigen wachtwoord; vanaf dan geldt
    alleen dat wachtwoord.
@@ -68,4 +69,5 @@ niet in git opgeslagen. Maak er op de server zelf back-ups van.
 - `includes/bootstrap.php` – database, sessies, beveiliging en uploads
 - `includes/layout.php` – menu, footer en herbruikbare onderdelen
 - `style.css`, `script.js`, `img/` – opmaak, menu/formulier-script en illustraties
+- `logo/` – logo van Molenaar Design als SVG en PNG (donkere en lichte achtergrond, liggend, staand en los beeldmerk)
 - `screenshots/` – screenshots van de site en de beheerpagina (met testreviews)

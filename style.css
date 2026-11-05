@@ -80,6 +80,7 @@ p { margin: 0 0 1em; }
 .nav.scrolled { background: rgba(var(--bg-rgb), .92); backdrop-filter: blur(10px); border-color: var(--line); }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
 .logo { display: flex; align-items: center; gap: 10px; font: 700 1.05rem var(--head); text-decoration: none; }
+.logo-img { display: block; height: 40px; width: auto; }
 .logo-mark {
   display: grid; place-items: center; width: 36px; height: 36px;
   background: var(--accent); color: var(--on-accent); border-radius: 6px; font-size: .9rem;

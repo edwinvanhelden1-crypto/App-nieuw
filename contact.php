@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $host = preg_replace('/[^a-z0-9.-]/i', '', explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0]);
         $host = preg_replace('/^www\./i', '', $host);
         $headers = implode("\r\n", [
-            'From: Website Edwin Molenaar <noreply@' . $host . '>',
+            'From: Website Molenaar Design <noreply@' . $host . '>',
             'Reply-To: ' . $old['email'],
             'MIME-Version: 1.0',
             'Content-Type: text/plain; charset=UTF-8',
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $_SESSION['form_shown'] = time();
 $sent = isset($_GET['verzonden']);
 
-layout_head('Contact – Edwin Molenaar', 'Neem contact op met Edwin Molenaar voor een website, backend of Android-app.', 'contact');
+layout_head('Contact – Molenaar Design', 'Neem contact op met Molenaar Design voor een website, backend of Android-app.', 'contact');
 ?>
   <main>
 <?php page_hero('Contact', 'Neem contact op', c('contact_intro')); ?>

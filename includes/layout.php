@@ -13,7 +13,10 @@ function layout_head(string $title, string $description, string $active): void
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($title) ?></title>
   <meta name="description" content="<?= e($description) ?>">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234563ff'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' text-anchor='middle' fill='%23ffffff'%3EEM%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="logo/molenaar-design-beeldmerk.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+  <meta property="og:site_name" content="Molenaar Design">
+  <meta property="og:image" content="<?= e(site_url()) ?>/logo/molenaar-design-logo-staand-donker.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -22,7 +25,7 @@ function layout_head(string $title, string $description, string $active): void
 <body>
   <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a href="index.php" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
+      <a href="index.php" class="logo"><img class="logo-img" src="logo/molenaar-design-logo-donker.svg" alt="Molenaar Design" width="181" height="40"></a>
       <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -73,7 +76,7 @@ function layout_foot(bool $lock = false): void
   <footer class="footer">
     <div class="container footer-grid">
       <div>
-        <a href="index.php" class="logo"><span class="logo-mark">EM</span> Edwin Molenaar</a>
+        <a href="index.php" class="logo"><img class="logo-img" src="logo/molenaar-design-logo-donker.svg" alt="Molenaar Design" width="181" height="40"></a>
         <p><?= e(c('footer_text')) ?></p>
       </div>
       <div>
@@ -96,7 +99,7 @@ function layout_foot(bool $lock = false): void
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>&copy; <?= date('Y') ?> Edwin Molenaar</span>
+      <span>&copy; <?= date('Y') ?> Molenaar Design · Edwin Molenaar</span>
       <?php if ($lock): ?>
       <a class="lock" href="beheer/" aria-label="Inloggen op de beheerpagina" title="Beheer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></a>
       <?php endif; ?>

@@ -223,7 +223,8 @@ function render_page(string $view): void
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Beheer – Edwin Molenaar</title>
+  <title>Beheer – Molenaar Design</title>
+  <link rel="icon" href="../logo/molenaar-design-beeldmerk.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -233,7 +234,7 @@ function render_page(string $view): void
 <body class="admin">
   <header class="admin-top">
     <div class="container admin-top-inner">
-      <a href="index.php" class="logo"><span class="logo-mark">EM</span> Beheer</a>
+      <a href="index.php" class="logo"><img src="../logo/molenaar-design-beeldmerk.svg" alt="" width="36" height="36"> Beheer</a>
       <?php if (is_admin()): ?>
       <div class="admin-top-actions">
         <a href="../index.php" target="_blank" rel="noopener">Website bekijken &#8599;</a>

@@ -2,7 +2,7 @@
 require __DIR__ . '/includes/bootstrap.php';
 require __DIR__ . '/includes/layout.php';
 
-layout_head('Over mij – Edwin Molenaar', 'Maak kennis met Edwin Molenaar, webdeveloper en Android-ontwikkelaar.', 'over');
+layout_head('Over mij – Molenaar Design', 'Maak kennis met Edwin Molenaar, webdeveloper en Android-ontwikkelaar.', 'over');
 ?>
   <main>
 <?php page_hero('Edwin Molenaar', 'Over mij', c('about_intro')); ?>

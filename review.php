@@ -54,7 +54,7 @@ if (!$invite) {
     }
 }
 
-layout_head('Review schrijven – Edwin Molenaar', 'Schrijf een review over de samenwerking met Edwin Molenaar.', '');
+layout_head('Review schrijven – Molenaar Design', 'Schrijf een review over de samenwerking met Molenaar Design.', '');
 ?>
   <main class="review-page">
     <div class="container review-box">
@@ -89,7 +89,7 @@ layout_head('Review schrijven – Edwin Molenaar', 'Schrijf een review over de s
             </div>
           </div>
           <label>Je review<textarea id="body" name="body" rows="6" required minlength="10" maxlength="2000" placeholder="Wat heb ik voor je gemaakt, en hoe beviel de samenwerking?"><?= e($old['body']) ?></textarea></label>
-          <label class="check"><input type="checkbox" id="consent" name="consent" value="1" required> <span>Mijn naam, bedrijfsnaam en review mogen op de website van Edwin Molenaar.</span></label>
+          <label class="check"><input type="checkbox" id="consent" name="consent" value="1" required> <span>Mijn naam, bedrijfsnaam en review mogen op de website van Molenaar Design.</span></label>
           <button class="btn" type="submit">Review versturen</button>
         </form>
       <?php endif; ?>

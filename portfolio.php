@@ -2,7 +2,7 @@
 require __DIR__ . '/includes/bootstrap.php';
 require __DIR__ . '/includes/layout.php';
 
-layout_head('Portfolio – Edwin Molenaar', 'Websites, backends en Android-apps gebouwd door Edwin Molenaar.', 'portfolio');
+layout_head('Portfolio – Molenaar Design', 'Websites, backends en Android-apps gebouwd door Edwin Molenaar.', 'portfolio');
 ?>
   <main>
 <?php page_hero('Portfolio', c('portfolio_title'), c('portfolio_intro')); ?>
