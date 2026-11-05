@@ -31,7 +31,7 @@ layout_head('Over mij – Edwin Molenaar', 'Maak kennis met Edwin Molenaar, webd
       <div class="container">
         <div class="section-head">
           <p class="eyebrow">Afspraken</p>
-          <h2>Waar je op kunt rekenen</h2>
+          <h2>Wat je van me mag verwachten</h2>
         </div>
         <div class="values">
           <?php for ($i = 1; $i <= 4; $i++): ?>
@@ -46,7 +46,7 @@ layout_head('Over mij – Edwin Molenaar', 'Maak kennis met Edwin Molenaar, webd
         <div class="section-head">
           <p class="eyebrow">Techniek</p>
           <h2>Waar ik mee werk</h2>
-          <p>De talen en tools die ik het meest gebruik.</p>
+          <p>Dit gebruik ik het meest.</p>
         </div>
         <div class="skills">
           <?php for ($i = 1; $i <= 4; $i++): ?>

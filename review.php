@@ -34,9 +34,9 @@ if (!$invite) {
     } elseif ($old['rating'] < 1 || $old['rating'] > 5) {
         $error = 'Kies een aantal sterren.';
     } elseif (mb_strlen($old['body']) < 10 || mb_strlen($old['body']) > 2000) {
-        $error = 'Schrijf een review van minimaal 10 en maximaal 2000 tekens.';
+        $error = 'Je review is wel erg kort. Schrijf er nog een zin bij (maximaal 2000 tekens).';
     } elseif (empty($_POST['consent'])) {
-        $error = 'Geef toestemming om je review op de website te zetten.';
+        $error = 'Zet een vinkje als je review op de website mag. Anders kan ik hem niet plaatsen.';
     } else {
         $pdo = db();
         $pdo->beginTransaction();
@@ -60,18 +60,18 @@ layout_head('Review schrijven – Edwin Molenaar', 'Schrijf een review over de s
     <div class="container review-box">
       <?php if ($state === 'invalid'): ?>
         <h1>Deze link werkt niet</h1>
-        <p>Controleer of je de hele link hebt gekopieerd. Werkt hij nog steeds niet? Vraag dan een nieuwe link aan Edwin.</p>
+        <p>Misschien is niet de hele link meegekomen. Kopieer hem nog eens uit het bericht dat je van me kreeg. Lukt het dan nog niet, laat het me even weten.</p>
       <?php elseif ($state === 'used'): ?>
         <h1>Deze link is al gebruikt</h1>
-        <p>Met deze link is al een review geplaatst. Bedankt daarvoor! Wil je iets aanpassen? Neem dan contact op met Edwin.</p>
+        <p>Met deze link is al een review gestuurd, bedankt daarvoor. Wil je er nog iets aan veranderen? Stuur me dan even een bericht.</p>
       <?php elseif ($state === 'thanks'): ?>
-        <h1>Bedankt voor je review</h1>
-        <p>Je review is ontvangen. Hij verschijnt op de website zodra Edwin hem heeft bekeken.</p>
+        <h1>Bedankt!</h1>
+        <p>Fijn dat je de tijd hebt genomen. Ik lees je review en zet hem daarna op mijn website.</p>
         <p><a class="btn" href="index.php">Naar de website</a></p>
       <?php else: ?>
         <p class="eyebrow">Review</p>
         <h1>Hoe was de samenwerking?</h1>
-        <p>Je review komt op de website van Edwin te staan, nadat Edwin hem heeft bekeken. Deze link werkt één keer.</p>
+        <p>Fijn dat je even de tijd neemt. Je review komt op mijn website zodra ik hem heb gelezen. Deze link werkt één keer.</p>
         <form class="form" method="post" action="review.php">
           <input type="hidden" name="t" value="<?= e($token) ?>">
           <?php if ($error): ?><p class="notice notice-error" role="alert"><?= e($error) ?></p><?php endif; ?>
@@ -88,8 +88,8 @@ layout_head('Review schrijven – Edwin Molenaar', 'Schrijf een review over de s
               <?php endfor; ?>
             </div>
           </div>
-          <label>Je review<textarea id="body" name="body" rows="6" required minlength="10" maxlength="2000" placeholder="Wat heeft Edwin voor je gemaakt en hoe beviel het?"><?= e($old['body']) ?></textarea></label>
-          <label class="check"><input type="checkbox" id="consent" name="consent" value="1" required> <span>Mijn naam, bedrijfsnaam en review mogen op de website van Edwin Molenaar staan.</span></label>
+          <label>Je review<textarea id="body" name="body" rows="6" required minlength="10" maxlength="2000" placeholder="Wat heb ik voor je gemaakt, en hoe beviel de samenwerking?"><?= e($old['body']) ?></textarea></label>
+          <label class="check"><input type="checkbox" id="consent" name="consent" value="1" required> <span>Mijn naam, bedrijfsnaam en review mogen op de website van Edwin Molenaar.</span></label>
           <button class="btn" type="submit">Review versturen</button>
         </form>
       <?php endif; ?>

@@ -50,9 +50,9 @@ function db(): PDO
 function seed_projects(PDO $pdo): void
 {
     $rows = [
-        ['Edgeflow', 'Android · Meldingen', 'Android-app voor meldingen: gebruikers maken en volgen meldingen direct vanaf hun telefoon en krijgen een pushbericht bij elke update.', 'Android, Pushmeldingen', 'img/project-edgeflow.svg', ''],
-        ['Wendaro Connect', 'App · Platform', 'Platform dat mensen en informatie samenbrengt in één overzichtelijke app, gekoppeld aan een eigen backend.', 'Android, Backend', 'img/project-wendaro.svg', 'https://www.wendaro.nl'],
-        ['Wanyama Photo', 'Website · Fotografie', 'Website voor Wanyama Photo.', 'Website', 'img/project-wanyama.svg', 'https://www.wanyama-photo.nl'],
+        ['Edgeflow', 'Android · Meldingen', 'Een Android-app voor meldingen. Je meldt iets vanaf je telefoon, volgt wat ermee gebeurt en krijgt een pushbericht als er iets verandert.', 'Android, Pushmeldingen', 'img/project-edgeflow.svg', ''],
+        ['Wendaro Connect', 'App · Platform', 'Een app die mensen en informatie bij elkaar brengt, met een eigen backend erachter.', 'Android, Backend', 'img/project-wendaro.svg', 'https://www.wendaro.nl'],
+        ['Wanyama Photo', 'Website · Fotografie', 'De website van Wanyama Photo.', 'Website', 'img/project-wanyama.svg', 'https://www.wanyama-photo.nl'],
     ];
     $st = $pdo->prepare('INSERT INTO projects (sort, title, tag, description, tech, image, url) VALUES (?, ?, ?, ?, ?, ?, ?)');
     foreach ($rows as $i => $r) $st->execute([($i + 1) * 10, ...$r]);

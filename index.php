@@ -78,7 +78,7 @@ layout_head('Edwin Molenaar – webdeveloper en Android-ontwikkelaar', 'Edwin Mo
             <p class="eyebrow">Portfolio</p>
             <h2>Recent werk</h2>
           </div>
-          <a href="portfolio.php" class="link-arrow">Meer over deze projecten &rarr;</a>
+          <a href="portfolio.php" class="link-arrow">Alle projecten &rarr;</a>
         </div>
         <div class="projects<?= count($homeProjects) === 2 ? ' projects-duo' : '' ?>">
           <?php foreach ($homeProjects as $p) project_card($p); ?>

@@ -18,15 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: contact.php?verzonden=1#formulier');
         exit;
     } elseif (count($recent) >= 5) {
-        $error = 'Je hebt al een paar berichten gestuurd. Probeer het over een uur opnieuw.';
+        $error = 'Je hebt net al een paar berichten gestuurd. Probeer het over een uur nog eens.';
     } elseif ($old['naam'] === '' || mb_strlen($old['naam']) > 100 || preg_match('/[\r\n]/', $old['naam'])) {
         $error = 'Vul je naam in.';
     } elseif (!filter_var($old['email'], FILTER_VALIDATE_EMAIL) || mb_strlen($old['email']) > 150) {
-        $error = 'Vul een geldig e-mailadres in, zodat ik je kan antwoorden.';
+        $error = 'Dit e-mailadres klopt niet helemaal. Ik heb het nodig om je te antwoorden.';
     } elseif (!in_array($old['type'], TYPES, true) || !in_array($old['budget'], BUDGETS, true)) {
         $error = 'Kies wat je wilt laten bouwen en een budget.';
     } elseif (mb_strlen($old['bericht']) < 10 || mb_strlen($old['bericht']) > 5000) {
-        $error = 'Schrijf een bericht van minimaal 10 tekens.';
+        $error = 'Je bericht is wel erg kort. Vertel iets meer over wat je wilt laten maken.';
     } else {
         $host = preg_replace('/[^a-z0-9.-]/i', '', explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0]);
         $host = preg_replace('/^www\./i', '', $host);
@@ -59,8 +59,8 @@ layout_head('Contact – Edwin Molenaar', 'Neem contact op met Edwin Molenaar vo
     <section class="section">
       <div class="container contact">
         <div>
-          <h2>Gegevens</h2>
-          <p class="muted">Vul het formulier in. Je bericht komt direct bij mij binnen.</p>
+          <h2>Goed om te weten</h2>
+          <p class="muted">Je bericht komt rechtstreeks bij mij binnen, niet bij een helpdesk.</p>
           <ul class="contact-cards">
             <li>
               <svg viewBox="0 0 24 24"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg>
@@ -75,7 +75,7 @@ layout_head('Contact – Edwin Molenaar', 'Neem contact op met Edwin Molenaar vo
         <?php if ($sent): ?>
         <div class="form" id="formulier" role="status">
           <h3>Bedankt voor je bericht</h3>
-          <p class="muted">Je bericht is verstuurd. Ik reageer binnen een werkdag op het e-mailadres dat je hebt ingevuld.</p>
+          <p class="muted">Ik heb je bericht ontvangen. Je krijgt binnen een werkdag antwoord op het e-mailadres dat je hebt ingevuld.</p>
           <a class="btn btn-outline" href="contact.php#formulier">Nog een bericht sturen</a>
         </div>
         <?php else: ?>
