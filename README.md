@@ -80,7 +80,7 @@ In `instagram/` staan vier reclamestories (1080 × 1920):
 - `story-02-reclame-app.png` – "Een eigen app voor je bedrijf?"
 - `story-03-reclame-waarom.png` – "Eén aanspreekpunt, van idee tot online."
 - `story-04-vraag-website.png` – "Is je website een beetje verouderd?" met de keuzes opfrisbeurt,
-  compleet nieuwe website of nieuw met backend, en "DM voor info"
+  compleet nieuwe website of nieuw met backend
 
 Tekst en logo staan binnen de veilige zone, zodat de knoppen van Instagram niets afdekken.
 
