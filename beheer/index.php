@@ -4,7 +4,7 @@ require __DIR__ . '/../includes/bootstrap.php';
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 
-const TABS = ['teksten' => 'Teksten & foto\'s', 'portfolio' => 'Portfolio', 'reviews' => 'Reviews', 'links' => 'Reviewlinks', 'account' => 'Account'];
+const TABS = ['berichten' => 'Berichten', 'teksten' => 'Teksten & foto\'s', 'portfolio' => 'Portfolio', 'reviews' => 'Reviews', 'links' => 'Reviewlinks', 'account' => 'Account'];
 
 function flash(string $msg, string $type = 'ok'): void { $_SESSION['flash'] = [$msg, $type]; }
 function back(string $query = ''): never
@@ -179,6 +179,15 @@ if ($action !== '') {
                 flash('De reviewlink is verwijderd en werkt niet meer.');
                 back('tab=links');
 
+            case 'message_read':
+                $pdo->prepare('UPDATE messages SET is_read = 1 WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
+                back('tab=berichten');
+
+            case 'message_delete':
+                $pdo->prepare('DELETE FROM messages WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
+                flash('Het bericht is verwijderd.');
+                back('tab=berichten');
+
             case 'password':
                 if (!password_verify((string)($_POST['current'] ?? ''), admin_hash())) throw new RuntimeException('Je huidige wachtwoord klopt niet.');
                 $pw = (string)($_POST['password'] ?? '');
@@ -195,15 +204,18 @@ if ($action !== '') {
     back();
 }
 
-render_page($_GET['tab'] ?? 'teksten');
+render_page($_GET['tab'] ?? 'berichten');
 
 // ---------- Weergave ----------
 function render_page(string $view): void
 {
     $flash = $_SESSION['flash'] ?? null;
     unset($_SESSION['flash']);
-    $tab = isset(TABS[$view]) ? $view : ($view === 'setup' || $view === 'login' ? $view : 'teksten');
-    $pending = is_admin() ? (int)db()->query('SELECT COUNT(*) FROM reviews WHERE status = "pending"')->fetchColumn() : 0;
+    $tab = isset(TABS[$view]) ? $view : ($view === 'setup' || $view === 'login' ? $view : 'berichten');
+    $badges = is_admin() ? [
+        'reviews' => (int)db()->query('SELECT COUNT(*) FROM reviews WHERE status = "pending"')->fetchColumn(),
+        'berichten' => (int)db()->query('SELECT COUNT(*) FROM messages WHERE is_read = 0')->fetchColumn(),
+    ] : [];
     ?>
 <!doctype html>
 <html lang="nl">
@@ -232,7 +244,7 @@ function render_page(string $view): void
     <?php if (is_admin()): ?>
     <nav class="container admin-tabs" aria-label="Onderdelen">
       <?php foreach (TABS as $key => $label): ?>
-      <a href="?tab=<?= $key ?>"<?= $key === $tab ? ' aria-current="page"' : '' ?>><?= e($label) ?><?php if ($key === 'reviews' && $pending): ?> <span class="badge"><?= $pending ?></span><?php endif; ?></a>
+      <a href="?tab=<?= $key ?>"<?= $key === $tab ? ' aria-current="page"' : '' ?>><?= e($label) ?><?php if (!empty($badges[$key])): ?> <span class="badge"><?= $badges[$key] ?></span><?php endif; ?></a>
       <?php endforeach; ?>
     </nav>
     <?php endif; ?>
@@ -288,6 +300,38 @@ function img_src(string $path): string
 {
     return '../' . $path;
 }
+
+function view_berichten(): void
+{
+    $rows = db()->query('SELECT * FROM messages ORDER BY created_at DESC')->fetchAll();
+    ?>
+    <h1>Berichten</h1>
+    <p class="muted">Berichten van het contactformulier. Ze worden ook naar <?= e(c('contact_email')) ?> gemaild; hier staan ze voor het geval een mail niet aankomt.</p>
+    <?php if (!$rows): ?>
+    <section class="admin-card"><p>Er zijn nog geen berichten.</p></section>
+    <?php endif; ?>
+    <?php foreach ($rows as $m): ?>
+    <section class="admin-card<?= $m['is_read'] ? '' : ' unread' ?>">
+      <div class="card-head">
+        <div>
+          <?php if (!$m['is_read']): ?><span class="pill pill-pending">Nieuw</span><?php endif; ?>
+          <?php if (!$m['mailed']): ?><span class="pill pill-hidden">Niet gemaild</span><?php endif; ?>
+          <h2><?= e($m['name']) ?> <span class="muted">· <?= e($m['type']) ?> · <?= e($m['budget']) ?></span></h2>
+          <a href="mailto:<?= e($m['email']) ?>"><?= e($m['email']) ?></a>
+        </div>
+        <span class="muted small"><?= e(date('d-m-Y H:i', strtotime($m['created_at']))) ?></span>
+      </div>
+      <p><?= nl2br(e($m['body'])) ?></p>
+      <div class="form-actions">
+        <a class="btn btn-sm" href="mailto:<?= e($m['email']) ?>?subject=<?= rawurlencode('Re: ' . $m['type']) ?>">Beantwoorden</a>
+        <?php if (!$m['is_read']): ?>
+        <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="message_read"><input type="hidden" name="id" value="<?= (int)$m['id'] ?>"><button class="btn btn-outline btn-sm" type="submit">Markeer als gelezen</button></form>
+        <?php endif; ?>
+        <form method="post" data-confirm="Dit bericht verwijderen?"><?= csrf_field() ?><input type="hidden" name="action" value="message_delete"><input type="hidden" name="id" value="<?= (int)$m['id'] ?>"><button class="btn btn-danger btn-sm" type="submit">Verwijderen</button></form>
+      </div>
+    </section>
+    <?php endforeach; ?>
+<?php }
 
 function view_teksten(): void
 {

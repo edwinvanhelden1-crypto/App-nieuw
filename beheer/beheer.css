@@ -71,3 +71,5 @@
   .admin-side a { white-space: nowrap; }
   .inline-form { grid-template-columns: 1fr; }
 }
+.unread { border-color: #6b5420; }
+.admin-card .card-head a { color: var(--accent-hover); font-size: .92rem; }

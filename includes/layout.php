@@ -69,7 +69,6 @@ function cta(): void
 
 function layout_foot(bool $lock = false): void
 {
-    $email = c('contact_email');
     ?>
   <footer class="footer">
     <div class="container footer-grid">
@@ -92,7 +91,7 @@ function layout_foot(bool $lock = false): void
       </div>
       <div>
         <h4>Contact</h4>
-        <a href="mailto:<?= e($email) ?>"><?= e($email) ?></a>
+        <a href="contact.php">Contactformulier</a>
         <span>Nederland</span>
       </div>
     </div>

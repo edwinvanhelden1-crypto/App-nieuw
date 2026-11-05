@@ -412,3 +412,4 @@ a.project-link:hover .visit { text-decoration: underline; }
 .lock:hover, .lock:focus-visible { opacity: 1; color: var(--text); }
 .lock:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .lock svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

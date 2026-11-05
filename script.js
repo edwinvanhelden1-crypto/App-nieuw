@@ -39,15 +39,3 @@ if ("IntersectionObserver" in window) {
 } else {
   revealItems.forEach((el) => el.classList.add("visible"));
 }
-
-// Contactformulier: opent het e-mailprogramma met een ingevuld bericht
-const form = document.getElementById("contact-form");
-if (form) {
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const data = new FormData(form);
-    const subject = `Aanvraag: ${data.get("type")} – ${data.get("naam")}`;
-    const body = `Naam: ${data.get("naam")}\nE-mail: ${data.get("email")}\nType: ${data.get("type")}\nBudget: ${data.get("budget")}\n\n${data.get("bericht")}`;
-    window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
-}

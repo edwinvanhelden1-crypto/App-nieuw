@@ -40,6 +40,9 @@ function db(): PDO
         name TEXT NOT NULL, company TEXT NOT NULL DEFAULT "", rating INTEGER NOT NULL, body TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT "pending", created_at TEXT NOT NULL)');
     $pdo->exec('CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT NOT NULL, at INTEGER NOT NULL)');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, type TEXT NOT NULL, budget TEXT NOT NULL,
+        body TEXT NOT NULL, mailed INTEGER NOT NULL DEFAULT 0, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)');
     if ($new) seed_projects($pdo);
     return $pdo;
 }
@@ -48,7 +51,7 @@ function seed_projects(PDO $pdo): void
 {
     $rows = [
         ['Edgeflow', 'Android · Meldingen', 'Android-app voor meldingen: gebruikers maken en volgen meldingen direct vanaf hun telefoon en krijgen een pushbericht bij elke update.', 'Android, Pushmeldingen', 'img/project-edgeflow.svg', ''],
-        ['Wendaro Connect', 'App · Platform', 'Platform dat mensen en informatie samenbrengt in één overzichtelijke app, gekoppeld aan een eigen backend.', 'Android, Backend', 'img/project-wendaro.svg', ''],
+        ['Wendaro Connect', 'App · Platform', 'Platform dat mensen en informatie samenbrengt in één overzichtelijke app, gekoppeld aan een eigen backend.', 'Android, Backend', 'img/project-wendaro.svg', 'https://www.wendaro.nl'],
         ['Wanyama Photo', 'Website · Fotografie', 'Website voor Wanyama Photo.', 'Website', 'img/project-wanyama.svg', 'https://www.wanyama-photo.nl'],
     ];
     $st = $pdo->prepare('INSERT INTO projects (sort, title, tag, description, tech, image, url) VALUES (?, ?, ?, ?, ?, ?, ?)');

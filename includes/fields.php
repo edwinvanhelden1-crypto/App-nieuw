@@ -19,7 +19,7 @@ const FIELD_GROUPS = [
 
 const FIELDS = [
     // Algemeen
-    'contact_email' => ['group' => 'algemeen', 'label' => 'E-mailadres voor contact', 'type' => 'text', 'default' => 'info@jouwdomein.nl'],
+    'contact_email' => ['group' => 'algemeen', 'label' => 'E-mailadres waar berichten van het contactformulier heen gaan (staat nergens op de site)', 'type' => 'text', 'default' => 'info@wendaro.nl'],
     'available' => ['group' => 'algemeen', 'label' => 'Label "beschikbaar" tonen', 'type' => 'bool', 'default' => '1'],
     'available_text' => ['group' => 'algemeen', 'label' => 'Tekst van het label', 'type' => 'text', 'default' => 'Beschikbaar voor nieuwe projecten'],
     'footer_text' => ['group' => 'algemeen', 'label' => 'Tekst in de footer', 'type' => 'text', 'default' => 'Webdeveloper en Android-ontwikkelaar uit Nederland.'],

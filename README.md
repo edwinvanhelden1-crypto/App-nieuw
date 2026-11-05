@@ -8,13 +8,16 @@ met een SQLite-database, zodat alles via een beheerpagina aan te passen is.
 - `index.php` – home met diensten, recent werk, reviews, werkwijze en samenwerken
 - `portfolio.php` – alle projecten; projecten met een link zijn aanklikbaar
 - `over-mij.php` – introductie, afspraken en technieken
-- `contact.php` – contactformulier (opent het mailprogramma) en veelgestelde vragen
+- `contact.php` – contactformulier en veelgestelde vragen. Berichten worden door de server naar het
+  ingestelde e-mailadres gemaild en ook bewaard in de beheerpagina; het adres staat nergens op de site
 - `review.php` – formulier voor klanten, alleen bereikbaar via een persoonlijke reviewlink
 - `beheer/` – beheerpagina met wachtwoord (bereikbaar via het slotje in de footer van de homepage, `noindex`)
 
 ## Beheerpagina
 
 Ga naar `/beheer/`. Daar pas je aan:
+
+- **Berichten**: alles wat via het contactformulier binnenkomt, met een knop om te antwoorden.
 
 - **Teksten & foto's**: alle teksten en afbeeldingen per pagina-onderdeel,
   het e-mailadres en het label "Beschikbaar voor nieuwe projecten".
@@ -38,7 +41,9 @@ Ga naar `/beheer/`. Daar pas je aan:
    Claude hebt gekregen (in `includes/config.php` staat alleen een versleutelde
    versie). Kies daarna bij Account meteen een eigen wachtwoord; vanaf dan geldt
    alleen dat wachtwoord.
-5. Vul bij Teksten & foto's → Algemeen je echte e-mailadres in.
+5. Berichten gaan naar info@wendaro.nl. Een ander adres stel je in bij Teksten & foto's → Algemeen.
+   Het formulier mailt via de PHP-functie `mail()`, die bij gewone hosting werkt. Komt er geen mail
+   aan, dan staan de berichten altijd in de beheerpagina bij Berichten.
 
 Hernoem je de map `beheer` (bijvoorbeeld naar `beheer-k7q2`), pas dan ook de
 link van het slotje aan in `includes/layout.php`.
