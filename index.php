@@ -151,4 +151,4 @@ layout_head('Edwin Molenaar – webdeveloper en Android-ontwikkelaar', 'Edwin Mo
 
 <?php cta(); ?>
   </main>
-<?php layout_foot();
+<?php layout_foot(true);

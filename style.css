@@ -294,7 +294,7 @@ p { margin: 0 0 1em; }
 .footer-grid a:not(.logo), .footer-grid > div > span { display: block; color: var(--muted); text-decoration: none; margin-bottom: 8px; }
 .footer-grid a:not(.logo):hover { color: var(--accent); }
 .footer-grid .logo { color: var(--text); }
-.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; border-top: 1px solid var(--line); padding-top: 22px; padding-bottom: 28px; }
+.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 24px; border-top: 1px solid var(--line); padding-top: 22px; padding-bottom: 28px; }
 
 /* Beschikbaarheid & feiten in de hero */
 .status {
@@ -406,3 +406,9 @@ a.project-link:hover .visit { text-decoration: underline; }
 }
 .rating-label { font-weight: 500; font-size: .92rem; margin: 0 0 8px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Slotje naar de beheerpagina */
+.lock { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 6px; color: var(--muted); opacity: .55; transition: opacity .2s, color .2s; }
+.lock:hover, .lock:focus-visible { opacity: 1; color: var(--text); }
+.lock:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lock svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

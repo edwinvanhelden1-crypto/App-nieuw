@@ -12,7 +12,11 @@ function back(string $query = ''): never
     header('Location: index.php' . ($query !== '' ? '?' . $query : ''));
     exit;
 }
-function admin_hash(): ?string { return settings()['_admin_hash'] ?? null; }
+/** Wachtwoord uit Account als dat is gekozen, anders het startwachtwoord uit includes/config.php. */
+function admin_hash(): ?string
+{
+    return settings()['_admin_hash'] ?? (ADMIN_PASSWORD_HASH !== '' ? ADMIN_PASSWORD_HASH : null);
+}
 function client_ip(): string { return $_SERVER['REMOTE_ADDR'] ?? 'onbekend'; }
 
 function too_many_attempts(): bool
@@ -276,6 +280,7 @@ function view_login(): void
         <label>Wachtwoord<input type="password" id="password" name="password" required autocomplete="current-password" autofocus></label>
         <button class="btn" type="submit">Inloggen</button>
       </form>
+      <a class="muted small" href="../index.php">&larr; Terug naar de website</a>
     </section>
 <?php }
 

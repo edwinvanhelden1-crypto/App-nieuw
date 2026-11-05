@@ -67,7 +67,7 @@ function cta(): void
 <?php
 }
 
-function layout_foot(): void
+function layout_foot(bool $lock = false): void
 {
     $email = c('contact_email');
     ?>
@@ -98,6 +98,9 @@ function layout_foot(): void
     </div>
     <div class="container footer-bottom">
       <span>&copy; <?= date('Y') ?> Edwin Molenaar</span>
+      <?php if ($lock): ?>
+      <a class="lock" href="beheer/" aria-label="Inloggen op de beheerpagina" title="Beheer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></a>
+      <?php endif; ?>
     </div>
   </footer>
 

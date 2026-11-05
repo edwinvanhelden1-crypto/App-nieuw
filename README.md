@@ -10,7 +10,7 @@ met een SQLite-database, zodat alles via een beheerpagina aan te passen is.
 - `over-mij.php` – introductie, afspraken en technieken
 - `contact.php` – contactformulier (opent het mailprogramma) en veelgestelde vragen
 - `review.php` – formulier voor klanten, alleen bereikbaar via een persoonlijke reviewlink
-- `beheer/` – verborgen beheerpagina (niet gelinkt, `noindex`, met wachtwoord)
+- `beheer/` – beheerpagina met wachtwoord (bereikbaar via het slotje in de footer van de homepage, `noindex`)
 
 ## Beheerpagina
 
@@ -33,12 +33,15 @@ Ga naar `/beheer/`. Daar pas je aan:
    bijna alle hostingpartijen).
 2. Upload alle bestanden naar de webmap, inclusief de verborgen `.htaccess`-bestanden.
 3. Zorg dat de mappen `data/` en `uploads/` schrijfbaar zijn voor PHP.
-4. Open direct `https://jouwdomein.nl/beheer/` en kies een wachtwoord. Dit kan
-   alleen zolang er nog geen wachtwoord is; doe het dus meteen na het uploaden.
+4. Log in via het slotje rechtsonder in de footer van de homepage, of ga naar
+   `https://jouwdomein.nl/beheer/`. Gebruik het startwachtwoord dat je van
+   Claude hebt gekregen (in `includes/config.php` staat alleen een versleutelde
+   versie). Kies daarna bij Account meteen een eigen wachtwoord; vanaf dan geldt
+   alleen dat wachtwoord.
 5. Vul bij Teksten & foto's → Algemeen je echte e-mailadres in.
 
-Extra verborgen: je mag de map `beheer` hernoemen naar iets dat niemand raadt,
-bijvoorbeeld `beheer-k7q2`. De rest blijft werken.
+Hernoem je de map `beheer` (bijvoorbeeld naar `beheer-k7q2`), pas dan ook de
+link van het slotje aan in `includes/layout.php`.
 
 De `.htaccess`-bestanden blokkeren de database en de PHP-onderdelen op Apache-
 hosting. Gebruik je nginx, blokkeer dan zelf de mappen `data/` en `includes/`

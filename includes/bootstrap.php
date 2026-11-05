@@ -6,6 +6,7 @@ const DB_FILE = ROOT . '/data/site.sqlite';
 const UPLOAD_DIR = ROOT . '/uploads';
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
+require __DIR__ . '/config.php';
 require __DIR__ . '/fields.php';
 
 $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
