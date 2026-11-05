@@ -43,6 +43,9 @@ function db(): PDO
     $pdo->exec('CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, type TEXT NOT NULL, budget TEXT NOT NULL,
         body TEXT NOT NULL, mailed INTEGER NOT NULL DEFAULT 0, is_read INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS leads (
+        id INTEGER PRIMARY KEY, url TEXT NOT NULL UNIQUE, title TEXT NOT NULL DEFAULT "", score INTEGER NOT NULL DEFAULT 0,
+        problems TEXT NOT NULL DEFAULT "[]", status TEXT NOT NULL DEFAULT "nieuw", note TEXT NOT NULL DEFAULT "", checked_at TEXT NOT NULL)');
     if ($new) seed_projects($pdo);
     return $pdo;
 }

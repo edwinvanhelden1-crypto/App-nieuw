@@ -29,6 +29,14 @@ Ga naar `/beheer/`. Daar pas je aan:
   de reviewsectie verborgen.
 - **Reviewlinks**: per klant een link maken die één keer werkt. Kopieer de link
   en stuur hem zelf op (mail, WhatsApp). De link staat nergens op de site.
+- **Websitecheck**: plak tot 25 websites van bedrijven (bijvoorbeeld uit Google Maps). De server
+  controleert ze op tekenen van veroudering: geen https, niet geschikt voor mobiel, oud
+  copyright-jaartal, verouderde techniek of software, traag, geen beschrijving voor Google, of
+  helemaal niet bereikbaar. Elke site krijgt een score van 0 tot 10 en per probleem een zin die je
+  in een gesprek kunt gebruiken. Per bedrijf houd je een status en notitie bij, en je kunt de lijst
+  exporteren naar Excel. Interne adressen worden geweigerd. Let op: reclame mailen naar bedrijven
+  zonder toestemming mag niet zomaar (bij eenmanszaken nooit); bel ze liever of gebruik hun
+  eigen contactformulier.
 - **Account**: wachtwoord wijzigen.
 
 ## Online zetten op www.molenaar-design.nl

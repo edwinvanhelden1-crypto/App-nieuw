@@ -1,10 +1,11 @@
 <?php
 require __DIR__ . '/../includes/bootstrap.php';
+require __DIR__ . '/../includes/websitecheck.php';
 
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 
-const TABS = ['berichten' => 'Berichten', 'teksten' => 'Teksten & foto\'s', 'portfolio' => 'Portfolio', 'reviews' => 'Reviews', 'links' => 'Reviewlinks', 'account' => 'Account'];
+const TABS = ['berichten' => 'Berichten', 'teksten' => 'Teksten & foto\'s', 'portfolio' => 'Portfolio', 'reviews' => 'Reviews', 'links' => 'Reviewlinks', 'websitecheck' => 'Websitecheck', 'account' => 'Account'];
 
 function flash(string $msg, string $type = 'ok'): void { $_SESSION['flash'] = [$msg, $type]; }
 function back(string $query = ''): never
@@ -76,6 +77,20 @@ if ($action === 'logout') {
     $_SESSION = [];
     session_destroy();
     back();
+}
+
+// ---------- Websitecheck exporteren als CSV (opent in Excel) ----------
+if (($_GET['tab'] ?? '') === 'websitecheck' && isset($_GET['export'])) {
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="websitecheck-' . date('Y-m-d') . '.csv"');
+    $out = fopen('php://output', 'w');
+    fwrite($out, "\xEF\xBB\xBF");
+    fputcsv($out, ['Website', 'Naam', 'Score', 'Problemen', 'Status', 'Notitie', 'Gecontroleerd'], ';');
+    foreach (db()->query('SELECT * FROM leads ORDER BY score DESC, url') as $l) {
+        $probs = implode(' | ', array_column(json_decode($l['problems'], true) ?: [], 'title'));
+        fputcsv($out, [$l['url'], $l['title'], $l['score'], $probs, WC_STATUSES[$l['status']] ?? $l['status'], $l['note'], date('d-m-Y', strtotime($l['checked_at']))], ';');
+    }
+    exit;
 }
 
 // ---------- Acties binnen de beheerpagina ----------
@@ -187,6 +202,28 @@ if ($action !== '') {
                 $pdo->prepare('DELETE FROM messages WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
                 flash('Het bericht is verwijderd.');
                 back('tab=berichten');
+
+            case 'wc_check':
+                $lines = preg_split('/[\s,;]+/', (string)($_POST['urls'] ?? ''));
+                $res = wc_run($lines);
+                if (!$res['checked']) throw new RuntimeException('Er stond geen geldig website-adres in de lijst. Zet één adres per regel, bijvoorbeeld www.voorbeeld.nl.');
+                $msg = $res['checked'] . ' website' . ($res['checked'] === 1 ? '' : 's') . ' gecontroleerd.';
+                if ($res['skipped']) $msg .= ' Overgeslagen (geen geldig of openbaar adres): ' . implode(', ', array_slice($res['skipped'], 0, 5)) . (count($res['skipped']) > 5 ? ' …' : '') . '.';
+                flash($msg);
+                back('tab=websitecheck');
+
+            case 'lead_update':
+                $status = (string)($_POST['status'] ?? 'nieuw');
+                if (!isset(WC_STATUSES[$status])) $status = 'nieuw';
+                $pdo->prepare('UPDATE leads SET status = ?, note = ? WHERE id = ?')
+                    ->execute([$status, mb_substr(trim((string)($_POST['note'] ?? '')), 0, 1000), (int)($_POST['id'] ?? 0)]);
+                flash('Opgeslagen.');
+                back('tab=websitecheck' . (isset($_GET['status']) ? '&status=' . urlencode((string)$_GET['status']) : ''));
+
+            case 'lead_delete':
+                $pdo->prepare('DELETE FROM leads WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
+                flash('Verwijderd uit de lijst.');
+                back('tab=websitecheck');
 
             case 'password':
                 if (!password_verify((string)($_POST['current'] ?? ''), admin_hash())) throw new RuntimeException('Je huidige wachtwoord klopt niet.');
@@ -502,6 +539,68 @@ function view_links(): void
       </div>
     </section>
     <?php endif; ?>
+<?php }
+
+function view_websitecheck(): void
+{
+    $filter = $_GET['status'] ?? '';
+    $sql = 'SELECT * FROM leads' . (isset(WC_STATUSES[$filter]) ? ' WHERE status = ?' : '') . ' ORDER BY score DESC, checked_at DESC';
+    $st = db()->prepare($sql);
+    $st->execute(isset(WC_STATUSES[$filter]) ? [$filter] : []);
+    $rows = $st->fetchAll();
+    $counts = db()->query('SELECT status, COUNT(*) n FROM leads GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);
+    ?>
+    <h1>Websitecheck</h1>
+    <p class="muted">Plak websites van bedrijven die je zou willen benaderen, bijvoorbeeld uit Google Maps. De check zoekt naar tekenen van een verouderde site. Hoe hoger de score, hoe meer er te verbeteren valt.</p>
+    <section class="admin-card">
+      <h2>Websites controleren</h2>
+      <form method="post" class="form-plain">
+        <?= csrf_field() ?><input type="hidden" name="action" value="wc_check">
+        <label>Eén adres per regel (maximaal <?= WC_MAX_URLS ?> per keer)<textarea id="urls" name="urls" rows="6" required placeholder="www.voorbeeldbedrijf.nl&#10;schildersbedrijf-jansen.nl"></textarea></label>
+        <div class="form-actions"><button class="btn" type="submit">Controleren</button><span class="muted small">Dit kan tot een halve minuut duren.</span></div>
+      </form>
+    </section>
+
+    <section class="admin-card">
+      <div class="card-head">
+        <h2>Gevonden bedrijven</h2>
+        <?php if ($counts): ?><a class="btn btn-outline btn-sm" href="?tab=websitecheck&amp;export=1">Exporteren naar Excel</a><?php endif; ?>
+      </div>
+      <nav class="filter-row" aria-label="Filter op status">
+        <a href="?tab=websitecheck"<?= $filter === '' ? ' aria-current="page"' : '' ?>>Alles (<?= array_sum($counts) ?>)</a>
+        <?php foreach (WC_STATUSES as $k => $label): ?>
+        <a href="?tab=websitecheck&amp;status=<?= $k ?>"<?= $filter === $k ? ' aria-current="page"' : '' ?>><?= e($label) ?> (<?= (int)($counts[$k] ?? 0) ?>)</a>
+        <?php endforeach; ?>
+      </nav>
+      <?php if (!$rows): ?>
+      <p class="muted">Nog niets gevonden. Plak hierboven een paar websites om te beginnen.</p>
+      <?php endif; ?>
+      <?php foreach ($rows as $l): $probs = json_decode($l['problems'], true) ?: []; $s = (int)$l['score']; ?>
+      <article class="wc-item">
+        <div class="lead-score score-<?= $s >= 6 ? 'hoog' : ($s >= 3 ? 'midden' : 'laag') ?>" title="Score <?= $s ?> van 10"><?= $s ?></div>
+        <div class="lead-body">
+          <h3><a href="https://<?= e($l['url']) ?>" target="_blank" rel="noopener"><?= e($l['url']) ?> &#8599;</a></h3>
+          <?php if ($l['title'] !== ''): ?><p class="muted small"><?= e($l['title']) ?></p><?php endif; ?>
+          <?php if ($probs): ?>
+          <ul class="lead-problems">
+            <?php foreach ($probs as $p): ?><li><strong><?= e($p['title']) ?></strong><span><?= e($p['pitch']) ?></span></li><?php endforeach; ?>
+          </ul>
+          <?php else: ?>
+          <p class="small">Geen duidelijke problemen gevonden. Deze site lijkt bij de tijd.</p>
+          <?php endif; ?>
+          <form method="post" class="lead-form">
+            <?= csrf_field() ?><input type="hidden" name="action" value="lead_update"><input type="hidden" name="id" value="<?= (int)$l['id'] ?>">
+            <select id="status-<?= (int)$l['id'] ?>" name="status" aria-label="Status">
+              <?php foreach (WC_STATUSES as $k => $label): ?><option value="<?= $k ?>"<?= $l['status'] === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
+            </select>
+            <input id="note-<?= (int)$l['id'] ?>" name="note" value="<?= e($l['note']) ?>" placeholder="Notitie, bijvoorbeeld: gebeld op 12-11, terugbellen in januari" aria-label="Notitie">
+            <button class="btn btn-sm" type="submit">Opslaan</button>
+          </form>
+        </div>
+        <form method="post" data-confirm="<?= e($l['url']) ?> uit de lijst verwijderen?"><?= csrf_field() ?><input type="hidden" name="action" value="lead_delete"><input type="hidden" name="id" value="<?= (int)$l['id'] ?>"><button class="linkbtn danger" type="submit">Verwijderen</button></form>
+      </article>
+      <?php endforeach; ?>
+    </section>
 <?php }
 
 function view_account(): void
