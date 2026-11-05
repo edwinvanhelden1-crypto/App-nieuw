@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /review.php
+
+Sitemap: https://www.molenaar-design.nl/sitemap.xml

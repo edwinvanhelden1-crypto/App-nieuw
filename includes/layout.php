@@ -1,5 +1,5 @@
 <?php
-function layout_head(string $title, string $description, string $active): void
+function layout_head(string $title, string $description, string $active, bool $rootBase = false): void
 {
     $link = function (string $href, string $label, string $key) use ($active): string {
         $cur = $key === $active ? ' class="active" aria-current="page"' : '';
@@ -10,13 +10,20 @@ function layout_head(string $title, string $description, string $active): void
 <html lang="nl">
 <head>
   <meta charset="utf-8">
+  <?php if ($rootBase): ?><base href="/"><?php endif; ?>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($title) ?></title>
   <meta name="description" content="<?= e($description) ?>">
   <link rel="icon" href="logo/molenaar-design-beeldmerk.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+  <?php $page = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php'); $canonical = SITE_URL . '/' . ($page === 'index.php' ? '' : $page); ?>
+  <link rel="canonical" href="<?= e($canonical) ?>">
   <meta property="og:site_name" content="Molenaar Design">
-  <meta property="og:image" content="<?= e(site_url()) ?>/logo/molenaar-design-logo-staand-donker.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<?= e($title) ?>">
+  <meta property="og:description" content="<?= e($description) ?>">
+  <meta property="og:url" content="<?= e($canonical) ?>">
+  <meta property="og:image" content="<?= e(SITE_URL) ?>/logo/molenaar-design-logo-staand-donker.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">

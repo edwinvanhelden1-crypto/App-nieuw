@@ -31,27 +31,33 @@ Ga naar `/beheer/`. Daar pas je aan:
   en stuur hem zelf op (mail, WhatsApp). De link staat nergens op de site.
 - **Account**: wachtwoord wijzigen.
 
-## Online zetten (PHP-hosting)
+## Online zetten op www.molenaar-design.nl
 
-1. Hosting met PHP 8.1 of nieuwer en de extensie `pdo_sqlite` (standaard bij
-   bijna alle hostingpartijen).
-2. Upload alle bestanden naar de webmap, inclusief de verborgen `.htaccess`-bestanden.
-3. Zorg dat de mappen `data/` en `uploads/` schrijfbaar zijn voor PHP.
-4. Log in via het slotje rechtsonder in de footer van de homepage, of ga naar
-   `https://molenaar-design.nl/beheer/`. Gebruik het startwachtwoord dat je van
-   Claude hebt gekregen (in `includes/config.php` staat alleen een versleutelde
-   versie). Kies daarna bij Account meteen een eigen wachtwoord; vanaf dan geldt
-   alleen dat wachtwoord.
-5. Berichten gaan naar info@wendaro.nl. Een ander adres stel je in bij Teksten & foto's → Algemeen.
-   Het formulier mailt via de PHP-functie `mail()`, die bij gewone hosting werkt. Komt er geen mail
-   aan, dan staan de berichten altijd in de beheerpagina bij Berichten.
+1. **Hosting met PHP 8.1 of nieuwer** en de extensie `pdo_sqlite` (standaard bij bijna
+   alle hostingpartijen, zoals TransIP, Hostinger, Strato of Vimexx).
+2. **Domein koppelen:** zorg dat molenaar-design.nl en www.molenaar-design.nl naar je
+   hosting wijzen. Heb je domein en hosting bij dezelfde partij, dan gaat dit vanzelf.
+3. **SSL aanzetten:** zet in het hostingpaneel het gratis SSL-certificaat (Let's Encrypt)
+   aan voor beide adressen. De site stuurt bezoekers daarna automatisch door naar
+   `https://www.molenaar-design.nl`.
+4. **Uploaden:** pak `molenaar-design-website.zip` uit en upload de inhoud naar de webmap
+   (vaak `public_html` of `www`), inclusief de verborgen `.htaccess`-bestanden.
+5. **Schrijfrechten:** zorg dat de mappen `data/` en `uploads/` schrijfbaar zijn voor PHP.
+6. **Inloggen:** via het slotje rechtsonder op de homepage, of op
+   `https://www.molenaar-design.nl/beheer/`, met het startwachtwoord. Kies daarna bij
+   Account meteen een eigen wachtwoord.
+7. **Testen:** stuur jezelf een bericht via het contactformulier. Het gaat naar
+   info@wendaro.nl, met afzender noreply@molenaar-design.nl. Komt het niet aan of
+   belandt het in de spam, vraag je hostingpartij dan om mail vanaf je domein toe te
+   staan (SPF). Berichten staan altijd ook bij Berichten in de beheerpagina.
+8. **Google:** meld de site aan bij Google Search Console en voeg de sitemap toe:
+   `https://www.molenaar-design.nl/sitemap.xml`.
 
-Hernoem je de map `beheer` (bijvoorbeeld naar `beheer-k7q2`), pas dan ook de
-link van het slotje aan in `includes/layout.php`.
+Het vaste adres van de site en de afzender van de mail staan in `includes/config.php`.
 
 De `.htaccess`-bestanden blokkeren de database en de PHP-onderdelen op Apache-
-hosting. Gebruik je nginx, blokkeer dan zelf de mappen `data/` en `includes/`
-en zet PHP uit in `uploads/`.
+hosting. Gebruik je nginx, blokkeer dan zelf de mappen `data/` en `includes/`,
+zet PHP uit in `uploads/` en stel de doorverwijzing naar https://www. zelf in.
 
 ## Lokaal bekijken
 

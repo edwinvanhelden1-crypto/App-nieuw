@@ -28,10 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mb_strlen($old['bericht']) < 10 || mb_strlen($old['bericht']) > 5000) {
         $error = 'Je bericht is wel erg kort. Vertel iets meer over wat je wilt laten maken.';
     } else {
-        $host = preg_replace('/[^a-z0-9.-]/i', '', explode(':', $_SERVER['HTTP_HOST'] ?? 'localhost')[0]);
-        $host = preg_replace('/^www\./i', '', $host);
         $headers = implode("\r\n", [
-            'From: Website Molenaar Design <noreply@' . $host . '>',
+            'From: Website Molenaar Design <' . MAIL_FROM . '>',
             'Reply-To: ' . $old['email'],
             'MIME-Version: 1.0',
             'Content-Type: text/plain; charset=UTF-8',
@@ -39,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $body = "Naam: {$old['naam']}\nE-mail: {$old['email']}\nWat: {$old['type']}\nBudget: {$old['budget']}\n\n{$old['bericht']}\n";
         $subject = mb_encode_mimeheader('Nieuw bericht via de website: ' . $old['type'], 'UTF-8');
-        $mailed = @mail(c('contact_email'), $subject, $body, $headers) ? 1 : 0;
+        $mailed = @mail(c('contact_email'), $subject, $body, $headers, '-f' . MAIL_FROM) ? 1 : 0;
 
         db()->prepare('INSERT INTO messages (name, email, type, budget, body, mailed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
             ->execute([$old['naam'], $old['email'], $old['type'], $old['budget'], $old['bericht'], $mailed, date('c')]);

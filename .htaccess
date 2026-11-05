@@ -1,11 +1,26 @@
-# Apache-instellingen voor de site
+# Apache-instellingen voor www.molenaar-design.nl
 DirectoryIndex index.php
 Options -Indexes
+ErrorDocument 404 /404.php
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # Altijd naar https://www.molenaar-design.nl (zonder www of zonder https wordt doorgestuurd)
+  RewriteCond %{HTTP_HOST} ^molenaar-design\.nl$ [NC]
+  RewriteRule ^(.*)$ https://www.molenaar-design.nl/$1 [R=301,L]
+  RewriteCond %{HTTP_HOST} ^www\.molenaar-design\.nl$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://www.molenaar-design.nl/$1 [R=301,L]
+
   # Database, PHP-onderdelen en interne bestanden zijn niet van buitenaf te openen
   RewriteRule ^(data|includes|screenshots)(/|$) - [F,L]
-  RewriteRule (^|/)\. - [F,L]
+  # Verborgen bestanden blokkeren, behalve .well-known (nodig voor het SSL-certificaat)
+  RewriteRule (^|/)\.(?!well-known/) - [F,L]
   RewriteRule \.(sqlite|md)$ - [F,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
 </IfModule>
