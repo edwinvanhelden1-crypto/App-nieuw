@@ -71,3 +71,10 @@ niet in git opgeslagen. Maak er op de server zelf back-ups van.
 - `style.css`, `script.js`, `img/` – opmaak, menu/formulier-script en illustraties
 - `logo/` – logo van Molenaar Design als SVG en PNG (donkere en lichte achtergrond, liggend, staand en los beeldmerk)
 - `screenshots/` – screenshots van de site en de beheerpagina (met testreviews)
+
+## Instagram
+
+In `instagram/` staan zes stories (1080 × 1920) om de site aan te kondigen:
+aankondiging, even voorstellen, wat ik doe, recent werk, zo werk ik en een
+oproep om een DM te sturen. Tekst en logo staan binnen de veilige zone, zodat
+de knoppen van Instagram niets afdekken.
