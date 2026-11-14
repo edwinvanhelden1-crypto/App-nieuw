@@ -185,6 +185,7 @@ const SECTIONS = [
       { key: 'feather', label: 'Zachte rand', min: 0, max: 1, hint: 'Hoe geleidelijk het gezicht overloopt' },
       { key: 'maskSize', label: 'Gezichtsgebied', min: -1, max: 1, fmt: signed, hint: 'Kleiner of groter deel van het gezicht vervangen' },
       { key: 'shape', label: 'Gezichtsvorm van nieuw gezicht', min: 0, max: 1, hint: 'Ogen, neus en mond op de plek van het nieuwe gezicht' },
+      { key: 'wrinkles', label: 'Plooien & rimpels van origineel', min: 0, max: 1, hint: 'Lachrimpels van jouw foto vervangen door de echte plooien van het origineel (neutraal = glad, lachen = lachplooien)' },
     ],
     checks: [
       { key: 'expression', label: 'Expressie volgen (knipperen, praten)' },

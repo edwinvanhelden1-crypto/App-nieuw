@@ -26,12 +26,15 @@ const WARP_VS = `#version 300 es
 in vec2 aPos;
 in vec2 aUV;
 in float aA;
+in float aR;
 uniform vec2 uRes;
 out vec2 vUV;
 out float vA;
+out float vR;
 void main() {
   vUV = aUV;
   vA = aA;
+  vR = aR;
   gl_Position = vec4(aPos / uRes * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
@@ -41,11 +44,20 @@ in vec2 vUV;
 out vec4 o;
 `;
 
-const WARP_FS = `${HEAD}
+const WARP_FS = `#version 300 es
+precision highp float;
+in vec2 vUV;
 in float vA;
+in float vR;
 uniform sampler2D uSrc;
-// Voorvermenigvuldigd met het gewicht (ogen/mond kunnen deels doorzichtig zijn).
-void main() { o = vec4(texture(uSrc, vUV).rgb * vA, vA); }`;
+layout(location = 0) out vec4 o;
+layout(location = 1) out vec4 o2;
+void main() {
+  // Voorvermenigvuldigd met het gewicht (ogen/mond kunnen deels doorzichtig zijn).
+  o = vec4(texture(uSrc, vUV).rgb * vA, vA);
+  // Waar plooien van het origineel mogen komen (0 bij wenkbrauwen, ogen, neus, lippen).
+  o2 = vec4(vR, 0.0, 0.0, 1.0);
+}`;
 
 // Gedeelde kleurfuncties (waarden van -1 tot 1, 0 = ongewijzigd).
 const ADJUST = `
@@ -139,8 +151,18 @@ uniform float uSmooth;
 uniform float uSharp;
 uniform float uDetailLod;
 uniform vec4 uFaceAdj;  // helderheid, contrast, verzadiging, warmte van alleen het gezicht
+uniform sampler2D uP;   // doel × dekking (met mipmaps)
+uniform sampler2D uR;   // gebied waar plooien van het origineel komen
+uniform float uWrinkle;
+uniform vec3 uBandLod;  // fijn, midden, grof
 const vec3 L = vec3(0.299, 0.587, 0.114);
 ${ADJUST}
+// Genormaliseerde helderheid op een vervagingsniveau (alleen binnen het gezicht).
+float lumAt(sampler2D tex, float lod, out float cover) {
+  vec4 c = textureLod(tex, vUV, lod);
+  cover = c.a;
+  return c.a > 0.01 ? dot(c.rgb / c.a, L) : 0.0;
+}
 void main() {
   vec4 t = texture(uT, vUV);
   vec4 w = texture(uW, vUV);
@@ -163,6 +185,22 @@ void main() {
   float sdT = sqrt(max(q.r / max(q.a, 1e-4) - lT * lT, 1e-5));
   float sdS = sqrt(max(q.g / max(q.a, 1e-4) - lS * lS, 1e-5));
   float g = mix(1.0, clamp(sdT / sdS, 0.6, 1.6), uContrast);
+
+  // Expressieplooien: de schaduwbanden (lachlijnen, kraaienpootjes, voorhoofdrimpels) van
+  // de bron worden vervangen door die van het origineel. Fijne huidstructuur en kleur blijven
+  // van de bron; wenkbrauwen, ogen, neus en lippen worden niet aangeraakt.
+  if (uWrinkle > 0.0) {
+    float c0, c1, c2, d0, d1, d2;
+    float s0 = lumAt(uW, uBandLod.x, c0), s1 = lumAt(uW, uBandLod.y, c1), s2 = lumAt(uW, uBandLod.z, c2);
+    float t0 = lumAt(uP, uBandLod.x, d0), t1 = lumAt(uP, uBandLod.y, d1), t2 = lumAt(uP, uBandLod.z, d2);
+    // Alleen waar alle niveaus ruim binnen het gezicht liggen (geen randfouten).
+    float inside = smoothstep(0.75, 0.98, min(c0, min(c1, c2)));
+    float r = texture(uR, vUV).r * inside * uWrinkle;
+    float midS = s1 - s2, midT = t1 - t2;   // plooien
+    float fineS = s0 - s1, fineT = t0 - t1; // fijne lijntjes
+    float shift = (midT / g - midS) + 0.85 * (fineT / g - fineS);
+    src = clamp(src + vec3(shift * r), 0.0, 1.0);
+  }
   // Gemiddelde kleur én contrast van het doel overnemen.
   vec3 matched = meanT + (src - meanS) * g;
   vec3 res = clamp(mix(src, matched, uColor), 0.0, 1.0);
@@ -178,6 +216,7 @@ export const DEFAULTS = {
   fillEyes: true,  // ogen van de bron gebruiken (uit = ogen van het doel, behoudt blik)
   fillMouth: false, // mond van de bron gebruiken (uit = mond van het doel, behoudt expressie)
   maskSize: 0,     // -1..1  gezichtsgebied kleiner/groter
+  wrinkles: 0.85,  // 0..1   expressieplooien van het origineel i.p.v. de bron
   smooth: 0,       // 0..1   huid gladmaken
   sharpen: 0,      // 0..1   verscherpen
   faceBright: 0, faceContrast: 0, faceSat: 0, faceWarm: 0, // -1..1 alleen het gezicht
@@ -218,6 +257,7 @@ export class SwapEngine {
     this.posBuf = gl.createBuffer();
     this.uvBuf = gl.createBuffer();
     this.alphaBuf = gl.createBuffer();
+    this.regionBuf = gl.createBuffer();
 
     this.target = this.texture(1, 1, true);
     this.targetSize = [1, 1];
@@ -250,7 +290,7 @@ export class SwapEngine {
       const name = gl.getActiveUniform(p, i).name;
       uni[name] = gl.getUniformLocation(p, name);
     }
-    return { p, uni, aPos: gl.getAttribLocation(p, 'aPos'), aUV: gl.getAttribLocation(p, 'aUV'), aA: gl.getAttribLocation(p, 'aA') };
+    return { p, uni, aPos: gl.getAttribLocation(p, 'aPos'), aUV: gl.getAttribLocation(p, 'aUV'), aA: gl.getAttribLocation(p, 'aA'), aR: gl.getAttribLocation(p, 'aR') };
   }
 
   texture(w, h, mip = false, float = false) {
@@ -310,7 +350,7 @@ export class SwapEngine {
     gl.vertexAttribPointer(prog.aPos, 2, gl.FLOAT, false, 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     // Ontkoppel textures zodat een volgende pass er weer naartoe kan tekenen.
-    for (let u = 0; u < 6; u++) {
+    for (let u = 0; u < 8; u++) {
       gl.activeTexture(gl.TEXTURE0 + u);
       gl.bindTexture(gl.TEXTURE_2D, null);
     }
@@ -328,8 +368,15 @@ export class SwapEngine {
     this.canvas.width = w;
     this.canvas.height = h;
     if (this.full) [this.full.warp, this.full.premul, this.full.square, ...this.full.out].forEach((t) => this.freeTarget(t));
+    if (this.region) this.gl.deleteTexture(this.region);
+    const warp = this.target_(w, h, true);
+    // Tweede uitvoer van de warp: het plooiengebied.
+    const gl = this.gl;
+    this.region = this.texture(w, h);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, warp.fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, this.region, 0);
     this.full = {
-      warp: this.target_(w, h, true),
+      warp,
       premul: this.target_(w, h, true, true),
       square: this.target_(w, h, true, true),
       out: [this.target_(w, h), this.target_(w, h)], // afwisselend in tekenen
@@ -420,6 +467,7 @@ export class SwapEngine {
       const geo = buildGeometry(f.src, f.dst, f.srcW, f.srcH, s, f.weights);
       const p = this.progs.warp;
       gl.bindFramebuffer(gl.FRAMEBUFFER, warp.fbo);
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
       gl.viewport(0, 0, this.w, this.h);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -435,9 +483,12 @@ export class SwapEngine {
       attr(this.posBuf, p.aPos, geo.pos, 2);
       attr(this.uvBuf, p.aUV, geo.uv, 2);
       attr(this.alphaBuf, p.aA, geo.alpha, 1);
+      attr(this.regionBuf, p.aR, geo.region, 1);
       gl.drawArrays(gl.TRIANGLES, 0, geo.count);
       gl.disableVertexAttribArray(p.aUV);
       gl.disableVertexAttribArray(p.aA);
+      gl.disableVertexAttribArray(p.aR);
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, warp.tex);
       gl.generateMipmap(gl.TEXTURE_2D);
@@ -493,6 +544,12 @@ export class SwapEngine {
         this.bindTex(q, 'uMT', col.a.tex, 3);
         this.bindTex(q, 'uMS', col.b.tex, 4);
         this.bindTex(q, 'uSQ', col.c.tex, 5);
+        this.bindTex(q, 'uP', premul.tex, 6);
+        this.bindTex(q, 'uR', this.region, 7);
+        // Banden als fractie van de gezichtsgrootte: fijn ±0.6 %, plooien ±1.5 %, grof ±7 %.
+        const lod = (frac) => Math.max(0, Math.log2(size * frac));
+        gl.uniform3f(q.uni.uBandLod, lod(0.006), lod(0.015), lod(0.07));
+        gl.uniform1f(q.uni.uWrinkle, s.wrinkles);
         gl.uniform1f(q.uni.uOpacity, s.opacity);
         gl.uniform1f(q.uni.uColor, s.color);
         gl.uniform1f(q.uni.uContrast, this.float ? s.contrast : 0);

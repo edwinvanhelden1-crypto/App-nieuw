@@ -29,7 +29,8 @@ abonnement, geen watermerk, geen server: je foto's en video's verlaten je appara
 - Foto maken en video opnemen, optioneel met microfoon.
 
 **Editor** (alles zichtbaar in realtime, in foto, video én live; per onderdeel bewaard)
-- *Gezicht*: sterkte, huidskleur & licht, contrast, zachte rand, gezichtsgebied, gezichtsvorm;
+- *Gezicht*: sterkte, huidskleur & licht, contrast, zachte rand, gezichtsgebied, gezichtsvorm,
+  plooien & rimpels van origineel (lachrimpels van je eigen foto verdwijnen bij een neutraal origineel);
   expressie volgen (knipperen, praten), ogen/mond van nieuw gezicht of van het origineel.
 - *Retouche*: huid gladmaken, verscherpen, helderheid/contrast/verzadiging/warmte van alleen het gezicht.
 - *Positie*: gezicht handmatig verschuiven, vergroten/verkleinen en draaien.
@@ -54,7 +55,10 @@ Verder: installeerbaar als app (PWA), werkt offline na het eerste gebruik, donke
    overgeslagen; kijkt de bron opzij, dan wordt de verborgen kant aangevuld met de gespiegelde zichtbare kant.
 3. **Kleur**: met een genormaliseerde vervaging worden de lokale huidskleur, belichting en het contrast
    van het doel overgenomen (in halve-float-precisie waar de GPU dat ondersteunt).
-4. **Overvloeien**: een vervaagd, iets ingekrompen masker zorgt voor een onzichtbare rand.
+4. **Plooien**: de schaduwbanden van het gezicht (lachlijnen, kraaienpootjes, voorhoofdrimpels) worden van
+   het origineel genomen; fijne huidstructuur en kleur blijven van jouw foto. Wenkbrauwen, ogen, neus en
+   lippen worden niet aangeraakt, zodat het gezicht herkenbaar blijft.
+5. **Overvloeien**: een vervaagd, iets ingekrompen masker zorgt voor een onzichtbare rand.
 
 Alles draait op de GPU, dus ook video en camera gaan in realtime.
 

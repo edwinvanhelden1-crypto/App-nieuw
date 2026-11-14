@@ -48,6 +48,21 @@ export function triangles({ fillEyes, fillMouth }) {
   return res;
 }
 
+// Landmarks die de herkenbaarheid bepalen: hier blijven de plooien van de bron.
+const KEEP = [
+  // wenkbrauwen
+  70, 63, 105, 66, 107, 55, 65, 52, 53, 46, 300, 293, 334, 296, 336, 285, 295, 282, 283, 276,
+  // ogen (randen)
+  ...LOOP_EYE_A, ...LOOP_EYE_B,
+  // neus
+  1, 2, 4, 5, 6, 19, 94, 97, 98, 326, 327, 195, 197, 168, 45, 275, 220, 440, 48, 278, 64, 294, 129, 358, 102, 331, 115, 344, 218, 438, 79, 309,
+  // lippen
+  61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 185, 40, 39, 37, 0, 267, 269, 270, 409, ...LOOP_MOUTH,
+];
+const REGION = new Float32Array(N_POINTS).fill(1);
+for (const i of KEEP) REGION[i] = 0;
+for (const c of CENTER) REGION[c] = 0;
+
 const area = (p, a, b, c) =>
   (p[b * 2] - p[a * 2]) * (p[c * 2 + 1] - p[a * 2 + 1]) - (p[b * 2 + 1] - p[a * 2 + 1]) * (p[c * 2] - p[a * 2]);
 
@@ -65,6 +80,7 @@ export function buildGeometry(src, dst, srcW, srcH, opts, weights = {}) {
   const pos = new Float32Array(n * 6);
   const uv = new Float32Array(n * 6);
   const alpha = new Float32Array(n * 3);
+  const region = new Float32Array(n * 3);
   const wTag = [1, weights.eyeA ?? 1, weights.eyeB ?? 1, weights.mouth ?? 1];
   let v = 0;
   for (let t = 0; t < n; t++) {
@@ -87,10 +103,11 @@ export function buildGeometry(src, dst, srcW, srcH, opts, weights = {}) {
       uv[v * 2] = src[q * 2] / srcW;
       uv[v * 2 + 1] = src[q * 2 + 1] / srcH;
       alpha[v] = w;
+      region[v] = tag === TAG_FACE ? REGION[p] : 0;
       v++;
     }
   }
-  return { pos, uv, alpha, count: v };
+  return { pos, uv, alpha, region, count: v };
 }
 
 const dist = (p, a, b) => Math.hypot(p[a * 2] - p[b * 2], p[a * 2 + 1] - p[b * 2 + 1]);
