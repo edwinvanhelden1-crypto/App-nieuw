@@ -1,0 +1,9 @@
+{
+  "appId": "nl.gezichtwissel.app",
+  "appName": "Gezichtwissel",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0d0c12",
+    "allowMixedContent": false
+  }
+}

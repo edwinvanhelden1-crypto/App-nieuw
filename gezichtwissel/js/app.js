@@ -76,7 +76,47 @@ function toCanvas(image, w, h) {
 
 const canvasBlob = (c, type = 'image/jpeg', q = 0.92) => new Promise((r) => c.toBlob(r, type, q));
 
+// ---------- Opslaan in de Android-app ----------
+const native = globalThis.Capacitor?.isNativePlatform?.() ? globalThis.Capacitor.Plugins : null;
+
+const blobToBase64 = (blob) => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload = () => resolve(String(r.result).split(',')[1]);
+  r.onerror = () => reject(r.error);
+  r.readAsDataURL(blob);
+});
+
+/** Bewaart in Documenten/Gezichtwissel en opent het deelmenu (galerij, WhatsApp, Drive…). */
+async function saveNative(blob, name) {
+  const { Filesystem, Share } = native;
+  const data = await blobToBase64(blob);
+  let saved = false;
+  try {
+    await Filesystem.writeFile({ path: `Gezichtwissel/${name}`, data, directory: 'DOCUMENTS', recursive: true });
+    saved = true;
+  } catch (err) {
+    console.warn('Opslaan in Documenten mislukt', err);
+  }
+  const tmp = await Filesystem.writeFile({ path: name, data, directory: 'CACHE' });
+  toast(saved ? 'Opgeslagen in Documenten/Gezichtwissel' : 'Kies waar je het bestand wilt bewaren');
+  try {
+    await Share.share({ title: name, files: [tmp.uri], dialogTitle: 'Opslaan of delen' });
+  } catch { /* geannuleerd */ }
+}
+
+// Downloadlinks (video, opnames) werken niet in een app-webview: onderscheppen.
+if (native) {
+  document.addEventListener('click', async (e) => {
+    const a = e.target.closest?.('a[download]');
+    if (!a) return;
+    e.preventDefault();
+    const blob = await (await fetch(a.href)).blob();
+    saveNative(blob, a.download || `gezichtwissel-${stamp()}`);
+  }, true);
+}
+
 function downloadBlob(blob, name) {
+  if (native) { saveNative(blob, name); return; }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = name;
@@ -87,10 +127,12 @@ function downloadBlob(blob, name) {
 }
 
 function canShareFile(file) {
+  if (native) return true;
   try { return !!navigator.canShare?.({ files: [file] }); } catch { return false; }
 }
 
 async function shareFile(file) {
+  if (native) { saveNative(file, file.name); return; }
   try {
     await navigator.share({ files: [file], title: 'Gezichtwissel' });
   } catch (err) {
@@ -1491,7 +1533,7 @@ consent();
 // Model alvast op de achtergrond ophalen zodat de eerste wissel snel is.
 setTimeout(() => detector.ready().catch(() => {}), 1500);
 
-if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+if (!native && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 

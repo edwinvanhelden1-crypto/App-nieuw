@@ -2,8 +2,14 @@
 import { initMesh, toPixels } from './mesh.js';
 
 const VERSION = '0.10.14';
-export const LIB_BASE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}`;
-export const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+// In de Android-app zitten bibliotheek en model in de app zelf (werkt offline).
+const NATIVE = !!globalThis.Capacitor?.isNativePlatform?.();
+export const LIB_BASE = NATIVE
+  ? new URL('../vendor/tasks-vision', import.meta.url).href
+  : `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}`;
+export const MODEL_URL = NATIVE
+  ? new URL('../models/face_landmarker.task', import.meta.url).href
+  : 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
 let libPromise = null;
 function lib() {
