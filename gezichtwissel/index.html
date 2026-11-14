@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Gezichtwissel</title>
+  <meta name="description" content="Gratis face swap in je browser: wissel gezichten in foto's, video's en live via de camera. Geen account, geen watermerk, je beelden blijven op je apparaat.">
+  <meta name="theme-color" content="#14121c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="icon.svg" alt="" width="28" height="28">
+      <span>Gezichtwissel</span>
+    </div>
+    <button class="active-face" id="active-face" type="button" title="Actief gezicht kiezen">
+      <span class="avatar" id="active-face-img"></span>
+      <span id="active-face-name">Geen gezicht</span>
+    </button>
+  </header>
+
+  <nav class="tabs" aria-label="Onderdelen">
+    <button type="button" data-tab="faces" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="4"/><path d="M4 21c1.5-5 14.5-5 16 0"/></svg>
+      Gezichten
+    </button>
+    <button type="button" data-tab="photo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg>
+      Foto
+    </button>
+    <button type="button" data-tab="video">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>
+      Video
+    </button>
+    <button type="button" data-tab="live">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+      Live
+    </button>
+  </nav>
+
+  <main>
+    <!-- ============ GEZICHTEN ============ -->
+    <section class="view" id="view-faces" data-view="faces">
+      <div class="hero card">
+        <h1>Jouw gezichten</h1>
+        <p class="muted">Voeg een duidelijke foto toe waarop je recht in de camera kijkt. Het gezicht wordt
+          alleen op dit apparaat bewaard en kan daarna in foto's, video's en live worden ingewisseld.</p>
+        <div class="row">
+          <label class="btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4-4 3 3 5-5 4 4M4 4h16v16H4z"/></svg>
+            Foto uploaden
+            <input type="file" id="face-file" accept="image/*" multiple hidden>
+          </label>
+          <button class="btn secondary" id="face-selfie" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            Selfie maken
+          </button>
+        </div>
+      </div>
+
+      <div class="face-grid" id="face-grid"></div>
+      <p class="empty muted" id="faces-empty">Nog geen gezichten. Voeg er hierboven een toe om te beginnen.</p>
+
+      <div class="card tips">
+        <h2>Tips voor het beste resultaat</h2>
+        <ul>
+          <li>Kijk recht in de camera, met je hele gezicht in beeld (geen zonnebril, haar niet voor je ogen).</li>
+          <li>Gebruik gelijkmatig licht. Kleur en belichting worden automatisch aangepast aan het doel.</li>
+          <li>Een neutrale uitdrukking met gesloten mond werkt het best voor video's.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ FOTO ============ -->
+    <section class="view" id="view-photo" data-view="photo" hidden>
+      <div class="card picker" id="photo-picker">
+        <h1>Gezicht wisselen in een foto</h1>
+        <p class="muted">Kies een foto met één of meer gezichten. Je kunt per persoon kiezen welk gezicht erop komt.</p>
+        <div class="drop" id="photo-drop" tabindex="0">
+          <p><strong>Sleep een foto hierheen</strong>, plak (Ctrl+V) of</p>
+          <div class="row">
+            <label class="btn">Kies foto<input type="file" id="photo-file" accept="image/*" hidden></label>
+            <button class="btn secondary" id="photo-camera" type="button">Camera</button>
+          </div>
+        </div>
+        <div class="templates" id="photo-templates-wrap" hidden>
+          <h2>Mijn sjablonen</h2>
+          <div class="template-row" id="photo-templates"></div>
+        </div>
+      </div>
+
+      <div class="workspace" id="photo-work" hidden>
+        <div class="stage">
+          <div class="canvas-wrap" id="photo-wrap">
+            <canvas id="photo-canvas"></canvas>
+            <div class="chips" id="photo-chips"></div>
+          </div>
+          <div class="stage-bar">
+            <button class="icon-btn" id="photo-compare" type="button" title="Houd ingedrukt om het origineel te zien">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 7h4v10H5zM15 7h4v10h-4z"/></svg>
+              <span>Vergelijk</span>
+            </button>
+            <button class="icon-btn" id="photo-markers" type="button" title="Gezichtslabels tonen/verbergen" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="10" r="4"/><path d="M5 20c1.5-4 12.5-4 14 0"/></svg>
+              <span>Labels</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <p class="status" id="photo-status" role="status" aria-live="polite"></p>
+          <div class="row wrap">
+            <button class="btn" id="photo-all" type="button">Alle gezichten → actief gezicht</button>
+            <button class="btn secondary" id="photo-rotate" type="button" title="Personen in de foto wisselen hun gezichten">Onderling wisselen</button>
+            <button class="btn secondary" id="photo-clear" type="button">Origineel</button>
+          </div>
+
+          <details class="settings" open>
+            <summary>Instellingen</summary>
+            <div class="sliders" data-settings="photo"></div>
+          </details>
+
+          <div class="row wrap actions">
+            <button class="btn" id="photo-download" type="button">Downloaden</button>
+            <button class="btn secondary" id="photo-share" type="button" hidden>Delen</button>
+            <button class="btn secondary" id="photo-save-template" type="button">Bewaar als sjabloon</button>
+            <button class="btn ghost" id="photo-new" type="button">Andere foto</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIDEO ============ -->
+    <section class="view" id="view-video" data-view="video" hidden>
+      <div class="card picker" id="video-picker">
+        <h1>Gezicht wisselen in een video</h1>
+        <p class="muted">Kies een video of GIF-achtige clip (mp4, webm, mov). Elk frame wordt in je browser verwerkt;
+          korte clips (tot ±30 seconden) werken het snelst.</p>
+        <div class="drop" id="video-drop" tabindex="0">
+          <p><strong>Sleep een video hierheen</strong> of</p>
+          <label class="btn">Kies video<input type="file" id="video-file" accept="video/*" hidden></label>
+        </div>
+        <div class="templates" id="video-templates-wrap" hidden>
+          <h2>Mijn sjablonen</h2>
+          <div class="template-row" id="video-templates"></div>
+        </div>
+      </div>
+
+      <div class="workspace" id="video-work" hidden>
+        <div class="stage">
+          <div class="canvas-wrap">
+            <canvas id="video-canvas"></canvas>
+            <div class="busy" id="video-busy" hidden>
+              <div class="spinner"></div>
+              <p id="video-busy-text">Video maken…</p>
+              <progress id="video-progress" max="1" value="0"></progress>
+              <button class="btn secondary small" id="video-cancel" type="button">Annuleren</button>
+            </div>
+          </div>
+          <div class="stage-bar">
+            <button class="icon-btn" id="video-play" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg>
+              <span>Afspelen</span>
+            </button>
+            <input type="range" id="video-seek" min="0" max="1000" value="0" aria-label="Positie in video">
+            <span class="time" id="video-time">0:00</span>
+            <button class="icon-btn" id="video-mute" type="button" aria-pressed="false" title="Geluid aan/uit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 010 6"/></svg>
+            </button>
+          </div>
+          <video id="video-el" playsinline preload="auto" hidden></video>
+        </div>
+
+        <div class="panel">
+          <p class="status" id="video-status" role="status" aria-live="polite"></p>
+          <label class="field">Gezichten in video
+            <select id="video-faces">
+              <option value="1">1 (grootste)</option>
+              <option value="2">Tot 2</option>
+              <option value="4">Tot 4</option>
+            </select>
+          </label>
+          <details class="settings" open>
+            <summary>Instellingen</summary>
+            <div class="sliders" data-settings="video"></div>
+          </details>
+          <div class="row wrap actions">
+            <button class="btn" id="video-export" type="button">Video maken</button>
+            <button class="btn secondary" id="video-save-template" type="button">Bewaar als sjabloon</button>
+            <button class="btn ghost" id="video-new" type="button">Andere video</button>
+          </div>
+          <div class="result" id="video-result" hidden>
+            <h2>Klaar!</h2>
+            <video id="video-out" controls playsinline loop></video>
+            <div class="row wrap">
+              <a class="btn" id="video-download" download>Downloaden</a>
+              <button class="btn secondary" id="video-share" type="button" hidden>Delen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LIVE ============ -->
+    <section class="view" id="view-live" data-view="live" hidden>
+      <div class="workspace">
+        <div class="stage">
+          <div class="canvas-wrap live">
+            <canvas id="live-canvas"></canvas>
+            <div class="live-start" id="live-start">
+              <p>Zie jezelf live met een ander gezicht.</p>
+              <button class="btn" id="live-on" type="button">Camera starten</button>
+            </div>
+            <span class="rec-dot" id="live-rec-dot" hidden>REC <span id="live-rec-time">0:00</span></span>
+            <span class="fps" id="live-fps"></span>
+          </div>
+          <div class="stage-bar">
+            <button class="icon-btn" id="live-flip" type="button" title="Andere camera">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9 13a3 3 0 015-2M15 13a3 3 0 01-5 2"/></svg>
+              <span>Draai</span>
+            </button>
+            <button class="shutter" id="live-snap" type="button" title="Foto maken" aria-label="Foto maken"></button>
+            <button class="icon-btn" id="live-rec" type="button" title="Opnemen">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"/></svg>
+              <span>Opnemen</span>
+            </button>
+          </div>
+          <video id="live-video" playsinline muted hidden></video>
+        </div>
+        <div class="panel">
+          <p class="status" id="live-status" role="status" aria-live="polite"></p>
+          <label class="check"><input type="checkbox" id="live-mic"> Geluid opnemen (microfoon)</label>
+          <label class="check"><input type="checkbox" id="live-swap" checked> Gezicht wisselen aan</label>
+          <details class="settings" open>
+            <summary>Instellingen</summary>
+            <div class="sliders" data-settings="live"></div>
+          </details>
+          <div class="gallery" id="live-gallery"></div>
+          <button class="btn ghost" id="live-off" type="button" hidden>Camera stoppen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Gezichtskiezer (onderblad) -->
+  <dialog class="sheet" id="face-sheet">
+    <form method="dialog">
+      <header>
+        <h2 id="face-sheet-title">Kies een gezicht</h2>
+        <button class="icon-btn" value="cancel" aria-label="Sluiten">✕</button>
+      </header>
+      <div class="sheet-body" id="face-sheet-body"></div>
+    </form>
+  </dialog>
+
+  <!-- Camera voor selfie / foto -->
+  <dialog class="sheet camera-sheet" id="camera-sheet">
+    <form method="dialog">
+      <header>
+        <h2>Camera</h2>
+        <button class="icon-btn" value="cancel" aria-label="Sluiten">✕</button>
+      </header>
+      <video id="camera-video" playsinline muted autoplay></video>
+      <div class="row">
+        <button class="icon-btn" id="camera-flip" type="button" title="Andere camera">Draai</button>
+        <button class="shutter" id="camera-snap" type="button" aria-label="Foto maken"></button>
+        <span class="spacer"></span>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toestemming / eerste gebruik -->
+  <dialog class="modal" id="consent">
+    <form method="dialog">
+      <h2>Welkom bij Gezichtwissel</h2>
+      <p>Gratis face swap die volledig in je browser draait: geen account, geen abonnement,
+        geen watermerk. Je foto's en video's worden nergens naartoe gestuurd.</p>
+      <p><strong>Gebruik het eerlijk.</strong> Gebruik alleen gezichten van mensen die daar toestemming voor
+        geven. Maak er geen beelden mee om iemand te misleiden, te kwetsen of in diskrediet te brengen, en
+        geen intieme of seksuele beelden van echte personen. Dat kan strafbaar zijn.</p>
+      <label class="check"><input type="checkbox" id="consent-check" required> Ik begrijp dit en gebruik de app verantwoord.</label>
+      <button class="btn" id="consent-ok" value="ok">Beginnen</button>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <div class="loader" id="loader" hidden>
+    <div class="spinner"></div>
+    <p id="loader-text">AI-model laden…</p>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

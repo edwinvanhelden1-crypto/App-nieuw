@@ -5,6 +5,9 @@ Er is geen server, account of API-sleutel nodig: de open-source modellen worden
 via [Transformers.js](https://huggingface.co/docs/transformers.js) van Hugging Face
 gedownload en lokaal uitgevoerd. Je foto's verlaten je apparaat niet.
 
+> Nieuw: **[Gezichtwissel](gezichtwissel/)** – gratis face swap voor foto's, video's en live camera.
+> Zie [gezichtwissel/README.md](gezichtwissel/README.md).
+
 ## Functies
 
 | Functie | Gratis model |
