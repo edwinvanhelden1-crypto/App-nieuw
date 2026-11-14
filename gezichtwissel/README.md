@@ -28,13 +28,22 @@ abonnement, geen watermerk, geen server: je foto's en video's verlaten je appara
 - Realtime face swap met de camera (voor- en achtercamera).
 - Foto maken en video opnemen, optioneel met microfoon.
 
-**Instellingen** (per onderdeel bewaard)
-- Sterkte, huidskleur & licht aanpassen, contrast aanpassen, zachte rand, gezichtsvorm van het nieuwe gezicht.
-- Expressie volgen: knippert het origineel of praat/lacht het met open mond, dan blijven die ogen/mond zichtbaar.
-- Ogen en/of mond van het nieuwe gezicht, of van het origineel (behoudt blik, praten en lachen).
-- Label "AI-bewerkt" op downloads (standaard aan).
+**Editor** (alles zichtbaar in realtime, in foto, video én live; per onderdeel bewaard)
+- *Gezicht*: sterkte, huidskleur & licht, contrast, zachte rand, gezichtsgebied, gezichtsvorm;
+  expressie volgen (knipperen, praten), ogen/mond van nieuw gezicht of van het origineel.
+- *Retouche*: huid gladmaken, verscherpen, helderheid/contrast/verzadiging/warmte van alleen het gezicht.
+- *Positie*: gezicht handmatig verschuiven, vergroten/verkleinen en draaien.
+- *Hele beeld*: helderheid, contrast, verzadiging, warmte, vignet.
+- *Beweging* (video/live): stabiliteit tegen trillen.
+- *Opslaan*: label "AI-bewerkt" bij downloaden (standaard aan).
+- Voor/na-schuifregelaar onder foto en video; dubbelklik op een regelaar zet hem terug.
 
-Verder: installeerbaar als app (PWA), werkt offline na het eerste gebruik, licht en donker thema.
+**Stabiel en snel**
+- One-Euro-stabilisatie: hoofdhouding en expressie apart gefilterd, dus een rustig gezicht zonder
+  naijlen bij snelle bewegingen.
+- Live: kies 480p/720p/1080p; is herkennen traag, dan wordt om het andere frame herkend.
+
+Verder: installeerbaar als app (PWA), werkt offline na het eerste gebruik, donker thema.
 
 ## Hoe het werkt
 

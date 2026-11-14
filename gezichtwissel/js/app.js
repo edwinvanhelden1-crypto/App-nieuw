@@ -172,67 +172,168 @@ async function withModel(fn) {
 // Instellingen
 // ============================================================
 
-const SLIDERS = [
-  { key: 'opacity', label: 'Sterkte', hint: 'Hoeveel van het nieuwe gezicht zichtbaar is' },
-  { key: 'color', label: 'Huidskleur & licht aanpassen', hint: 'Neemt kleur en belichting van de foto over' },
-  { key: 'contrast', label: 'Contrast aanpassen', hint: 'Neemt het lokale contrast (schaduwen, glans) van de foto over' },
-  { key: 'feather', label: 'Zachte rand', hint: 'Hoe geleidelijk het gezicht overloopt' },
-  { key: 'shape', label: 'Gezichtsvorm van nieuw gezicht', hint: 'Ogen, neus en mond op de plek van het nieuwe gezicht' },
+// Editor: alle opties werken direct (realtime) in foto, video en live.
+const pct = (v) => `${Math.round(v * 100)}%`;
+const signed = (v) => (v > 0 ? '+' : '') + Math.round(v * 100);
+const SECTIONS = [
+  {
+    id: 'swap', title: 'Gezicht',
+    sliders: [
+      { key: 'opacity', label: 'Sterkte', min: 0, max: 1, hint: 'Hoeveel van het nieuwe gezicht zichtbaar is' },
+      { key: 'color', label: 'Huidskleur & licht aanpassen', min: 0, max: 1, hint: 'Neemt kleur en belichting van het origineel over' },
+      { key: 'contrast', label: 'Contrast aanpassen', min: 0, max: 1, hint: 'Neemt schaduwen en glans van het origineel over' },
+      { key: 'feather', label: 'Zachte rand', min: 0, max: 1, hint: 'Hoe geleidelijk het gezicht overloopt' },
+      { key: 'maskSize', label: 'Gezichtsgebied', min: -1, max: 1, fmt: signed, hint: 'Kleiner of groter deel van het gezicht vervangen' },
+      { key: 'shape', label: 'Gezichtsvorm van nieuw gezicht', min: 0, max: 1, hint: 'Ogen, neus en mond op de plek van het nieuwe gezicht' },
+    ],
+    checks: [
+      { key: 'expression', label: 'Expressie volgen (knipperen, praten)' },
+      { key: 'fillEyes', label: 'Ogen van nieuw gezicht' },
+      { key: 'fillMouth', label: 'Mond van nieuw gezicht' },
+    ],
+  },
+  {
+    id: 'face', title: 'Retouche',
+    sliders: [
+      { key: 'smooth', label: 'Huid gladmaken', min: 0, max: 1 },
+      { key: 'sharpen', label: 'Verscherpen', min: 0, max: 1 },
+      { key: 'faceBright', label: 'Helderheid gezicht', min: -1, max: 1, fmt: signed },
+      { key: 'faceContrast', label: 'Contrast gezicht', min: -1, max: 1, fmt: signed },
+      { key: 'faceSat', label: 'Verzadiging gezicht', min: -1, max: 1, fmt: signed },
+      { key: 'faceWarm', label: 'Warmte gezicht', min: -1, max: 1, fmt: signed },
+    ],
+  },
+  {
+    id: 'pos', title: 'Positie',
+    sliders: [
+      { key: 'offX', label: 'Links / rechts', min: -1, max: 1, fmt: signed },
+      { key: 'offY', label: 'Omhoog / omlaag', min: -1, max: 1, fmt: signed },
+      { key: 'scale', label: 'Grootte', min: -1, max: 1, fmt: signed },
+      { key: 'rotate', label: 'Draaien', min: -1, max: 1, fmt: (v) => `${Math.round(v * 15)}°` },
+    ],
+  },
+  {
+    id: 'image', title: 'Hele beeld',
+    sliders: [
+      { key: 'imgBright', label: 'Helderheid', min: -1, max: 1, fmt: signed },
+      { key: 'imgContrast', label: 'Contrast', min: -1, max: 1, fmt: signed },
+      { key: 'imgSat', label: 'Verzadiging', min: -1, max: 1, fmt: signed },
+      { key: 'imgWarm', label: 'Warmte', min: -1, max: 1, fmt: signed },
+      { key: 'vignette', label: 'Vignet', min: 0, max: 1 },
+    ],
+  },
+  {
+    id: 'motion', title: 'Beweging', modes: ['video', 'live'],
+    sliders: [
+      { key: 'stability', label: 'Stabiliteit (minder trillen)', min: 0, max: 1, hint: 'Hoger = rustiger gezicht; snelle bewegingen worden altijd direct gevolgd' },
+    ],
+  },
+  {
+    id: 'export', title: 'Opslaan',
+    checks: [{ key: 'label', label: 'Label "AI-bewerkt" bij downloaden' }],
+  },
 ];
-const CHECKS = [
-  { key: 'expression', label: 'Expressie volgen (knipperen, praten)', hint: 'Bij dichte ogen of open mond van het origineel worden die van het origineel getoond' },
-  { key: 'fillEyes', label: 'Ogen van nieuw gezicht', hint: 'Uit: ogen van het origineel (behoudt blik en knipperen)' },
-  { key: 'fillMouth', label: 'Mond van nieuw gezicht', hint: 'Uit: mond van het origineel (behoudt praten en lachen)' },
-  { key: 'label', label: 'Label "AI-bewerkt" bij downloaden' },
-];
+
+const EDIT_DEFAULTS = { ...DEFAULTS, shape: 0, expression: true, label: true, offX: 0, offY: 0, scale: 0, rotate: 0, stability: 0.6 };
 const MODE_DEFAULTS = {
-  photo: { ...DEFAULTS, shape: 0.25, expression: true, label: true },
-  video: { ...DEFAULTS, shape: 0, expression: true, label: true },
-  live: { ...DEFAULTS, shape: 0, expression: true, label: true },
+  photo: { ...EDIT_DEFAULTS, shape: 0.25 },
+  video: { ...EDIT_DEFAULTS },
+  live: { ...EDIT_DEFAULTS, stability: 0.5 },
 };
 const settings = {};
 for (const mode of Object.keys(MODE_DEFAULTS)) {
   settings[mode] = { ...MODE_DEFAULTS[mode], ...storage.get(`settings-${mode}`, {}) };
 }
 
-function buildSettings(mode, onChange) {
+function buildSettings(mode, onChange, openId = storage.get(`section-${mode}`, 'swap')) {
   const root = $(`[data-settings="${mode}"]`);
+  root.replaceChildren();
   const s = settings[mode];
   const save = () => { storage.set(`settings-${mode}`, s); onChange(); };
-  for (const def of SLIDERS) {
-    const label = document.createElement('label');
-    label.className = 'slider';
-    label.title = def.hint;
-    label.innerHTML = `<span>${def.label}</span><output>${Math.round(s[def.key] * 100)}%</output>
-      <input type="range" min="0" max="100" value="${Math.round(s[def.key] * 100)}">`;
-    const input = $('input', label);
-    input.addEventListener('input', () => {
-      s[def.key] = input.value / 100;
-      $('output', label).textContent = `${input.value}%`;
+  const sections = SECTIONS.filter((sec) => !sec.modes || sec.modes.includes(mode));
+  if (!sections.some((sec) => sec.id === openId)) openId = 'swap';
+
+  const tabs = document.createElement('div');
+  tabs.className = 'seg';
+  tabs.setAttribute('role', 'tablist');
+  root.append(tabs);
+
+  for (const sec of sections) {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.textContent = sec.title;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', sec.id === openId);
+    tabs.append(tab);
+
+    const box = document.createElement('div');
+    box.className = 'sec';
+    box.hidden = sec.id !== openId;
+    tab.addEventListener('click', () => {
+      storage.set(`section-${mode}`, sec.id);
+      $$('[role=tab]', tabs).forEach((t) => t.setAttribute('aria-selected', t === tab));
+      $$('.sec', root).forEach((b) => { b.hidden = b !== box; });
+    });
+
+    for (const def of sec.sliders || []) {
+      const fmt = def.fmt || pct;
+      const label = document.createElement('label');
+      label.className = 'slider';
+      if (def.hint) label.title = def.hint;
+      label.innerHTML = '<span></span><output></output><input type="range" step="1">';
+      label.firstChild.textContent = def.label;
+      const input = $('input', label);
+      const out = $('output', label);
+      input.min = Math.round(def.min * 100);
+      input.max = Math.round(def.max * 100);
+      input.value = Math.round(s[def.key] * 100);
+      out.textContent = fmt(s[def.key]);
+      input.addEventListener('input', () => {
+        s[def.key] = input.value / 100;
+        out.textContent = fmt(s[def.key]);
+        save();
+      });
+      // Dubbelklik/dubbeltik zet de regelaar terug.
+      input.addEventListener('dblclick', () => {
+        s[def.key] = MODE_DEFAULTS[mode][def.key];
+        input.value = Math.round(s[def.key] * 100);
+        out.textContent = fmt(s[def.key]);
+        save();
+      });
+      box.append(label);
+    }
+    for (const def of sec.checks || []) {
+      const label = document.createElement('label');
+      label.className = 'check';
+      label.innerHTML = '<input type="checkbox"> <span></span>';
+      label.lastChild.textContent = def.label;
+      const input = $('input', label);
+      input.checked = !!s[def.key];
+      input.addEventListener('change', () => { s[def.key] = input.checked; save(); });
+      box.append(label);
+    }
+    const reset = document.createElement('button');
+    reset.type = 'button';
+    reset.className = 'btn ghost small';
+    reset.textContent = `${sec.title}: standaard`;
+    reset.addEventListener('click', () => {
+      for (const def of [...(sec.sliders || []), ...(sec.checks || [])]) s[def.key] = MODE_DEFAULTS[mode][def.key];
+      buildSettings(mode, onChange, sec.id);
       save();
     });
-    root.append(label);
+    box.append(reset);
+    root.append(box);
   }
-  for (const def of CHECKS) {
-    const label = document.createElement('label');
-    label.className = 'check';
-    if (def.hint) label.title = def.hint;
-    label.innerHTML = `<input type="checkbox" ${s[def.key] ? 'checked' : ''}> ${def.label}`;
-    const input = $('input', label);
-    input.addEventListener('change', () => { s[def.key] = input.checked; save(); });
-    root.append(label);
-  }
-  const reset = document.createElement('button');
-  reset.type = 'button';
-  reset.className = 'btn ghost small';
-  reset.textContent = 'Standaardwaarden';
-  reset.addEventListener('click', () => {
-    Object.assign(s, MODE_DEFAULTS[mode]);
-    root.replaceChildren();
-    buildSettings(mode, onChange);
-    save();
-  });
-  root.append(reset);
+}
+
+/** Voert een render hoogstens één keer per schermverversing uit (soepel slepen). */
+function coalesce(fn) {
+  let queued = false;
+  return () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; fn(); });
+  };
 }
 
 // ============================================================
@@ -505,10 +606,10 @@ function openPicker({ title, groups, multi = false, confirm = null, none = null,
 // Camera-onderblad (selfie of foto maken)
 // ============================================================
 
-async function getCamera(facingMode, audio = false) {
+async function getCamera(facingMode, audio = false, height = 720) {
   if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera wordt niet ondersteund (gebruik HTTPS).');
   return navigator.mediaDevices.getUserMedia({
-    video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+    video: { facingMode, height: { ideal: height }, width: { ideal: Math.round(height * 16 / 9) }, frameRate: { ideal: 30 } },
     audio,
   });
 }
@@ -563,14 +664,45 @@ function openCamera(initialFacing = 'user') {
 
 /** Maakt de gezichtsopdracht voor de motor: bron → doelpositie. */
 function faceJob(engine, source, targetPts, s) {
-  const dst = withCenters(blendShape(targetPts, source.raw, s.shape));
+  let pts = blendShape(targetPts, source.raw, s.shape);
+  if (s.offX || s.offY || s.scale || s.rotate) pts = nudge(pts, s);
+  const dst = withCenters(pts);
   const weights = s.expression ? expressionWeights(source.raw, targetPts) : {};
   return { tex: source.tex, srcW: source.w, srcH: source.h, src: source.src, dst, weights, size: bounds(dst).size };
+}
+
+/** Handmatig bijstellen: verschuiven, schalen en draaien rond het gezichtsmidden. */
+function nudge(pts, s) {
+  const b = bounds(pts);
+  const k = 1 + s.scale * 0.2;
+  const a = s.rotate * (15 * Math.PI / 180);
+  const c = Math.cos(a) * k, si = Math.sin(a) * k;
+  const dx = s.offX * 0.15 * b.size, dy = s.offY * 0.15 * b.size;
+  const out = new Float32Array(pts.length);
+  for (let i = 0; i < pts.length; i += 2) {
+    const x = pts[i] - b.cx, y = pts[i + 1] - b.cy;
+    out[i] = b.cx + c * x - si * y + dx;
+    out[i + 1] = b.cy + si * x + c * y + dy;
+  }
+  return out;
 }
 
 async function librarySource(engine, face) {
   const d = await faceSource(face);
   return { ...d, tex: engine.sourceTexture(face.id, d.image) };
+}
+
+/** Synchrone variant voor de videolus: geeft null terwijl het gezicht nog laadt. */
+function librarySourceSync(engine, face) {
+  const d = faceData.get(face.id);
+  if (!d) { faceSource(face).catch(() => {}); return null; }
+  return { ...d, tex: engine.sourceTexture(face.id, d.image) };
+}
+
+/** Voor/na-schuif: 0 = uit, anders het deel (links) dat het origineel toont. */
+function splitValue(id) {
+  const v = Number($(id)?.value || 0);
+  return v > 0 ? v / 100 : -1;
 }
 
 // ============================================================
@@ -588,7 +720,9 @@ const photo = {
   blob: null,
 
   init() {
-    buildSettings('photo', () => this.render());
+    this.requestRender = coalesce(() => this.render());
+    buildSettings('photo', this.requestRender);
+    $('#photo-split').addEventListener('input', this.requestRender);
     const drop = $('#photo-drop');
     $('#photo-file').addEventListener('change', (e) => {
       const f = e.target.files[0];
@@ -721,8 +855,8 @@ const photo = {
         if (source) jobs.push(faceJob(this.engine, source, this.faces[i].pts, s));
       }
     }
-    this.engine.render(jobs, s);
-    if (!original) this.drawChips();
+    this.engine.render(jobs, s, { split: original ? -1 : splitValue('#photo-split') });
+    if (!original && this.chipsDirty !== false) this.drawChips();
   },
 
   drawChips() {
@@ -874,7 +1008,10 @@ const video = {
   exporting: null,
 
   init() {
-    buildSettings('video', () => { if (this.el.paused) this.frame(); });
+    // Bij stilstand: alleen opnieuw tekenen met de laatste gezichtspunten (direct zichtbaar).
+    this.requestDraw = coalesce(() => { if (this.el.paused) this.draw(); });
+    buildSettings('video', this.requestDraw);
+    $('#video-split').addEventListener('input', this.requestDraw);
     $('#video-file').addEventListener('change', (e) => {
       const f = e.target.files[0];
       e.target.value = '';
@@ -1010,18 +1147,27 @@ const video = {
     if (!this.engine || el.readyState < 2) return;
     this.engine.setTarget(el, el.videoWidth, el.videoHeight);
     const face = activeFace();
-    const s = settings.video;
-    let jobs = [];
+    this.found = [];
     if (face && this.detect) {
+      if (!faceData.has(face.id)) await faceSource(face);
       let found = this.detect(el, this.w, this.h);
       found.sort((a, b) => bounds(b).size - bounds(a).size);
       found = found.slice(0, Number($('#video-faces').value));
-      found = this.smoother.update(found);
-      const source = await librarySource(this.engine, face);
-      jobs = found.map((pts) => faceJob(this.engine, source, pts, s));
+      // Bij stilstand (pauze/zoeken) geen filter: dan klopt het frame precies.
+      this.found = el.paused && !this.exporting ? found : this.smoother.update(found, performance.now() / 1000, settings.video.stability);
     }
-    this.engine.render(jobs, s);
+    this.draw();
     this.exporting?.onFrame();
+  },
+
+  /** Tekent het huidige frame met de laatst gevonden gezichten (gebruikt bij elke instelling). */
+  draw() {
+    if (!this.engine || this.el.readyState < 2) return;
+    const face = activeFace();
+    const s = settings.video;
+    const source = face ? librarySourceSync(this.engine, face) : null;
+    const jobs = source ? (this.found || []).map((pts) => faceJob(this.engine, source, pts, s)) : [];
+    this.engine.render(jobs, s, { split: this.exporting ? -1 : splitValue('#video-split') });
   },
 
   async export() {
@@ -1123,6 +1269,11 @@ const live = {
 
   init() {
     buildSettings('live', () => {});
+    $('#live-quality').value = String(storage.get('live-quality', 720));
+    $('#live-quality').addEventListener('change', (e) => {
+      storage.set('live-quality', Number(e.target.value));
+      if (this.running) this.start();
+    });
     $('#live-on').addEventListener('click', () => this.start());
     $('#live-off').addEventListener('click', () => this.stop());
     $('#live-flip').addEventListener('click', () => {
@@ -1137,10 +1288,11 @@ const live = {
     const status = $('#live-status');
     this.stopTracks();
     try {
-      this.stream = await getCamera(this.facing);
+      const q = Number($('#live-quality').value);
+      this.stream = await getCamera(this.facing, false, q);
       this.el.srcObject = this.stream;
       await this.el.play();
-      [this.w, this.h] = fit(this.el.videoWidth, this.el.videoHeight, 1280);
+      [this.w, this.h] = fit(this.el.videoWidth, this.el.videoHeight, q * 16 / 9);
       this.engine ??= newEngine($('#live-canvas'));
       this.engine.setSize(this.w, this.h);
       $('#live-canvas').classList.toggle('mirror', this.facing === 'user');
@@ -1172,7 +1324,10 @@ const live = {
   },
 
   loop() {
-    const step = async (now) => {
+    let frameNo = 0;
+    let detectMs = 0;
+    let found = [];
+    const step = (now) => {
       if (!this.running) return;
       const el = this.el;
       if (el.readyState >= 2 && el.videoWidth) {
@@ -1180,12 +1335,20 @@ const live = {
         const face = $('#live-swap').checked ? activeFace() : null;
         const s = settings.live;
         let jobs = [];
-        if (face && this.detect) {
-          let found = this.detect(el, this.w, this.h);
-          found = this.smoother.update(found);
-          const source = await librarySource(this.engine, face);
+        const source = face ? librarySourceSync(this.engine, face) : null;
+        if (source && this.detect) {
+          // Snelle camera: is herkennen traag (> 22 ms), dan om het andere frame herkennen.
+          // Tussenliggende frames hergebruiken de gestabiliseerde punten.
+          const every = detectMs > 22 ? 2 : 1;
+          if (frameNo % every === 0 || !found.length) {
+            const t0 = performance.now();
+            const raw = this.detect(el, this.w, this.h);
+            detectMs = detectMs * 0.8 + (performance.now() - t0) * 0.2;
+            found = this.smoother.update(raw, performance.now() / 1000, s.stability);
+          }
           jobs = found.map((pts) => faceJob(this.engine, source, pts, s));
         }
+        frameNo++;
         this.engine.render(jobs, s);
         if (this.recorder) exportCanvas(this.engine.canvas, { label: s.label, mirror: this.facing === 'user', into: this.recCanvas });
         this.fps.n++;

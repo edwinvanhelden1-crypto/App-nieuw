@@ -47,9 +47,37 @@ uniform sampler2D uSrc;
 // Voorvermenigvuldigd met het gewicht (ogen/mond kunnen deels doorzichtig zijn).
 void main() { o = vec4(texture(uSrc, vUV).rgb * vA, vA); }`;
 
-const COPY_FS = `${HEAD}
+// Gedeelde kleurfuncties (waarden van -1 tot 1, 0 = ongewijzigd).
+const ADJUST = `
+const vec3 LUM = vec3(0.299, 0.587, 0.114);
+vec3 adjust(vec3 c, float bright, float contr, float sat, float warm) {
+  c = pow(max(c, 0.0), vec3(exp(-bright * 0.8)));
+  c = (c - 0.5) * (1.0 + contr) + 0.5;
+  float l = dot(c, LUM);
+  c = mix(vec3(l), c, 1.0 + sat);
+  c += vec3(warm * 0.07, warm * 0.015, -warm * 0.07);
+  return clamp(c, 0.0, 1.0);
+}`;
+
+// Laatste stap naar het scherm: filters voor het hele beeld + voor/na-splitsing.
+const FINAL_FS = `${HEAD}
 uniform sampler2D uTex;
-void main() { o = vec4(texture(uTex, vUV).rgb, 1.0); }`;
+uniform sampler2D uOrig;
+uniform float uSplit;
+uniform vec4 uAdj;      // helderheid, contrast, verzadiging, warmte
+uniform float uVignette;
+${ADJUST}
+void main() {
+  if (uSplit >= 0.0 && vUV.x < uSplit) {
+    o = vec4(texture(uOrig, vUV).rgb, 1.0);
+    if (abs(vUV.x - uSplit) < 0.002) o = vec4(1.0);
+    return;
+  }
+  vec3 c = adjust(texture(uTex, vUV).rgb, uAdj.x, uAdj.y, uAdj.z, uAdj.w);
+  float d = distance(vUV, vec2(0.5)) * 1.414;
+  c *= 1.0 - uVignette * 0.75 * smoothstep(0.35, 1.0, d);
+  o = vec4(c, 1.0);
+}`;
 
 // Doelkleur vermenigvuldigd met de dekking van het gewarpte gezicht.
 const PREMUL_FS = `${HEAD}
@@ -106,18 +134,30 @@ uniform sampler2D uSQ;
 uniform float uOpacity;
 uniform float uColor;
 uniform float uContrast;
+uniform float uMaskLo;
+uniform float uSmooth;
+uniform float uSharp;
+uniform float uDetailLod;
+uniform vec4 uFaceAdj;  // helderheid, contrast, verzadiging, warmte van alleen het gezicht
 const vec3 L = vec3(0.299, 0.587, 0.114);
+${ADJUST}
 void main() {
   vec4 t = texture(uT, vUV);
   vec4 w = texture(uW, vUV);
   // Zachte rand × gewicht (ogen/mond van het doel blijven zichtbaar waar het gewicht laag is).
-  float m = smoothstep(0.5, 0.98, texture(uMask, vUV).r) * clamp(w.a, 0.0, 1.0) * uOpacity;
+  float m = smoothstep(uMaskLo, uMaskLo + 0.48, texture(uMask, vUV).r) * clamp(w.a, 0.0, 1.0) * uOpacity;
   vec4 a = texture(uMT, vUV);
   vec4 b = texture(uMS, vUV);
   vec4 q = texture(uSQ, vUV);
   vec3 meanT = a.rgb / max(a.a, 1e-4);
   vec3 meanS = b.rgb / max(b.a, 1e-4);
   vec3 src = w.a > 0.001 ? w.rgb / w.a : t.rgb;
+  // Huid gladmaken (randbehoudend) en verscherpen met een vervaagde versie van het gezicht.
+  vec4 bw = textureLod(uW, vUV, uDetailLod);
+  vec3 blurred = bw.a > 0.001 ? bw.rgb / bw.a : src;
+  vec3 dd = src - blurred;
+  float k = uSmooth * exp(-dot(dd, dd) / 0.01);
+  src = clamp(mix(src, blurred, k) + uSharp * 1.5 * dd, 0.0, 1.0);
   // Lokaal contrast: verhouding van de standaardafwijking van de helderheid.
   float lT = dot(meanT, L), lS = dot(meanS, L);
   float sdT = sqrt(max(q.r / max(q.a, 1e-4) - lT * lT, 1e-5));
@@ -126,6 +166,7 @@ void main() {
   // Gemiddelde kleur én contrast van het doel overnemen.
   vec3 matched = meanT + (src - meanS) * g;
   vec3 res = clamp(mix(src, matched, uColor), 0.0, 1.0);
+  res = adjust(res, uFaceAdj.x, uFaceAdj.y, uFaceAdj.z, uFaceAdj.w);
   o = vec4(mix(t.rgb, res, m), 1.0);
 }`;
 
@@ -135,7 +176,13 @@ export const DEFAULTS = {
   contrast: 1,     // 0..1   contrast van het doel overnemen
   feather: 0.4,    // 0..1   zachtheid van de rand
   fillEyes: true,  // ogen van de bron gebruiken (uit = ogen van het doel, behoudt blik)
-  fillMouth: false // mond van de bron gebruiken (uit = mond van het doel, behoudt expressie)
+  fillMouth: false, // mond van de bron gebruiken (uit = mond van het doel, behoudt expressie)
+  maskSize: 0,     // -1..1  gezichtsgebied kleiner/groter
+  smooth: 0,       // 0..1   huid gladmaken
+  sharpen: 0,      // 0..1   verscherpen
+  faceBright: 0, faceContrast: 0, faceSat: 0, faceWarm: 0, // -1..1 alleen het gezicht
+  imgBright: 0, imgContrast: 0, imgSat: 0, imgWarm: 0,      // -1..1 hele beeld
+  vignette: 0,     // 0..1
 };
 
 export class SwapEngine {
@@ -157,7 +204,7 @@ export class SwapEngine {
     this.progs = {
       square: this.program(QUAD_VS, SQUARE_FS),
       warp: this.program(WARP_VS, WARP_FS),
-      copy: this.program(QUAD_VS, COPY_FS),
+      final: this.program(QUAD_VS, FINAL_FS),
       premul: this.program(QUAD_VS, PREMUL_FS),
       lod: this.program(QUAD_VS, LOD_FS),
       blur: this.program(QUAD_VS, BLUR_FS),
@@ -355,7 +402,7 @@ export class SwapEngine {
    * Rendert het doelbeeld met verwisselde gezichten.
    * faces: [{ tex, srcW, srcH, src: Float32Array(481*2) bronpixels, dst: Float32Array(481*2) uitvoerpixels, size }]
    */
-  render(faces, settings = {}) {
+  render(faces, settings = {}, { split = -1 } = {}) {
     const gl = this.gl;
     const s = { ...DEFAULTS, ...settings };
     const { warp, premul, square, out } = this.full;
@@ -449,10 +496,21 @@ export class SwapEngine {
         gl.uniform1f(q.uni.uOpacity, s.opacity);
         gl.uniform1f(q.uni.uColor, s.color);
         gl.uniform1f(q.uni.uContrast, this.float ? s.contrast : 0);
+        gl.uniform1f(q.uni.uMaskLo, 0.5 - 0.3 * s.maskSize);
+        gl.uniform1f(q.uni.uSmooth, s.smooth);
+        gl.uniform1f(q.uni.uSharp, s.sharpen);
+        gl.uniform1f(q.uni.uDetailLod, Math.max(0, Math.log2(size / 110)));
+        gl.uniform4f(q.uni.uFaceAdj, s.faceBright, s.faceContrast, s.faceSat, s.faceWarm);
       });
       cur = dest.tex;
     }
 
-    this.pass(this.progs.copy, null, (q) => this.bindTex(q, 'uTex', cur, 0));
+    this.pass(this.progs.final, null, (q) => {
+      this.bindTex(q, 'uTex', cur, 0);
+      this.bindTex(q, 'uOrig', this.target, 1);
+      gl.uniform1f(q.uni.uSplit, split);
+      gl.uniform4f(q.uni.uAdj, s.imgBright, s.imgContrast, s.imgSat, s.imgWarm);
+      gl.uniform1f(q.uni.uVignette, s.vignette);
+    });
   }
 }

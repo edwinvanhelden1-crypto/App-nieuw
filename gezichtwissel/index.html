@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gezichtwissel</title>
   <meta name="description" content="Gratis face swap in je browser: wissel gezichten in foto's, video's en live via de camera. Geen account, geen watermerk, je beelden blijven op je apparaat.">
-  <meta name="theme-color" content="#14121c">
+  <meta name="theme-color" content="#0d0c12">
+  <meta name="color-scheme" content="dark">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
@@ -109,6 +110,9 @@
               <span>Labels</span>
             </button>
           </div>
+          <label class="split-row">Voor
+            <input type="range" id="photo-split" min="0" max="100" value="0" aria-label="Voor/na vergelijken">
+            na</label>
         </div>
 
         <div class="panel">
@@ -120,7 +124,7 @@
           </div>
 
           <details class="settings" open>
-            <summary>Instellingen</summary>
+            <summary>Editor <span class="muted small">· wijzigingen zie je direct</span></summary>
             <div class="sliders" data-settings="photo"></div>
           </details>
 
@@ -172,6 +176,9 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 010 6"/></svg>
             </button>
           </div>
+          <label class="split-row">Voor
+            <input type="range" id="video-split" min="0" max="100" value="0" aria-label="Voor/na vergelijken">
+            na</label>
           <video id="video-el" playsinline preload="auto" hidden></video>
         </div>
 
@@ -185,7 +192,7 @@
             </select>
           </label>
           <details class="settings" open>
-            <summary>Instellingen</summary>
+            <summary>Editor <span class="muted small">· wijzigingen zie je direct</span></summary>
             <div class="sliders" data-settings="video"></div>
           </details>
           <div class="row wrap actions">
@@ -233,10 +240,17 @@
         </div>
         <div class="panel">
           <p class="status" id="live-status" role="status" aria-live="polite"></p>
+          <label class="field">Camerakwaliteit
+            <select id="live-quality">
+              <option value="480">Snel (480p)</option>
+              <option value="720">Normaal (720p)</option>
+              <option value="1080">Hoog (1080p)</option>
+            </select>
+          </label>
           <label class="check"><input type="checkbox" id="live-mic"> Geluid opnemen (microfoon)</label>
           <label class="check"><input type="checkbox" id="live-swap" checked> Gezicht wisselen aan</label>
           <details class="settings" open>
-            <summary>Instellingen</summary>
+            <summary>Editor <span class="muted small">· wijzigingen zie je direct</span></summary>
             <div class="sliders" data-settings="live"></div>
           </details>
           <div class="gallery" id="live-gallery"></div>

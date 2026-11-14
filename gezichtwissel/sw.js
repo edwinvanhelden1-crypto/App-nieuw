@@ -1,5 +1,5 @@
 // Service worker: app werkt offline en het AI-model hoeft maar één keer gedownload te worden.
-const CACHE = 'gezichtwissel-v1';
+const CACHE = 'gezichtwissel-v2';
 const SHELL = [
   './', 'index.html', 'style.css', 'icon.svg', 'manifest.webmanifest',
   'js/app.js', 'js/engine.js', 'js/mesh.js', 'js/detector.js', 'js/store.js',

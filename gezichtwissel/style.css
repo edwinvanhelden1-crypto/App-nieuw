@@ -1,34 +1,19 @@
+/* Altijd donker thema. */
 :root {
-  --bg: #f4f2f8;
-  --surface: #ffffff;
-  --surface-2: #ece9f3;
-  --text: #1a1724;
-  --muted: #625d72;
-  --border: #ddd8e8;
-  --accent: #6d3df2;
-  --accent-2: #e8457c;
-  --accent-text: #ffffff;
-  --danger: #c62a4a;
-  --grad: linear-gradient(135deg, var(--accent), var(--accent-2));
+  --bg: #0d0c12;
+  --surface: #17151f;
+  --surface-2: #24212f;
+  --text: #f1eff7;
+  --muted: #9d97b0;
+  --border: #2c2939;
+  --accent: #9b78ff;
+  --accent-2: #ff6c9a;
+  --accent-text: #0d0c12;
+  --danger: #ff6b84;
+  --grad: linear-gradient(135deg, #7a4bff, #ff5a8f);
   --radius: 16px;
   --tabs-h: 64px;
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14121c;
-    --surface: #1e1b29;
-    --surface-2: #2a2638;
-    --text: #efedf5;
-    --muted: #a39db5;
-    --border: #332f44;
-    --accent: #9b78ff;
-    --accent-2: #ff6c9a;
-    --accent-text: #14121c;
-    --danger: #ff6b84;
-    color-scheme: dark;
-  }
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -322,3 +307,26 @@ dialog::backdrop { background: #0009; }
   .tabs button[aria-current="page"] { background: var(--surface); color: var(--accent); }
   .toast { bottom: 24px; }
 }
+
+/* ---------- Editor ---------- */
+.small { font-size: .8rem; font-weight: 400; }
+.seg {
+  display: flex; gap: 4px; overflow-x: auto; padding: 4px; margin-bottom: 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 12px; scrollbar-width: none;
+}
+.seg::-webkit-scrollbar { display: none; }
+.seg button {
+  flex: none; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: .85rem; font-weight: 600;
+  padding: 7px 12px; border-radius: 9px; cursor: pointer; white-space: nowrap;
+}
+.seg button[aria-selected="true"] { background: var(--surface-2); color: var(--text); }
+.sec { display: grid; gap: 12px; }
+.sec .btn.ghost { justify-self: start; }
+.slider input { height: 28px; }
+.split-row {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 4px 0;
+  font-size: .8rem; color: var(--muted);
+}
+.split-row input { flex: 1; accent-color: var(--accent); }
+.field { margin-bottom: 8px; }
+.status:empty { min-height: 0; margin: 0; }

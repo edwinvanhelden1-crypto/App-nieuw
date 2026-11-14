@@ -193,16 +193,85 @@ export function blendShape(dst, src, amount) {
   return out;
 }
 
+// ---------- Stabilisatie (One-Euro-filter) ----------
+// Weinig beweging → sterk filteren (geen trillen); snelle beweging → nauwelijks (geen naijlen).
+
+const lowpass = (dt, cutoff) => 1 / (1 + 1 / (2 * Math.PI * cutoff * dt));
+
+class OneEuro {
+  constructor(n) {
+    this.x = new Float64Array(n);
+    this.dx = new Float64Array(n);
+    this.init = false;
+  }
+  /** values: nieuwe waarden; speedScale: deelt de snelheid (bv. door de gezichtsgrootte). */
+  filter(values, dt, minCutoff, beta, speedScale = 1) {
+    const n = values.length;
+    if (!this.init || dt <= 0 || dt > 0.5) {
+      this.x.set(values);
+      this.dx.fill(0);
+      this.init = true;
+      return this.x;
+    }
+    const aD = lowpass(dt, 1.0);
+    for (let i = 0; i < n; i++) {
+      const d = (values[i] - this.x[i]) / dt;
+      this.dx[i] += (d - this.dx[i]) * aD;
+      const scale = typeof speedScale === 'number' ? speedScale : speedScale[i];
+      const cutoff = minCutoff + beta * Math.abs(this.dx[i]) / scale;
+      this.x[i] += (values[i] - this.x[i]) * lowpass(dt, cutoff);
+    }
+    return this.x;
+  }
+}
+
+/** Splitst landmarks in houding (midden, grootte, hoek) en vorm in een eigen assenstelsel. */
+function decompose(pts) {
+  const n = N_LANDMARKS;
+  let cx = 0, cy = 0;
+  for (let i = 0; i < n; i++) { cx += pts[i * 2]; cy += pts[i * 2 + 1]; }
+  cx /= n; cy /= n;
+  let ss = 0;
+  for (let i = 0; i < n; i++) ss += (pts[i * 2] - cx) ** 2 + (pts[i * 2 + 1] - cy) ** 2;
+  const scale = Math.sqrt(ss / n) || 1;
+  const angle = Math.atan2(pts[263 * 2 + 1] - pts[33 * 2 + 1], pts[263 * 2] - pts[33 * 2]);
+  const c = Math.cos(-angle), s = Math.sin(-angle);
+  const local = new Float64Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    const x = (pts[i * 2] - cx) / scale, y = (pts[i * 2 + 1] - cy) / scale;
+    local[i * 2] = c * x - s * y;
+    local[i * 2 + 1] = s * x + c * y;
+  }
+  return { pose: [cx, cy, scale, angle], local };
+}
+
+function compose(pose, local) {
+  const [cx, cy, scale, angle] = pose;
+  const c = Math.cos(angle), s = Math.sin(angle);
+  const out = new Float32Array(N_LANDMARKS * 2);
+  for (let i = 0; i < N_LANDMARKS; i++) {
+    const x = local[i * 2], y = local[i * 2 + 1];
+    out[i * 2] = (c * x - s * y) * scale + cx;
+    out[i * 2 + 1] = (s * x + c * y) * scale + cy;
+  }
+  return out;
+}
+
 /**
- * Strijkt bewegende landmarks glad tussen videoframes en koppelt gezichten aan
- * het vorige frame (MediaPipe garandeert geen vaste volgorde).
+ * Stabiliseert gezichten tussen videoframes en koppelt ze aan het vorige frame
+ * (MediaPipe garandeert geen vaste volgorde).
  */
 export class Smoother {
-  constructor() { this.tracks = []; }
-  reset() { this.tracks = []; }
-  update(faces) {
+  constructor() { this.tracks = []; this.last = 0; }
+  reset() { this.tracks = []; this.last = 0; }
+
+  /** faces: landmarks per gezicht; time: seconden; stability: 0 (snel) .. 1 (zeer stabiel). */
+  update(faces, time = performance.now() / 1000, stability = 0.6) {
+    const dt = this.last ? time - this.last : 0;
+    this.last = time;
     const prev = this.tracks;
     const used = new Set();
+    const lerp = (a, b) => a + (b - a) * stability;
     const next = faces.map((pts) => {
       const b = bounds(pts);
       let best = null, bestD = Infinity;
@@ -211,16 +280,23 @@ export class Smoother {
         const d = Math.hypot(t.b.cx - b.cx, t.b.cy - b.cy);
         if (d < bestD && d < b.size * 0.6) { bestD = d; best = t; }
       }
-      if (!best) return { pts: new Float32Array(pts), b };
-      used.add(best);
-      // Snelle beweging → weinig gladstrijken (geen naijlen); stilstand → veel (geen trillen).
-      const motion = bestD / (b.size || 1);
-      const alpha = Math.min(1, 0.3 + motion * 12);
-      const out = best.pts;
-      for (let i = 0; i < out.length; i++) out[i] += (pts[i] - out[i]) * alpha;
-      return { pts: out, b };
+      const track = best ?? { pose: new OneEuro(4), local: new OneEuro(N_LANDMARKS * 2) };
+      if (best) used.add(best);
+      track.b = b;
+      const { pose, local } = decompose(pts);
+      // Hoek omwikkelen zodat -π/π geen sprong geeft.
+      if (track.pose.init) {
+        const prevA = track.pose.x[3];
+        pose[3] = prevA + Math.atan2(Math.sin(pose[3] - prevA), Math.cos(pose[3] - prevA));
+      }
+      // Snelheid van positie en grootte relatief aan de gezichtsgrootte.
+      const sp = track.pose.filter(pose, dt, lerp(2, 0.15), 3, [pose[2], pose[2], pose[2], 1]);
+      const fp = [sp[0], sp[1], sp[2], sp[3]];
+      const fl = track.local.filter(local, dt, lerp(4, 0.5), 1, 1);
+      track.out = compose(fp, fl);
+      return track;
     });
     this.tracks = next;
-    return next.map((t) => t.pts);
+    return next.map((t) => t.out);
   }
 }
