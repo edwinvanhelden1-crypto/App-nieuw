@@ -12,6 +12,11 @@ const LOOPS = [LOOP_EYE_A, LOOP_EYE_B, LOOP_MOUTH];
 const CENTER = [N_LANDMARKS, N_LANDMARKS + 1, N_LANDMARKS + 2];
 export const N_POINTS = N_LANDMARKS + LOOPS.length;
 
+// Spiegelpunt (links ↔ rechts) per landmark, berekend op een frontaal gezicht.
+const MIRROR = [0,1,2,248,4,5,6,390,8,9,10,11,12,13,14,15,16,17,18,19,250,251,252,253,254,255,256,257,258,259,260,261,262,249,264,265,266,267,268,269,304,271,310,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,306,308,293,294,295,296,297,298,299,300,301,302,303,272,305,308,307,308,309,310,311,312,313,314,315,316,317,318,319,321,321,322,323,94,324,324,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,463,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,263,360,361,463,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,151,152,380,382,362,383,384,385,386,387,388,389,373,164,391,392,393,168,394,395,396,397,362,399,175,400,401,402,403,404,405,406,415,407,408,410,411,412,413,414,415,416,417,418,195,419,197,420,199,200,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,388,467,3,33,20,21,22,23,24,25,26,27,28,29,30,31,32,130,34,35,36,37,38,39,40,41,74,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,76,63,64,65,66,67,68,69,70,71,72,73,40,75,61,77,62,79,42,81,82,83,84,85,86,87,88,89,90,90,92,93,96,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,155,134,135,136,137,138,139,140,141,142,143,144,145,77,147,148,149,150,153,154,154,156,157,158,159,160,246,162,7,165,166,167,169,170,171,172,154,174,176,177,178,179,180,181,182,184,185,185,186,187,188,189,190,183,192,193,194,196,198,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,133,244,245,246,247];
+
+// Driehoeken: 0 = gezicht, 1 = oog A, 2 = oog B, 3 = mond.
+const TAG_FACE = 0, TAG_EYE_A = 1, TAG_EYE_B = 2, TAG_MOUTH = 3;
 let baseTriangles = null;
 
 /** Haalt de 852 driehoeken uit de tesselatie (die in driehoek-volgorde staat). */
@@ -24,19 +29,93 @@ export function initMesh(tesselation) {
 }
 
 const triCache = new Map();
-/** Driehoeksindices, optioneel met de ogen en/of mond van de bron opgevuld. */
+/** Driehoeksindices (+ soort), optioneel met de ogen en/of mond van de bron opgevuld. */
 export function triangles({ fillEyes, fillMouth }) {
   const key = `${+fillEyes}${+fillMouth}`;
   if (triCache.has(key)) return triCache.get(key);
-  const out = baseTriangles.slice();
-  const fan = (loop, c) => {
-    for (let i = 0; i < loop.length; i++) out.push(c, loop[i], loop[(i + 1) % loop.length]);
+  const idx = baseTriangles.slice();
+  const tags = new Array(baseTriangles.length / 3).fill(TAG_FACE);
+  const fan = (loop, c, tag) => {
+    for (let i = 0; i < loop.length; i++) {
+      idx.push(c, loop[i], loop[(i + 1) % loop.length]);
+      tags.push(tag);
+    }
   };
-  if (fillEyes) { fan(LOOP_EYE_A, CENTER[0]); fan(LOOP_EYE_B, CENTER[1]); }
-  if (fillMouth) fan(LOOP_MOUTH, CENTER[2]);
-  const arr = new Uint16Array(out);
-  triCache.set(key, arr);
-  return arr;
+  if (fillEyes) { fan(LOOP_EYE_A, CENTER[0], TAG_EYE_A); fan(LOOP_EYE_B, CENTER[1], TAG_EYE_B); }
+  if (fillMouth) fan(LOOP_MOUTH, CENTER[2], TAG_MOUTH);
+  const res = { idx: new Uint16Array(idx), tags: new Uint8Array(tags) };
+  triCache.set(key, res);
+  return res;
+}
+
+const area = (p, a, b, c) =>
+  (p[b * 2] - p[a * 2]) * (p[c * 2 + 1] - p[a * 2 + 1]) - (p[b * 2 + 1] - p[a * 2 + 1]) * (p[c * 2] - p[a * 2]);
+
+/**
+ * Bouwt de hoekpunten voor de warp.
+ * - Driehoeken die in het doel van de camera af gedraaid zijn (achter de neus of
+ *   wang) worden overgeslagen, zodat er niets "dubbel" over elkaar valt.
+ * - Is een deel van het brongezicht weggedraaid (bron kijkt opzij), dan wordt de
+ *   gespiegelde, wel zichtbare kant van de bron gebruikt.
+ * - Ogen en mond krijgen een gewicht, zodat knipperen en praten van het doel zichtbaar blijven.
+ */
+export function buildGeometry(src, dst, srcW, srcH, opts, weights = {}) {
+  const { idx, tags } = triangles(opts);
+  const n = tags.length;
+  const pos = new Float32Array(n * 6);
+  const uv = new Float32Array(n * 6);
+  const alpha = new Float32Array(n * 3);
+  const wTag = [1, weights.eyeA ?? 1, weights.eyeB ?? 1, weights.mouth ?? 1];
+  let v = 0;
+  for (let t = 0; t < n; t++) {
+    const a = idx[t * 3], b = idx[t * 3 + 1], c = idx[t * 3 + 2];
+    const tag = tags[t];
+    let ua = a, ub = b, uc = c;
+    if (tag === TAG_FACE) {
+      // Canonieke driehoeken hebben negatieve oppervlakte (y naar beneden) als ze naar de camera wijzen.
+      if (area(dst, a, b, c) >= 0) continue;
+      const own = Math.max(0, -area(src, a, b, c));
+      const ma = MIRROR[a], mb = MIRROR[b], mc = MIRROR[c];
+      const mir = Math.max(0, area(src, ma, mb, mc)); // gespiegeld = omgekeerde draairichting
+      if (own < 0.45 * mir) { ua = ma; ub = mb; uc = mc; }
+    }
+    const w = wTag[tag];
+    if (w <= 0.001) continue;
+    for (const [p, q] of [[a, ua], [b, ub], [c, uc]]) {
+      pos[v * 2] = dst[p * 2];
+      pos[v * 2 + 1] = dst[p * 2 + 1];
+      uv[v * 2] = src[q * 2] / srcW;
+      uv[v * 2 + 1] = src[q * 2 + 1] / srcH;
+      alpha[v] = w;
+      v++;
+    }
+  }
+  return { pos, uv, alpha, count: v };
+}
+
+const dist = (p, a, b) => Math.hypot(p[a * 2] - p[b * 2], p[a * 2 + 1] - p[b * 2 + 1]);
+/** Hoe ver de ogen en mond open zijn (ten opzichte van de breedte). */
+export function openness(p) {
+  return {
+    eyeA: dist(p, 159, 145) / (dist(p, 33, 133) || 1),
+    eyeB: dist(p, 386, 374) / (dist(p, 263, 362) || 1),
+    mouth: dist(p, 13, 14) / (dist(p, 61, 291) || 1),
+  };
+}
+
+const smooth = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+/**
+ * Expressie overnemen: knippert het doel, dan verdwijnt het oog van de bron en zie je
+ * het ooglid van het doel. Gaat de mond van het doel verder open dan die van de bron,
+ * dan komen tanden en tong van het doel in beeld.
+ */
+export function expressionWeights(src, dst) {
+  const s = openness(src), d = openness(dst);
+  return {
+    eyeA: smooth(0.35, 0.75, d.eyeA / Math.max(s.eyeA, 0.05)),
+    eyeB: smooth(0.35, 0.75, d.eyeB / Math.max(s.eyeB, 0.05)),
+    mouth: 1 - smooth(0.04, 0.18, d.mouth - s.mouth),
+  };
 }
 
 /** Voegt de middelpunten van de lussen toe: 478 → 481 punten (x,y paren). */

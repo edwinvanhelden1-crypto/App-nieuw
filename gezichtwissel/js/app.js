@@ -1,7 +1,7 @@
 import { store, uid } from './store.js';
 import * as detector from './detector.js';
 import { SwapEngine, DEFAULTS } from './engine.js';
-import { withCenters, bounds, yaw, blendShape, Smoother, N_LANDMARKS } from './mesh.js';
+import { withCenters, bounds, yaw, blendShape, expressionWeights, Smoother, N_LANDMARKS } from './mesh.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -175,18 +175,20 @@ async function withModel(fn) {
 const SLIDERS = [
   { key: 'opacity', label: 'Sterkte', hint: 'Hoeveel van het nieuwe gezicht zichtbaar is' },
   { key: 'color', label: 'Huidskleur & licht aanpassen', hint: 'Neemt kleur en belichting van de foto over' },
+  { key: 'contrast', label: 'Contrast aanpassen', hint: 'Neemt het lokale contrast (schaduwen, glans) van de foto over' },
   { key: 'feather', label: 'Zachte rand', hint: 'Hoe geleidelijk het gezicht overloopt' },
   { key: 'shape', label: 'Gezichtsvorm van nieuw gezicht', hint: 'Ogen, neus en mond op de plek van het nieuwe gezicht' },
 ];
 const CHECKS = [
+  { key: 'expression', label: 'Expressie volgen (knipperen, praten)', hint: 'Bij dichte ogen of open mond van het origineel worden die van het origineel getoond' },
   { key: 'fillEyes', label: 'Ogen van nieuw gezicht', hint: 'Uit: ogen van het origineel (behoudt blik en knipperen)' },
   { key: 'fillMouth', label: 'Mond van nieuw gezicht', hint: 'Uit: mond van het origineel (behoudt praten en lachen)' },
   { key: 'label', label: 'Label "AI-bewerkt" bij downloaden' },
 ];
 const MODE_DEFAULTS = {
-  photo: { ...DEFAULTS, shape: 0.25, label: true },
-  video: { ...DEFAULTS, shape: 0, label: true },
-  live: { ...DEFAULTS, shape: 0, label: true },
+  photo: { ...DEFAULTS, shape: 0.25, expression: true, label: true },
+  video: { ...DEFAULTS, shape: 0, expression: true, label: true },
+  live: { ...DEFAULTS, shape: 0, expression: true, label: true },
 };
 const settings = {};
 for (const mode of Object.keys(MODE_DEFAULTS)) {
@@ -562,7 +564,8 @@ function openCamera(initialFacing = 'user') {
 /** Maakt de gezichtsopdracht voor de motor: bron → doelpositie. */
 function faceJob(engine, source, targetPts, s) {
   const dst = withCenters(blendShape(targetPts, source.raw, s.shape));
-  return { tex: source.tex, srcW: source.w, srcH: source.h, src: source.src, dst, size: bounds(dst).size };
+  const weights = s.expression ? expressionWeights(source.raw, targetPts) : {};
+  return { tex: source.tex, srcW: source.w, srcH: source.h, src: source.src, dst, weights, size: bounds(dst).size };
 }
 
 async function librarySource(engine, face) {

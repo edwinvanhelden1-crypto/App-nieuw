@@ -29,7 +29,8 @@ abonnement, geen watermerk, geen server: je foto's en video's verlaten je appara
 - Foto maken en video opnemen, optioneel met microfoon.
 
 **Instellingen** (per onderdeel bewaard)
-- Sterkte, huidskleur & licht aanpassen, zachte rand, gezichtsvorm van het nieuwe gezicht.
+- Sterkte, huidskleur & licht aanpassen, contrast aanpassen, zachte rand, gezichtsvorm van het nieuwe gezicht.
+- Expressie volgen: knippert het origineel of praat/lacht het met open mond, dan blijven die ogen/mond zichtbaar.
 - Ogen en/of mond van het nieuwe gezicht, of van het origineel (behoudt blik, praten en lachen).
 - Label "AI-bewerkt" op downloads (standaard aan).
 
@@ -40,8 +41,10 @@ Verder: installeerbaar als app (PWA), werkt offline na het eerste gebruik, licht
 1. **Herkennen**: [MediaPipe Face Landmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker)
    (gratis, Apache 2.0) vindt 478 punten per gezicht. Het model (±4 MB) wordt één keer gedownload.
 2. **Vervormen**: het brongezicht wordt via de 852 driehoeken van het gezichtsnet met WebGL2 naar de positie
-   en uitdrukking van het doelgezicht gewarpt.
-3. **Kleur**: met een genormaliseerde vervaging wordt de lokale huidskleur en belichting van het doel overgenomen.
+   en uitdrukking van het doelgezicht gewarpt. Bij een gedraaid hoofd worden weggedraaide driehoeken
+   overgeslagen; kijkt de bron opzij, dan wordt de verborgen kant aangevuld met de gespiegelde zichtbare kant.
+3. **Kleur**: met een genormaliseerde vervaging worden de lokale huidskleur, belichting en het contrast
+   van het doel overgenomen (in halve-float-precisie waar de GPU dat ondersteunt).
 4. **Overvloeien**: een vervaagd, iets ingekrompen masker zorgt voor een onzichtbare rand.
 
 Alles draait op de GPU, dus ook video en camera gaan in realtime.

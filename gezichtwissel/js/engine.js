@@ -11,7 +11,7 @@
 //
 // Afspraak: in alle textures en framebuffers is rij 0 de bovenkant van het beeld; pas
 // bij het tekenen op het scherm wordt de y-as omgedraaid.
-import { triangles } from './mesh.js';
+import { buildGeometry } from './mesh.js';
 
 const QUAD_VS = `#version 300 es
 in vec2 aPos;
@@ -25,10 +25,13 @@ void main() {
 const WARP_VS = `#version 300 es
 in vec2 aPos;
 in vec2 aUV;
+in float aA;
 uniform vec2 uRes;
 out vec2 vUV;
+out float vA;
 void main() {
   vUV = aUV;
+  vA = aA;
   gl_Position = vec4(aPos / uRes * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
@@ -39,8 +42,10 @@ out vec4 o;
 `;
 
 const WARP_FS = `${HEAD}
+in float vA;
 uniform sampler2D uSrc;
-void main() { o = vec4(texture(uSrc, vUV).rgb, 1.0); }`;
+// Voorvermenigvuldigd met het gewicht (ogen/mond kunnen deels doorzichtig zijn).
+void main() { o = vec4(texture(uSrc, vUV).rgb * vA, vA); }`;
 
 const COPY_FS = `${HEAD}
 uniform sampler2D uTex;
@@ -53,6 +58,18 @@ uniform sampler2D uW;
 void main() {
   float a = texture(uW, vUV).a;
   o = vec4(texture(uT, vUV).rgb * a, a);
+}`;
+
+// Helderheid² van doel (r) en bron (g), gewogen met de dekking: voor het contrast.
+const SQUARE_FS = `${HEAD}
+uniform sampler2D uT;
+uniform sampler2D uW;
+const vec3 L = vec3(0.299, 0.587, 0.114);
+void main() {
+  vec4 w = texture(uW, vUV);
+  float lt = dot(texture(uT, vUV).rgb, L);
+  float ls = w.a > 0.001 ? dot(w.rgb / w.a, L) : 0.0;
+  o = vec4(lt * lt * w.a, ls * ls * w.a, 0.0, w.a);
 }`;
 
 const LOD_FS = `${HEAD}
@@ -85,24 +102,37 @@ uniform sampler2D uW;
 uniform sampler2D uMask;
 uniform sampler2D uMT;
 uniform sampler2D uMS;
+uniform sampler2D uSQ;
 uniform float uOpacity;
 uniform float uColor;
+uniform float uContrast;
+const vec3 L = vec3(0.299, 0.587, 0.114);
 void main() {
   vec4 t = texture(uT, vUV);
   vec4 w = texture(uW, vUV);
-  float m = smoothstep(0.5, 0.98, texture(uMask, vUV).r) * uOpacity;
+  // Zachte rand × gewicht (ogen/mond van het doel blijven zichtbaar waar het gewicht laag is).
+  float m = smoothstep(0.5, 0.98, texture(uMask, vUV).r) * clamp(w.a, 0.0, 1.0) * uOpacity;
   vec4 a = texture(uMT, vUV);
   vec4 b = texture(uMS, vUV);
+  vec4 q = texture(uSQ, vUV);
   vec3 meanT = a.rgb / max(a.a, 1e-4);
   vec3 meanS = b.rgb / max(b.a, 1e-4);
   vec3 src = w.a > 0.001 ? w.rgb / w.a : t.rgb;
-  vec3 res = clamp(src + uColor * (meanT - meanS), 0.0, 1.0);
+  // Lokaal contrast: verhouding van de standaardafwijking van de helderheid.
+  float lT = dot(meanT, L), lS = dot(meanS, L);
+  float sdT = sqrt(max(q.r / max(q.a, 1e-4) - lT * lT, 1e-5));
+  float sdS = sqrt(max(q.g / max(q.a, 1e-4) - lS * lS, 1e-5));
+  float g = mix(1.0, clamp(sdT / sdS, 0.6, 1.6), uContrast);
+  // Gemiddelde kleur én contrast van het doel overnemen.
+  vec3 matched = meanT + (src - meanS) * g;
+  vec3 res = clamp(mix(src, matched, uColor), 0.0, 1.0);
   o = vec4(mix(t.rgb, res, m), 1.0);
 }`;
 
 export const DEFAULTS = {
   opacity: 1,      // 0..1   hoeveel van het nieuwe gezicht zichtbaar is
   color: 1,        // 0..1   kleur/belichting van het doel overnemen
+  contrast: 1,     // 0..1   contrast van het doel overnemen
   feather: 0.4,    // 0..1   zachtheid van de rand
   fillEyes: true,  // ogen van de bron gebruiken (uit = ogen van het doel, behoudt blik)
   fillMouth: false // mond van de bron gebruiken (uit = mond van het doel, behoudt expressie)
@@ -120,7 +150,12 @@ export class SwapEngine {
     if (!gl) throw new Error('Je browser ondersteunt geen WebGL2.');
     this.gl = gl;
 
+    // Halve-float-buffers geven genoeg precisie voor contrastberekening.
+    this.float = !!gl.getExtension('EXT_color_buffer_float');
+    if (this.float) gl.getExtension('OES_texture_float_linear');
+
     this.progs = {
+      square: this.program(QUAD_VS, SQUARE_FS),
       warp: this.program(WARP_VS, WARP_FS),
       copy: this.program(QUAD_VS, COPY_FS),
       premul: this.program(QUAD_VS, PREMUL_FS),
@@ -135,8 +170,7 @@ export class SwapEngine {
 
     this.posBuf = gl.createBuffer();
     this.uvBuf = gl.createBuffer();
-    this.idxBuf = gl.createBuffer();
-    this.idxKey = null;
+    this.alphaBuf = gl.createBuffer();
 
     this.target = this.texture(1, 1, true);
     this.targetSize = [1, 1];
@@ -169,14 +203,15 @@ export class SwapEngine {
       const name = gl.getActiveUniform(p, i).name;
       uni[name] = gl.getUniformLocation(p, name);
     }
-    return { p, uni, aPos: gl.getAttribLocation(p, 'aPos'), aUV: gl.getAttribLocation(p, 'aUV') };
+    return { p, uni, aPos: gl.getAttribLocation(p, 'aPos'), aUV: gl.getAttribLocation(p, 'aUV'), aA: gl.getAttribLocation(p, 'aA') };
   }
 
-  texture(w, h, mip = false) {
+  texture(w, h, mip = false, float = false) {
     const gl = this.gl;
     const tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    if (float) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -184,9 +219,9 @@ export class SwapEngine {
     return tex;
   }
 
-  target_(w, h, mip = false) {
+  target_(w, h, mip = false, float = false) {
     const gl = this.gl;
-    const tex = this.texture(w, h, mip);
+    const tex = this.texture(w, h, mip, float && this.float);
     const fbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
@@ -228,7 +263,7 @@ export class SwapEngine {
     gl.vertexAttribPointer(prog.aPos, 2, gl.FLOAT, false, 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     // Ontkoppel textures zodat een volgende pass er weer naartoe kan tekenen.
-    for (let u = 0; u < 5; u++) {
+    for (let u = 0; u < 6; u++) {
       gl.activeTexture(gl.TEXTURE0 + u);
       gl.bindTexture(gl.TEXTURE_2D, null);
     }
@@ -245,10 +280,11 @@ export class SwapEngine {
     this.h = h;
     this.canvas.width = w;
     this.canvas.height = h;
-    if (this.full) [this.full.warp, this.full.premul, ...this.full.out].forEach((t) => this.freeTarget(t));
+    if (this.full) [this.full.warp, this.full.premul, this.full.square, ...this.full.out].forEach((t) => this.freeTarget(t));
     this.full = {
       warp: this.target_(w, h, true),
-      premul: this.target_(w, h, true),
+      premul: this.target_(w, h, true, true),
+      square: this.target_(w, h, true, true),
       out: [this.target_(w, h), this.target_(w, h)], // afwisselend in tekenen
     };
   }
@@ -283,7 +319,7 @@ export class SwapEngine {
     const k = `${key}:${w}x${h}`;
     let set = this.low.get(k);
     if (!set) {
-      set = { a: this.target_(w, h), b: this.target_(w, h), tmp: this.target_(w, h) };
+      set = { a: this.target_(w, h, false, true), b: this.target_(w, h, false, true), c: this.target_(w, h, false, true), tmp: this.target_(w, h, false, true) };
       this.low.set(k, set);
       if (this.low.size > 12) {
         const [oldKey, old] = this.low.entries().next().value;
@@ -322,8 +358,7 @@ export class SwapEngine {
   render(faces, settings = {}) {
     const gl = this.gl;
     const s = { ...DEFAULTS, ...settings };
-    const { warp, premul, out } = this.full;
-    const idx = triangles(s);
+    const { warp, premul, square, out } = this.full;
     let cur = this.target;
     let flip = 0;
 
@@ -331,21 +366,11 @@ export class SwapEngine {
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
 
-    if (this.idxKey !== idx) {
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuf);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
-      this.idxKey = idx;
-    }
-
     const maxLod = Math.floor(Math.log2(Math.max(this.w, this.h)));
 
     for (const f of faces) {
       // 1. Brongezicht vervormen naar de doelpositie.
-      const uv = new Float32Array(f.src.length);
-      for (let i = 0; i < uv.length; i += 2) {
-        uv[i] = f.src[i] / f.srcW;
-        uv[i + 1] = f.src[i + 1] / f.srcH;
-      }
+      const geo = buildGeometry(f.src, f.dst, f.srcW, f.srcH, s, f.weights);
       const p = this.progs.warp;
       gl.bindFramebuffer(gl.FRAMEBUFFER, warp.fbo);
       gl.viewport(0, 0, this.w, this.h);
@@ -354,17 +379,18 @@ export class SwapEngine {
       gl.useProgram(p.p);
       gl.uniform2f(p.uni.uRes, this.w, this.h);
       this.bindTex(p, 'uSrc', f.tex, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuf);
-      gl.bufferData(gl.ARRAY_BUFFER, f.dst, gl.DYNAMIC_DRAW);
-      gl.enableVertexAttribArray(p.aPos);
-      gl.vertexAttribPointer(p.aPos, 2, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuf);
-      gl.bufferData(gl.ARRAY_BUFFER, uv, gl.DYNAMIC_DRAW);
-      gl.enableVertexAttribArray(p.aUV);
-      gl.vertexAttribPointer(p.aUV, 2, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuf);
-      gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0);
+      const attr = (buf, loc, data, size) => {
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+      };
+      attr(this.posBuf, p.aPos, geo.pos, 2);
+      attr(this.uvBuf, p.aUV, geo.uv, 2);
+      attr(this.alphaBuf, p.aA, geo.alpha, 1);
+      gl.drawArrays(gl.TRIANGLES, 0, geo.count);
       gl.disableVertexAttribArray(p.aUV);
+      gl.disableVertexAttribArray(p.aA);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, warp.tex);
       gl.generateMipmap(gl.TEXTURE_2D);
@@ -376,6 +402,14 @@ export class SwapEngine {
       });
       gl.bindTexture(gl.TEXTURE_2D, premul.tex);
       gl.generateMipmap(gl.TEXTURE_2D);
+      if (this.float) {
+        this.pass(this.progs.square, square, (q) => {
+          this.bindTex(q, 'uT', cur, 0);
+          this.bindTex(q, 'uW', warp.tex, 1);
+        });
+        gl.bindTexture(gl.TEXTURE_2D, square.tex);
+        gl.generateMipmap(gl.TEXTURE_2D);
+      }
 
       const size = Math.max(8, f.size);
       // Kleur: gezicht ≈ 32 px breed, masker: gezicht ≈ 128 px breed.
@@ -390,6 +424,10 @@ export class SwapEngine {
       const sigmaC = (0.12 * size) / (1 << lodC);
       this.blur(col.a, col.tmp, sigmaC);
       this.blur(col.b, col.tmp, sigmaC);
+      if (this.float) {
+        this.downsample(square.tex, col.c, lodC, false);
+        this.blur(col.c, col.tmp, sigmaC);
+      }
 
       // 3. Zachte rand.
       const [mw, mh] = dims(lodM);
@@ -407,8 +445,10 @@ export class SwapEngine {
         this.bindTex(q, 'uMask', msk.a.tex, 2);
         this.bindTex(q, 'uMT', col.a.tex, 3);
         this.bindTex(q, 'uMS', col.b.tex, 4);
+        this.bindTex(q, 'uSQ', col.c.tex, 5);
         gl.uniform1f(q.uni.uOpacity, s.opacity);
         gl.uniform1f(q.uni.uColor, s.color);
+        gl.uniform1f(q.uni.uContrast, this.float ? s.contrast : 0);
       });
       cur = dest.tex;
     }
